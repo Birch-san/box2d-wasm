@@ -1,0 +1,4 @@
+[submodule "box2d"]
+	path = box2d
+	url = git@github.com:erincatto/box2d.git
+	branch = master
