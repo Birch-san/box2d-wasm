@@ -45,6 +45,13 @@ export class CanvasDebugDraw {
     this.context.fillStyle = `rgba(${colStr},0.5)`;
     this.context.strokeStyle = `rgb(${colStr})`;
   }
+
+  drawPoint(b2Vec2_p: any, size: number, b2Color_color: any): void {
+    const { wrapPointer, b2Vec2 } = this.box2D;
+    const vert = wrapPointer(b2Vec2_p, b2Vec2);
+    this.setColorFromDebugDrawCallback(b2Color_color);
+    this.context.fillRect(vert.get_x(), vert.get_y(), size, size);
+  }
   
   drawSegment(vert1: any, vert2: any): void {
     const { wrapPointer, b2Vec2 } = this.box2D;
@@ -116,29 +123,32 @@ export class CanvasDebugDraw {
   constructJSDraw() {
     const { JSDraw, b2Vec2 } = this.box2D;
     const debugDraw = Object.assign(new JSDraw(), {
-      DrawSegment: (vert1: any, vert2: any, color: any) => {
+      DrawSegment: (vert1: any, vert2: any, color: any): void => {
         this.setColorFromDebugDrawCallback(color);
         this.drawSegment(vert1, vert2);
       },
-      DrawPolygon: (vertices: any, vertexCount: any, color: any) => {
+      DrawPolygon: (vertices: any, vertexCount: any, color: any): void => {
         this.setColorFromDebugDrawCallback(color);
         this.drawPolygon(vertices, vertexCount, false);
       },
-      DrawSolidPolygon: (vertices: any, vertexCount: any, color: any) => {
+      DrawSolidPolygon: (vertices: any, vertexCount: any, color: any): void => {
         this.setColorFromDebugDrawCallback(color);
         this.drawPolygon(vertices, vertexCount, true);
       },
-      DrawCircle: (center: any, radius: any, color: any) => {
+      DrawCircle: (center: any, radius: any, color: any): void => {
         this.setColorFromDebugDrawCallback(color);
         const dummyAxis = b2Vec2(0,0);
         this.drawCircle(center, radius, dummyAxis, false);
       },
-      DrawSolidCircle: (center: any, radius: any, axis: any, color: any) => {
+      DrawSolidCircle: (center: any, radius: any, axis: any, color: any): void => {
         this.setColorFromDebugDrawCallback(color);
         this.drawCircle(center, radius, axis, true);
       },
-      DrawTransform: (transform: any) => {
+      DrawTransform: (transform: any): void => {
         this.drawTransform(transform);
+      },
+      DrawPoint: (b2Vec2_p: any, size: number, b2Color_color: any): void => {
+        this.drawPoint(b2Vec2_p, size, b2Color_color);
       }
     });
     return debugDraw;

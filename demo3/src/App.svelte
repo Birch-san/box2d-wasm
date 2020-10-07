@@ -24,8 +24,8 @@
       y: canvas.height/2
     };
 
-    const { b2_dynamicBody, b2BodyDef, b2CircleShape, b2EdgeShape, b2Fixture, b2Vec2, b2World,
-      destroy, e_shapeBit, JSQueryCallback, wrapPointer } = box2D;
+    const { b2_dynamicBody, b2BodyDef, b2CircleShape, b2Draw: { e_shapeBit }, b2EdgeShape, b2Fixture,
+      b2Vec2, b2World, destroy, JSQueryCallback, wrapPointer } = box2D;
     const myQueryCallback = new JSQueryCallback();
 
     myQueryCallback.ReportFixture = (fixturePtr: any) => {
@@ -59,7 +59,7 @@
     //falling shapes
     const ZERO = new b2Vec2(0, 0);
     const temp = new b2Vec2(0, 0);
-    new Array(2).fill(undefined).forEach((_, index: number) => {
+    new Array(20).fill(undefined).forEach((_, index: number) => {
       const bd = new b2BodyDef();
       bd.set_type(b2_dynamicBody);
       bd.set_position(ZERO);
@@ -152,10 +152,10 @@
 
     (function loop(prevMs: number) {
       const nowMs = window.performance.now();
-      handle = requestAnimationFrame(loop.bind(nowMs));
+      handle = requestAnimationFrame(loop.bind(null, nowMs));
       const delta = nowMs-prevMs;
 
-			world.Step(delta*1000, 3, 2);
+			world.Step(delta/1000, 3, 2);
       draw();
 		}(window.performance.now()));
 
