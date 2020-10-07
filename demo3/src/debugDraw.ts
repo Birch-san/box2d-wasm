@@ -14,7 +14,6 @@ export class CanvasDebugDraw {
     private readonly helpers: Helpers,
     private readonly context: CanvasRenderingContext2D
     ) {
-    this.drawAxes = this.drawAxes.bind(this);
     this.setColorFromDebugDrawCallback = this.setColorFromDebugDrawCallback.bind(this);
     this.drawSegment = this.drawSegment.bind(this);
     this.drawPolygon = this.drawPolygon.bind(this);
@@ -23,17 +22,17 @@ export class CanvasDebugDraw {
     this.constructJSDraw = this.constructJSDraw.bind(this);
   }
 
-  drawAxes(): void {
-    this.context.strokeStyle = 'rgb(192,0,0)';
-    this.context.beginPath();
-    this.context.moveTo(0, 0);
-    this.context.lineTo(1, 0);
-    this.context.stroke();
-    this.context.strokeStyle = 'rgb(0,192,0)';
-    this.context.beginPath();
-    this.context.moveTo(0, 0);
-    this.context.lineTo(0, 1);
-    this.context.stroke();
+  static drawAxes(ctx: CanvasRenderingContext2D): void {
+    ctx.strokeStyle = 'rgb(192,0,0)';
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(1, 0);
+    ctx.stroke();
+    ctx.strokeStyle = 'rgb(0,192,0)';
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(0, 1);
+    ctx.stroke();
   }
   
   setColorFromDebugDrawCallback(color: any): void {
@@ -110,7 +109,7 @@ export class CanvasDebugDraw {
     this.context.scale(0.5,0.5);
     this.context.rotate(rot.GetAngle());
     this.context.lineWidth *= 2;
-    this.drawAxes();
+    CanvasDebugDraw.drawAxes(this.context);
     this.context.restore();
   }
 

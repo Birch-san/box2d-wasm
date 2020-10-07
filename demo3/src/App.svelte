@@ -4,12 +4,25 @@
   import { CanvasDebugDraw } from './debugDraw';
   import { Helpers } from './helpers';
 
-	let canvas: HTMLCanvasElement;
+  let canvas: HTMLCanvasElement;
+  
+  interface Point {
+    x: number;
+    y: number;
+  }
 
 	onMount(async () => {
     const box2D = await Box2D();
 
     const ctx = canvas.getContext('2d');
+    const canvasOffset: Point = {
+      x: 0,
+      y: 0
+    };
+    const viewCenterPixel: Point = {
+      x:320,
+      y:240
+    };
 
     const { b2BodyDef, b2CircleShape, b2EdgeShape, b2Vec2, b2World, b2_dynamicBody } = box2D;
     const helpers = new Helpers(box2D);
@@ -69,36 +82,75 @@
       groundBody.CreateFixture(chainShape, 0.0);
     }
 
-		// let handle: number | undefined;
+    const PTM = 32;
 
-		// (function loop() {
-		// 	handle = requestAnimationFrame(loop);
+    const myRound = (val: number, places: number) => {
+        let c = 1;
+        for (let i = 0; i < places; i++)
+          c *= 10;
+        return Math.round(val*c)/c;
+    }
 
-		// 	const imageData = ctx!.getImageData(0, 0, canvas.width, canvas.height);
+    const getWorldPointFromPixelPoint = (pixelPoint: Point) => ({
+      x: (pixelPoint.x - canvasOffset.x)/PTM,
+      y: (pixelPoint.y - (canvas.height - canvasOffset.y))/PTM
+    });
 
-		// 	for (let p = 0; p < imageData.data.length; p += 4) {
-		// 		const i = p / 4;
-		// 		const x = i % canvas.width;
-		// 		const y = i / canvas.height >>> 0;
+    const setViewCenterWorld = (b2vecpos: any, instantaneous: any): void => {
+      var currentViewCenterWorld = getWorldPointFromPixelPoint( viewCenterPixel );
+      var toMoveX = b2vecpos.get_x() - currentViewCenterWorld.x;
+      var toMoveY = b2vecpos.get_y() - currentViewCenterWorld.y;
+      var fraction = instantaneous ? 1 : 0.25;
+      canvasOffset.x -= myRound(fraction * toMoveX * PTM, 0);
+      canvasOffset.y += myRound(fraction * toMoveY * PTM, 0);
+    };
+    setViewCenterWorld( new b2Vec2(0,0), true );
 
-		// 		const t = window.performance.now();
 
-		// 		const r = 64 + (128 * x / canvas.width) + (64 * Math.sin(t / 1000));
-		// 		const g = 64 + (128 * y / canvas.height) + (64 * Math.cos(t / 1000));
-		// 		const b = 128;
+    const draw = () => {
+      //black background
+      ctx!.fillStyle = 'rgb(0,0,0)';
+      ctx!.fillRect( 0, 0, canvas.width, canvas.height );
 
-		// 		imageData.data[p + 0] = r;
-		// 		imageData.data[p + 1] = g;
-		// 		imageData.data[p + 2] = b;
-		// 		imageData.data[p + 3] = 255;
-		// 	}
+      ctx!.save();
+      ctx!.translate(canvasOffset.x, canvasOffset.y);
+      ctx!.scale(1,-1);                
+      ctx!.scale(PTM, PTM);
+      ctx!.lineWidth /= PTM;
+      
+      CanvasDebugDraw.drawAxes(ctx!);
+      
+      ctx!.fillStyle = 'rgb(255,255,0)';
+      world.DebugDraw();
+      
+      // if ( mouseJoint != null ) {
+      //     //mouse joint is not drawn with regular joints in debug draw
+      //     var p1 = mouseJoint.GetAnchorB();
+      //     var p2 = mouseJoint.GetTarget();
+      //     ctx!.strokeStyle = 'rgb(204,204,204)';
+      //     ctx!.beginPath();
+      //     ctx!.moveTo(p1.get_x(),p1.get_y());
+      //     ctx!.lineTo(p2.get_x(),p2.get_y());
+      //     ctx!.stroke();
+      // }
+          
+      ctx!.restore();
+  }
 
-		// 	ctx!.putImageData(imageData, 0, 0);
-		// }());
+    let handle: number | undefined;
 
-		// return () => {
-		// 	cancelAnimationFrame(handle!);
-		// };
+    (function loop(prevMs: number) {
+      const nowMs = window.performance.now();
+      handle = requestAnimationFrame(loop.bind(nowMs));
+      const delta = nowMs-prevMs;
+
+			world.Step(delta*1000, 3, 2);
+      draw();
+		}(window.performance.now()));
+
+		return () => {
+			cancelAnimationFrame(handle!);
+		};
 	});
 </script>
 
