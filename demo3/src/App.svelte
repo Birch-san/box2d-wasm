@@ -1,16 +1,36 @@
 <script lang="typescript">
   import Box2D from 'Box2D';
   import { onMount } from 'svelte';
+  import { CanvasDebugDraw } from './debugDraw';
+  import { Helpers } from './helpers';
 
 	let canvas: HTMLCanvasElement;
 
 	onMount(async () => {
     const box2D = await Box2D();
-    console.log(box2D);
-    // const bd_ground = new b2BodyDef();
-    // const groundBody = world.CreateBody(bd_ground);
 
-		const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d');
+
+    const { b2BodyDef, b2CircleShape, b2EdgeShape, b2Vec2, b2World } = box2D;
+    const helpers = new Helpers(box2D);
+    const debugDraw = new CanvasDebugDraw(box2D, helpers, ctx!).constructJSDraw();
+    const world = new b2World(new b2Vec2(0.0, -10.0));
+    world.SetDebugDraw(debugDraw);
+    const bd_ground = new b2BodyDef();
+    const groundBody = world.CreateBody(bd_ground);
+
+    //ground edges
+    const shape0 = new b2EdgeShape();
+    shape0.SetTwoSided(new b2Vec2(-40.0, -6.0), new b2Vec2(40.0, -6.0));
+    groundBody.CreateFixture(shape0, 0.0);
+    shape0.SetTwoSided(new b2Vec2(-9.0, -6.0), new b2Vec2(-9.0, -4.0));
+    groundBody.CreateFixture(shape0, 0.0);
+    shape0.SetTwoSided(new b2Vec2(9.0, -6.0), new b2Vec2(9.0, -4.0));
+    groundBody.CreateFixture(shape0, 0.0);
+
+    const cshape = new b2CircleShape();
+    cshape.set_m_radius(0.5);
+
 		let handle: number | undefined;
 
 		(function loop() {
