@@ -14,6 +14,13 @@ export class CanvasDebugDraw {
     private readonly helpers: Helpers,
     private readonly context: CanvasRenderingContext2D
     ) {
+    this.drawAxes = this.drawAxes.bind(this);
+    this.setColorFromDebugDrawCallback = this.setColorFromDebugDrawCallback.bind(this);
+    this.drawSegment = this.drawSegment.bind(this);
+    this.drawPolygon = this.drawPolygon.bind(this);
+    this.drawCircle = this.drawCircle.bind(this);
+    this.drawTransform = this.drawTransform.bind(this);
+    this.constructJSDraw = this.constructJSDraw.bind(this);
   }
 
   drawAxes(): void {
