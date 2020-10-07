@@ -1,10 +1,11 @@
 /*
  * Forked from Box2D.js
  * @see https://github.com/kripken/box2d.js/blob/2816b45/Box2D_v2.3.1.idl
- * @author dmagunov + alperencaliskan
+ * @author dmagunov + alperencaliskan + fork contributions from Alex Birch
  * @license Zlib https://opensource.org/licenses/Zlib
  * License evidence: https://github.com/kripken/box2d.js/blob/master/README.markdown#box2djs
  *   "box2d.js is zlib licensed, just like Box2D."
+ * Compatibility: Box2D v1.4.0+ @f0f9d50
  */
 
 [NoDelete]
@@ -57,7 +58,7 @@ interface b2World {
   void DestroyJoint(b2Joint joint);
   void Step(float timeStep, long velocityIterations, long positionIterations);
   void ClearForces();
-  void DrawDebugData();
+  void DebugDraw();
   void QueryAABB(b2QueryCallback callback, [Ref] b2AABB aabb);
   void RayCast(b2RayCastCallback callback, [Ref] b2Vec2 point1, [Ref] b2Vec2 point2);
   b2Body GetBodyList();
@@ -108,10 +109,14 @@ interface b2Shape {
   attribute float m_radius;
 };
 
+interface b2FixtureUserData {
+  attribute unsigned long pointer;
+};
+
 interface b2FixtureDef {
   void b2FixtureDef();
   [Const] attribute b2Shape shape;
-  attribute any userData;
+  [Value] attribute b2FixtureUserData userData;
   attribute float friction;
   attribute float restitution;
   attribute float density;
@@ -129,8 +134,7 @@ interface b2Fixture {
   void Refilter();
   b2Body GetBody();
   b2Fixture GetNext();
-  any GetUserData();
-  void SetUserData(any data);
+  [Ref] b2FixtureUserData GetUserData();
   boolean TestPoint([Ref] b2Vec2 p);
   boolean RayCast(b2RayCastOutput output, [Ref] b2RayCastInput input, long childIndex);
   void GetMassData(b2MassData massData);
@@ -208,6 +212,10 @@ interface b2Vec3 {
   attribute float z;
 };
 
+interface b2BodyUserData {
+  attribute unsigned long pointer;
+};
+
 [NoDelete]
 interface b2Body {
   b2Fixture CreateFixture(b2FixtureDef def);
@@ -253,16 +261,13 @@ interface b2Body {
   boolean IsSleepingAllowed();
   void SetAwake(boolean flag);
   boolean IsAwake();
-  void SetActive(boolean flag);
-  boolean IsActive();
   void SetFixedRotation(boolean flag);
   boolean IsFixedRotation();
   b2Fixture GetFixtureList();
   b2JointEdge GetJointList();
   b2ContactEdge GetContactList();
   b2Body GetNext();
-  any GetUserData();
-  void SetUserData(any data);
+  [Ref] b2BodyUserData GetUserData();
   b2World GetWorld();
   void Dump();
 };
@@ -287,8 +292,7 @@ interface b2BodyDef {
   attribute boolean awake;
   attribute boolean fixedRotation;
   attribute boolean bullet;
-  attribute boolean active;
-  attribute any userData;
+  [Value] attribute b2BodyUserData userData;
   attribute float gravityScale;
 };
 
@@ -322,14 +326,14 @@ b2CircleShape implements b2Shape;
 
 interface b2EdgeShape {
   void b2EdgeShape();
-  void Set([Ref] b2Vec2 v1, [Ref] b2Vec2 v2);
+  void SetOneSided([Const,Ref] b2Vec2 v0, [Const,Ref] b2Vec2 v1, [Const,Ref] b2Vec2 v2, [Const,Ref] b2Vec2 v3);
+  void SetTwoSided([Const,Ref] b2Vec2 v1, [Const,Ref] b2Vec2 v2);
 
   [Value] attribute b2Vec2 m_vertex1;
   [Value] attribute b2Vec2 m_vertex2;
   [Value] attribute b2Vec2 m_vertex0;
   [Value] attribute b2Vec2 m_vertex3;
-  attribute boolean m_hasVertex0;
-  attribute boolean m_hasVertex3;
+  attribute boolean m_oneSided;
 };
 
 b2EdgeShape implements b2Shape;
@@ -349,17 +353,14 @@ enum b2JointType {
   "e_motorJoint"
 };
 
-enum b2LimitState {
-  "e_inactiveLimit",
-  "e_atLowerLimit",
-  "e_atUpperLimit",
-  "e_equalLimits"
+interface b2JointUserData {
+  attribute unsigned long pointer;
 };
 
 interface b2JointDef {
   void b2JointDef();
   attribute b2JointType type;
-  attribute any userData;
+  [Value] attribute b2JointUserData userData;
   attribute b2Body bodyA;
   attribute b2Body bodyB;
   attribute boolean collideConnected;
@@ -375,9 +376,7 @@ interface b2Joint {
   [Value] b2Vec2 GetReactionForce(float inv_dt);
   float GetReactionTorque(float inv_dt);
   b2Joint GetNext();
-  any GetUserData();
-  void SetUserData(any data);
-  boolean IsActive();
+  [Ref] b2JointUserData GetUserData();
   boolean GetCollideConnected();
   void Dump();
 };
@@ -385,10 +384,11 @@ interface b2Joint {
 interface b2WeldJoint {
   [Const, Ref] b2Vec2 GetLocalAnchorA();
   [Const, Ref] b2Vec2 GetLocalAnchorB();
-  void SetFrequency(float hz);
-  float GetFrequency();
-  void SetDampingRatio(float ratio);
-  float GetDampingRatio();
+  float GetReferenceAngle();
+  void SetStiffness(float stiffness);
+  float GetStiffness();
+  void SetDamping(float damping);
+  float GetDamping();
   void Dump();
 };
 
@@ -400,8 +400,8 @@ interface b2WeldJointDef {
   [Value] attribute b2Vec2 localAnchorA;
   [Value] attribute b2Vec2 localAnchorB;
   attribute float referenceAngle;
-  attribute float frequencyHz;
-  attribute float dampingRatio;
+  attribute float stiffness;
+  attribute float damping;
 };
 
 b2WeldJointDef implements b2JointDef;
@@ -409,18 +409,14 @@ b2WeldJointDef implements b2JointDef;
 interface b2ChainShape {
   void b2ChainShape();
   void Clear();
-  void CreateLoop(b2Vec2 vertices, long count);
-  void CreateChain(b2Vec2 vertices, long count);
-  void SetPrevVertex([Ref] b2Vec2 prevVertex);
-  void SetNextVertex([Ref] b2Vec2 nextVertex);
+  void CreateLoop([Const] b2Vec2 vertices, long count);
+  void CreateChain([Const] b2Vec2 vertices, long count, [Const,Ref] b2Vec2 prevVertex, [Const,Ref] b2Vec2 nextVertex);
   void GetChildEdge(b2EdgeShape edge, long index);
 
   attribute b2Vec2 m_vertices;
   attribute long m_count;
   [Value] attribute b2Vec2 m_prevVertex;
   [Value] attribute b2Vec2 m_nextVertex;
-  attribute boolean m_hasPrevVertex;
-  attribute boolean m_hasNextVertex;
 };
 
 b2ChainShape implements b2Shape;
@@ -494,24 +490,31 @@ interface JSDestructionListener {
 interface b2DistanceJoint {
   [Const, Ref] b2Vec2 GetLocalAnchorA();
   [Const, Ref] b2Vec2 GetLocalAnchorB();
-  void SetLength(float length);
   float GetLength();
-  void SetFrequency(float hz);
-  float GetFrequency();
-  void SetDampingRatio(float ratio);
-  float GetDampingRatio();
+  void SetLength(float length);
+  float GetMinLength();
+  void SetMinLength(float minLength);
+  float GetMaxLength();
+  void SetMaxLength(float maxLength);
+  float GetCurrentLength();
+  void SetStiffness(float stiffness);
+  float GetStiffness();
+  void SetDamping(float damping);
+  float GetDamping();
 };
 
 b2DistanceJoint implements b2Joint;
 
 interface b2DistanceJointDef {
   void b2DistanceJointDef();
-  void Initialize(b2Body bodyA, b2Body bodyB, [Ref] b2Vec2 anchorA, [Ref] b2Vec2 anchorB);
+  void Initialize(b2Body bodyA, b2Body bodyB, [Const,Ref] b2Vec2 anchorA, [Const,Ref] b2Vec2 anchorB);
   [Value] attribute b2Vec2 localAnchorA;
   [Value] attribute b2Vec2 localAnchorB;
   attribute float length;
-  attribute float frequencyHz;
-  attribute float dampingRatio;
+  attribute float minLength;
+  attribute float maxLength;
+  attribute float stiffness;
+  attribute float damping;
 };
 
 b2DistanceJointDef implements b2JointDef;
@@ -540,6 +543,7 @@ interface JSDraw {
   void DrawSolidCircle([Const, Ref] b2Vec2 center, float radius, [Const, Ref] b2Vec2 axis, [Const, Ref] b2Color color);
   void DrawSegment([Const, Ref] b2Vec2 p1, [Const, Ref] b2Vec2 p2, [Const, Ref] b2Color color);
   void DrawTransform([Const, Ref] b2Transform xf);
+  void DrawPoint([Const, Ref] b2Vec2 p, float size, [Const, Ref] b2Color color);
 };
 
 interface b2FrictionJoint {
@@ -655,10 +659,10 @@ interface b2MouseJoint {
   [Const, Ref] b2Vec2 GetTarget();
   void SetMaxForce(float force);
   float GetMaxForce();
-  void SetFrequency(float hz);
-  float GetFrequency();
-  void SetDampingRatio(float ratio);
-  float GetDampingRatio();
+  void SetStiffness(float stiffness);
+  float GetStiffness();
+  void SetDamping(float damping);
+  float GetDamping();
 };
 
 b2MouseJoint implements b2Joint;
@@ -667,8 +671,8 @@ interface b2MouseJointDef {
   void b2MouseJointDef();
   [Value] attribute b2Vec2 target;
   attribute float maxForce;
-  attribute float frequencyHz;
-  attribute float dampingRatio;
+  attribute float stiffness;
+  attribute float damping;
 };
 
 b2MouseJointDef implements b2JointDef;
@@ -678,8 +682,6 @@ interface b2PolygonShape {
   void Set(b2Vec2 vertices, long vertexCount);
   void SetAsBox(float hx, float hy);
   void SetAsBox(float hx, float hy, [Ref] b2Vec2 center, float angle);
-  long GetVertexCount();
-  [Const, Ref] b2Vec2 GetVertex(long index);
   [Value] attribute b2Vec2 m_centroid;
 
   // TODO: webidl_binder support for array types.
@@ -819,24 +821,6 @@ interface b2RevoluteJointDef {
 
 b2RevoluteJointDef implements b2JointDef;
 
-interface b2RopeJoint {
-  [Const, Ref] b2Vec2 GetLocalAnchorA();
-  [Const, Ref] b2Vec2 GetLocalAnchorB();
-  void SetMaxLength(float length);
-  float GetMaxLength();
-  b2LimitState GetLimitState();
-};
-
-b2RopeJoint implements b2Joint;
-
-interface b2RopeJointDef {
-  void b2RopeJointDef();
-  [Value] attribute b2Vec2 localAnchorA;
-  [Value] attribute b2Vec2 localAnchorB;
-  attribute float maxLength;
-};
-b2RopeJointDef implements b2JointDef;
-
 interface b2Rot {
   void b2Rot();
   void b2Rot(float angle);
@@ -854,7 +838,14 @@ interface b2WheelJoint {
   [Const, Ref] b2Vec2 GetLocalAnchorB();
   [Const, Ref] b2Vec2 GetLocalAxisA();
   float GetJointTranslation();
-  float GetJointSpeed();
+  float GetJointLinearSpeed();
+  float GetJointAngle();
+  float GetJointAngularSpeed();
+  boolean IsLimitEnabled();
+  void EnableLimit(boolean flag);
+  float GetLowerLimit();
+  float GetUpperLimit();
+  void SetLimits(float lower, float upper);
   boolean IsMotorEnabled();
   void EnableMotor(boolean flag);
   void SetMotorSpeed(float speed);
@@ -862,25 +853,28 @@ interface b2WheelJoint {
   void SetMaxMotorTorque(float torque);
   float GetMaxMotorTorque();
   float GetMotorTorque(float inv_dt);
-  void SetSpringFrequencyHz(float hz);
-  float GetSpringFrequencyHz();
-  void SetSpringDampingRatio(float ratio);
-  float GetSpringDampingRatio();
+  void SetStiffness(float stiffness);
+  float GetStiffness();
+  void SetDamping(float damping);
+  float GetDamping();
 };
 
 b2WheelJoint implements b2Joint;
 
 interface b2WheelJointDef {
   void b2WheelJointDef();
-  void Initialize(b2Body bodyA, b2Body bodyB, [Ref] b2Vec2 anchor, [Ref] b2Vec2 axis);
+  void Initialize(b2Body bodyA, b2Body bodyB, [Const,Ref] b2Vec2 anchor, [Const,Ref] b2Vec2 axis);
   [Value] attribute b2Vec2 localAnchorA;
   [Value] attribute b2Vec2 localAnchorB;
   [Value] attribute b2Vec2 localAxisA;
+  attribute boolean enableLimit;
+  attribute float lowerTranslation;
+  attribute float upperTranslation;
   attribute boolean enableMotor;
   attribute float maxMotorTorque;
   attribute float motorSpeed;
-  attribute float frequencyHz;
-  attribute float dampingRatio;
+  attribute float stiffness;
+  attribute float damping;
 };
 
 b2WheelJointDef implements b2JointDef;
@@ -912,3 +906,13 @@ interface b2MotorJointDef {
 };
 
 b2MotorJointDef implements b2JointDef;
+
+enum b2PointState {
+  "b2_nullState",
+  "b2_addState",
+  "b2_persistState",
+  "b2_removeState"
+};
+
+// TODO: b2_collision.h
+// TODO: b2_rope
