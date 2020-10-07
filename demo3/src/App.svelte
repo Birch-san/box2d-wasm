@@ -1,30 +1,59 @@
-<script lang="ts">
-	export let name: string;
+<script lang="typescript">
+  import Box2D from 'Box2D';
+  import { onMount } from 'svelte';
+
+	let canvas: HTMLCanvasElement;
+
+	onMount(async () => {
+    const box2D = await Box2D();
+    console.log(box2D);
+    // const bd_ground = new b2BodyDef();
+    // const groundBody = world.CreateBody(bd_ground);
+
+		const ctx = canvas.getContext('2d');
+		let handle: number | undefined;
+
+		(function loop() {
+			handle = requestAnimationFrame(loop);
+
+			const imageData = ctx!.getImageData(0, 0, canvas.width, canvas.height);
+
+			for (let p = 0; p < imageData.data.length; p += 4) {
+				const i = p / 4;
+				const x = i % canvas.width;
+				const y = i / canvas.height >>> 0;
+
+				const t = window.performance.now();
+
+				const r = 64 + (128 * x / canvas.width) + (64 * Math.sin(t / 1000));
+				const g = 64 + (128 * y / canvas.height) + (64 * Math.cos(t / 1000));
+				const b = 128;
+
+				imageData.data[p + 0] = r;
+				imageData.data[p + 1] = g;
+				imageData.data[p + 2] = b;
+				imageData.data[p + 3] = 255;
+			}
+
+			ctx!.putImageData(imageData, 0, 0);
+		}());
+
+		return () => {
+			cancelAnimationFrame(handle!);
+		};
+	});
 </script>
 
-<main>
-	<h1>Hello {name}!</h1>
-	<p>Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn how to build Svelte apps.</p>
-</main>
-
 <style>
-	main {
-		text-align: center;
-		padding: 1em;
-		max-width: 240px;
-		margin: 0 auto;
-	}
-
-	h1 {
-		color: #ff3e00;
-		text-transform: uppercase;
-		font-size: 4em;
-		font-weight: 100;
-	}
-
-	@media (min-width: 640px) {
-		main {
-			max-width: none;
-		}
-	}
+  canvas {
+    background-color: #666;
+    -webkit-mask: url(logo.svg) 50% 50% no-repeat;
+    mask: url(logo.svg) 50% 50% no-repeat;
+  }
 </style>
+
+<canvas
+	bind:this={canvas}
+	width={1280}
+	height={720}
+></canvas>
