@@ -1,11 +1,13 @@
 <script lang="typescript">
   import * as Box2D from 'Box2D';
   import { onMount } from 'svelte';
-  console.log(Box2D);
 
 	let canvas: HTMLCanvasElement;
 
-	onMount(() => {
+	onMount(async () => {
+    console.log(Box2D);
+    debugger;
+    const box2D = await Box2D();
     // const bd_ground = new b2BodyDef();
     // const groundBody = world.CreateBody(bd_ground);
 
