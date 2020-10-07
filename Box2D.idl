@@ -5,7 +5,7 @@
  * @license Zlib https://opensource.org/licenses/Zlib
  * License evidence: https://github.com/kripken/box2d.js/blob/master/README.markdown#box2djs
  *   "box2d.js is zlib licensed, just like Box2D."
- * Compatibility: Box2D v1.4.0+ @f0f9d50
+ * Compatibility: Box2D v2.4.0+ @f0f9d50
  */
 
 [NoDelete]

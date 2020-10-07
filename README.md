@@ -1,5 +1,7 @@
 # box2d-wasm
 
+Compatibility: Box2D v2.4.0+ @[f0f9d50](https://github.com/erincatto/box2d/tree/f0f9d50a328a709cc3a287a61b864e7d0e3ef35f)
+
 ## License
 
 [Zlib-licensed](LICENSE.zlib.txt).  
