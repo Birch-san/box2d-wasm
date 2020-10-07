@@ -80,22 +80,34 @@ importers:
     devDependencies:
       '@rollup/plugin-commonjs': 14.0.0_rollup@2.28.2
       '@rollup/plugin-node-resolve': 8.4.0_rollup@2.28.2
-      '@rollup/plugin-typescript': 6.0.0_e101a3dfdabdb9716953ca1efbc80bc6
+      '@rollup/plugin-typescript': 6.0.0_6ebf205059c50f6ae99787c685ed3f4e
       '@tsconfig/svelte': 1.0.10
+      '@typescript-eslint/eslint-plugin': 4.4.0_a71b0516f86a95383173f79e74386c73
+      '@typescript-eslint/parser': 4.4.0_eslint@7.10.0+typescript@4.0.3
+      eslint: 7.10.0
+      eslint-plugin-svelte3: 2.7.3_eslint@7.10.0+svelte@3.29.0
+      eslint-svelte3-preprocess: 0.0.4_svelte@3.29.0
+      patch-package: 6.2.2
       rollup: 2.28.2
       rollup-plugin-livereload: 2.0.0
       rollup-plugin-svelte: 6.0.1_rollup@2.28.2+svelte@3.29.0
       rollup-plugin-terser: 7.0.2_rollup@2.28.2
       svelte: 3.29.0
       svelte-check: 1.0.55
-      svelte-preprocess: 4.5.1_svelte@3.29.0+typescript@3.9.7
+      svelte-preprocess: 4.5.1_svelte@3.29.0+typescript@4.0.3
       tslib: 2.0.2
-      typescript: 3.9.7
+      typescript: 4.0.3
     specifiers:
       '@rollup/plugin-commonjs': ^14.0.0
       '@rollup/plugin-node-resolve': ^8.0.0
       '@rollup/plugin-typescript': ^6.0.0
       '@tsconfig/svelte': ^1.0.0
+      '@typescript-eslint/eslint-plugin': ^4.4.0
+      '@typescript-eslint/parser': ^4.4.0
+      eslint: ^7.10.0
+      eslint-plugin-svelte3: 2.7.3
+      eslint-svelte3-preprocess: ^0.0.4
+      patch-package: ^6.2.2
       rollup: ^2.3.4
       rollup-plugin-livereload: ^2.0.0
       rollup-plugin-svelte: ^6.0.0
@@ -105,7 +117,7 @@ importers:
       svelte-check: ^1.0.0
       svelte-preprocess: ^4.0.0
       tslib: ^2.0.0
-      typescript: ^3.9.3
+      typescript: ^4.0.0
 lockfileVersion: 5.1
 packages:
   /@babel/code-frame/7.10.4:
@@ -1479,13 +1491,13 @@ packages:
       rollup: ^1.20.0 || ^2.0.0
     resolution:
       integrity: sha512-XPmVXZ7IlaoWaJLkSCDaa0Y6uVo5XQYHhiMFzOd5qSv5rE+t/UJToPIOE56flKIxBFQI27ONsxb7dqHnwSsjKQ==
-  /@rollup/plugin-typescript/6.0.0_e101a3dfdabdb9716953ca1efbc80bc6:
+  /@rollup/plugin-typescript/6.0.0_6ebf205059c50f6ae99787c685ed3f4e:
     dependencies:
       '@rollup/pluginutils': 3.1.0_rollup@2.28.2
       resolve: 1.17.0
       rollup: 2.28.2
       tslib: 2.0.2
-      typescript: 3.9.7
+      typescript: 4.0.3
     dev: true
     engines:
       node: '>=8.0.0'
@@ -8969,58 +8981,6 @@ packages:
     requiresBuild: true
     resolution:
       integrity: sha512-CmIsCr62y34qGS10/SC1l1VkmX0kZR6wncbGgRJ1qJftLDMEaazC3bWqoqAlrqyQFvpO0+xb44GQm4RKi/9sLQ==
-  /svelte-preprocess/4.5.1_svelte@3.29.0+typescript@3.9.7:
-    dependencies:
-      '@types/pug': 2.0.4
-      '@types/sass': 1.16.0
-      detect-indent: 6.0.0
-      strip-indent: 3.0.0
-      svelte: 3.29.0
-      typescript: 3.9.7
-    dev: true
-    engines:
-      node: '>= 9.11.2'
-    peerDependencies:
-      '@babel/core': ^7.10.2
-      coffeescript: ^2.5.1
-      less: ^3.11.3
-      node-sass: '*'
-      postcss: ^7 || ^8
-      postcss-load-config: ^2.1.0
-      pug: ^3.0.0
-      sass: ^1.26.8
-      stylus: ^0.54.7
-      sugarss: ^2.0.0
-      svelte: ^3.23.0
-      typescript: ^3.9.5 || ^4.0.0
-    peerDependenciesMeta:
-      '@babel/core':
-        optional: true
-      coffeescript:
-        optional: true
-      less:
-        optional: true
-      node-sass:
-        optional: true
-      postcss:
-        optional: true
-      postcss-load-config:
-        optional: true
-      pug:
-        optional: true
-      sass:
-        optional: true
-      stylus:
-        optional: true
-      sugarss:
-        optional: true
-      svelte:
-        optional: true
-      typescript:
-        optional: true
-    requiresBuild: true
-    resolution:
-      integrity: sha512-fZiLMg+mJzp5y4bsvBtl6wE1WCp+s5L87BoKMONGLXk8HSZD5HuRJzxhM0yhM9LHF0jP5kYG22P2Vc/vrv4I0A==
   /svelte-preprocess/4.5.1_svelte@3.29.0+typescript@4.0.3:
     dependencies:
       '@types/pug': 2.0.4
@@ -9420,13 +9380,6 @@ packages:
     dev: true
     resolution:
       integrity: sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
-  /typescript/3.9.7:
-    dev: true
-    engines:
-      node: '>=4.2.0'
-    hasBin: true
-    resolution:
-      integrity: sha512-BLbiRkiBzAwsjut4x/dsibSTB6yWpwT5qWmC2OfuCg3GgVQCSgMs4vEctYPhsaGtd0AeuuHMkjZ2h2WG8MSzRw==
   /typescript/4.0.3:
     dev: true
     engines:
