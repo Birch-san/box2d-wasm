@@ -16,18 +16,29 @@
 
     const ctx = canvas.getContext('2d');
     const canvasOffset: Point = {
-      x: 0,
-      y: 0
+      x: canvas.width/2,
+      y: canvas.height/2
     };
     const viewCenterPixel: Point = {
-      x:320,
-      y:240
+      x: canvas.width/2,
+      y: canvas.height/2
     };
 
-    const { b2BodyDef, b2CircleShape, b2EdgeShape, b2Vec2, b2World, b2_dynamicBody } = box2D;
+    const { b2_dynamicBody, b2BodyDef, b2CircleShape, b2EdgeShape, b2Fixture, b2Vec2, b2World,
+      destroy, e_shapeBit, JSQueryCallback, wrapPointer } = box2D;
+    const myQueryCallback = new JSQueryCallback();
+
+    myQueryCallback.ReportFixture = (fixturePtr: any) => {
+        const fixture = wrapPointer( fixturePtr, b2Fixture );
+        if ( fixture.GetBody().GetType() != b2_dynamicBody ) //mouse cannot drag static bodies around
+          return true;
+        console.log(fixture);
+        return false;
+    };
     const helpers = new Helpers(box2D);
     const { createPolygonShape, createRandomPolygonShape, createChainShape } = helpers;
     const debugDraw = new CanvasDebugDraw(box2D, helpers, ctx!).constructJSDraw();
+    debugDraw.SetFlags(e_shapeBit);
     const world = new b2World(new b2Vec2(0.0, -10.0));
     world.SetDebugDraw(debugDraw);
     const bd_ground = new b2BodyDef();
@@ -135,7 +146,7 @@
       // }
           
       ctx!.restore();
-  }
+    };
 
     let handle: number | undefined;
 
@@ -149,7 +160,8 @@
 		}(window.performance.now()));
 
 		return () => {
-			cancelAnimationFrame(handle!);
+      cancelAnimationFrame(handle!);
+      destroy(world);
 		};
 	});
 </script>
