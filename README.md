@@ -26,6 +26,8 @@ cd box2d/build
 emcmake cmake .. -DBOX2D_BUILD_UNIT_TESTS=OFF -DBOX2D_BUILD_DOCS=OFF -DBOX2D_BUILD_TESTBED=OFF
 # compile C++ to LLVM IR (creates ./src/libbox2d.a archive)
 emmake make
+# ensure EMSCRIPTEN environment variable is set appropriately for your computer
+export EMSCRIPTEN=/usr/local/Cellar/emscripten/2.0.5/libexec
 # use Box2D.idl to create ./box2d_glue.{js,cpp} for invoking functionality from libbox2d
 ../../build_idl_bindings.sh
 # generate Box2D_*.{wasm,js} from glue code + libbox2d.a

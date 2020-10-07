@@ -16,4 +16,4 @@ fi
 EMIT_OPTS=-fno-rtti
 TARGET_EMIT_OPTS="-s WASM=1 -s ALLOW_MEMORY_GROWTH=1 -o Box2D_$BUILD.wasm.js"
 
-emcc $LINK_OPTS $FLAVOUR_LINK_OPTS -I ../include ../glue_stub.cpp src/libbox2d.a $EMIT_OPTS $TARGET_EMIT_OPTS
+emcc $LINK_OPTS $FLAVOUR_LINK_OPTS -I ../include ../../glue_stub.cpp src/libbox2d.a $EMIT_OPTS $TARGET_EMIT_OPTS
