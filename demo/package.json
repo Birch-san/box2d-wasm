@@ -2,7 +2,8 @@
   "scripts": {
     "start": "snowpack dev",
     "build": "snowpack build",
-    "test": "jest"
+    "test": "jest",
+		"postinstall": "patch-package"
   },
   "dependencies": {
     "svelte": "^3.24.0"
@@ -18,7 +19,13 @@
     "@tsconfig/svelte": "^1.0.3",
     "@types/jest": "^26.0.4",
     "@types/snowpack-env": "^2.3.0",
+    "@typescript-eslint/eslint-plugin": "^4.4.0",
+    "@typescript-eslint/parser": "^4.4.0",
+    "eslint": "^7.10.0",
+    "eslint-plugin-svelte3": "2.7.3",
+    "eslint-svelte3-preprocess": "^0.0.4",
     "jest": "^26.2.2",
+    "patch-package": "^6.2.2",
     "snowpack": "^2.13.3",
     "svelte-check": "^1.0.0",
     "svelte-preprocess": "^4.0.8",

@@ -1,4 +1,4 @@
-<script>
+<script lang="typescript">
 	import { onMount } from 'svelte';
 
 	let canvas: HTMLCanvasElement;
@@ -40,10 +40,10 @@
 
 <style>
   canvas {
-		background-color: #666;
-		-webkit-mask: url(logo.svg) 50% 50% no-repeat;
-		mask: url(logo.svg) 50% 50% no-repeat;
-	}
+    background-color: #666;
+    -webkit-mask: url(logo.svg) 50% 50% no-repeat;
+    mask: url(logo.svg) 50% 50% no-repeat;
+  }
 </style>
 
 <canvas
