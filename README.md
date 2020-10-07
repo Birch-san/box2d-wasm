@@ -8,17 +8,23 @@ Compiles Zlib-licensed code from Alon Zakai's [box2d-js](https://github.com/krip
 
 ## Setup
 
-Clone this repository using --recursive, to ensure that the `box2d` submodule is available.  
+### Clone repository
+
+Clone this repository using --recursive, to ensure that the [`box2d`](https://github.com/erincatto/box2d) submodule is available.  
 _Tutorial: [Using submodules in Git](https://www.vogella.com/tutorials/GitSubmodules/article.html)_
 
 ```bash
+# start in root of repository
 git clone --recursive git@github.com:Birch-san/box2d-wasm.git
 cd box2d-wasm
 ```
 
+### Compile WASM
+
 Confirmed working with emscripten 2.0.5.
 
 ```bash
+# start in root of repository
 # in the box2d submodule, make a build folder for cmake output
 mkdir -p box2d/build
 cd box2d/build
@@ -32,4 +38,12 @@ export EMSCRIPTEN=/usr/local/Cellar/emscripten/2.0.5/libexec
 ../../build_idl_bindings.sh
 # generate Box2D_*.{wasm,js} from glue code + libbox2d.a
 ../../build_wasm.sh
+```
+
+### Build demo
+
+```bash
+# from root of repository
+npm i -g pnpm
+pnpm i
 ```
