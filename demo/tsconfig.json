@@ -8,7 +8,9 @@
     "jsx": "preserve",
     "baseUrl": "./",
     /* paths - If you configure Snowpack import aliases, add them here. */
-    "paths": {},
+    "paths": {
+      "Box2D": ["../box2d/build/Box2D_debug.wasm"]
+    },
     /* noEmit - Snowpack builds (emits) files, not tsc. */
     "noEmit": true,
     /* Additional Options */

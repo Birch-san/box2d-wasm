@@ -1,7 +1,10 @@
 module.exports = {
   mount: {
     public: '/',
-    src: '/_dist_',
+    src: '/_dist_'
+  },
+  alias: {
+    Box2D: './public/Box2D'
   },
   plugins: [
     '@snowpack/plugin-svelte',

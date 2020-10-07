@@ -3,7 +3,7 @@
     "start": "snowpack dev",
     "build": "snowpack build",
     "test": "jest",
-		"postinstall": "patch-package"
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "svelte": "^3.24.0"
@@ -26,6 +26,7 @@
     "eslint-svelte3-preprocess": "^0.0.4",
     "jest": "^26.2.2",
     "patch-package": "^6.2.2",
+    "rollup": "^2.28.2",
     "snowpack": "^2.13.3",
     "svelte-check": "^1.0.0",
     "svelte-preprocess": "^4.0.8",

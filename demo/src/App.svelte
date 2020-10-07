@@ -1,9 +1,14 @@
 <script lang="typescript">
-	import { onMount } from 'svelte';
+  import * as Box2D from 'Box2D';
+  import { onMount } from 'svelte';
+  console.log(Box2D);
 
 	let canvas: HTMLCanvasElement;
 
 	onMount(() => {
+    // const bd_ground = new b2BodyDef();
+    // const groundBody = world.CreateBody(bd_ground);
+
 		const ctx = canvas.getContext('2d');
 		let handle: number | undefined;
 
