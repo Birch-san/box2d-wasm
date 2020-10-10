@@ -31,4 +31,4 @@ public:
   }
 };
 
-#include "box2d/build/box2d_glue.cpp"
+#include "build/box2d_glue.cpp"

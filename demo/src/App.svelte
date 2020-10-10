@@ -1,5 +1,5 @@
 <script lang="typescript">
-  import Box2D from 'Box2D';
+  import Box2D from 'box2d-wasm';
   import { onMount } from 'svelte';
   import { CanvasDebugDraw } from './debugDraw';
   import { Helpers } from './helpers';

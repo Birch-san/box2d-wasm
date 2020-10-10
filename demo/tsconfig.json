@@ -10,9 +10,6 @@
     "moduleResolution": "node",
     "strict": true,
     "allowSyntheticDefaultImports": true,
-    "baseUrl": ".",
-    "paths": {
-      "Box2D": ["../box2d/build/Box2D_debug.wasm"]
-    }
+    "baseUrl": "."
   }
 }

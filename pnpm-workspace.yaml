@@ -1,2 +1,3 @@
 packages:
   - demo
+  - box2d-wasm

@@ -1,6 +1,9 @@
 importers:
+  box2d-wasm:
+    specifiers: {}
   demo:
     dependencies:
+      box2d-wasm: 'link:../box2d-wasm'
       sirv-cli: 1.0.6
     devDependencies:
       '@rollup/plugin-commonjs': 14.0.0_rollup@2.28.2
@@ -30,6 +33,7 @@ importers:
       '@tsconfig/svelte': ^1.0.0
       '@typescript-eslint/eslint-plugin': ^4.4.0
       '@typescript-eslint/parser': ^4.4.0
+      box2d-wasm: 'workspace:*'
       eslint: ^7.10.0
       eslint-plugin-svelte3: 2.7.3
       eslint-svelte3-preprocess: ^0.0.4

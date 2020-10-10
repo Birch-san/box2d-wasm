@@ -1,6 +1,28 @@
 # box2d-wasm
 
+Box2D compiled to WebAssembly. Project aims (compared to existing [`box2d.js`](https://github.com/kripken/box2d.js/)):
+
+- Support Box2D v2.4.0 (for better ropes)
+- Support Box2D v2.4.0's new cmake build system
+- Offload processing to web worker
+- Add source maps back to original C++ source (could be fun!)
+- Demo should demonstrate how to consume library via TypeScript
+- Strive for nice development experience (try to eliminate steps that involve manual copying of build artifacts)
+- Generate TypeScript declarations for WebIDL interface (…somehow)
+- Avoid pulling Box2D C++ into repository (prefer git submodule)
+- Keep build artifacts out of git (prefer to publish to npm)
+- If multiple versions of Box2D are to be maintained, this should be done via branches (and changing the commit of the box2d submodule)
+- Documentation not currently planned, but TypeScript declarations and demos would be a start.
+
 Compatibility: Box2D v2.4.0+ @[f0f9d50](https://github.com/erincatto/box2d/tree/f0f9d50a328a709cc3a287a61b864e7d0e3ef35f)
+
+Status:
+
+- Demo application currently demonstrates basic behaviour. Performs well
+- Rope bindings not yet exposed
+- No TypeScript declarations
+- No package published to npm
+- No release distributed
 
 ## License
 
@@ -23,26 +45,11 @@ cd box2d-wasm
 
 ### Compile WASM
 
-Confirmed working with emscripten 2.0.5.
-
-```bash
-# start in root of repository
-# in the box2d submodule, make a build folder for cmake output
-mkdir -p box2d/build
-cd box2d/build
-# generate Makefiles compatible with emscripten
-emcmake cmake .. -DBOX2D_BUILD_UNIT_TESTS=OFF -DBOX2D_BUILD_DOCS=OFF -DBOX2D_BUILD_TESTBED=OFF
-# compile C++ to LLVM IR (creates ./src/libbox2d.a archive)
-emmake make
-# ensure EMSCRIPTEN environment variable is set appropriately for your computer
-export EMSCRIPTEN=/usr/local/Cellar/emscripten/2.0.5/libexec
-# use Box2D.idl to create ./box2d_glue.{js,cpp} for invoking functionality from libbox2d
-../../build_idl_bindings.sh
-# generate Box2D_*.{wasm,js} from glue code + libbox2d.a
-../../build_wasm.sh
-```
+See README of [`box2d-wasm`](box2d-wasm) package.
 
 ### Build demo
+
+[`pnpm`](https://pnpm.js.org/) is used to manage packages in this monorepo. In particular, it creates a symlink that enables `demo` to consume build artifacts from `box2d-wasm`.
 
 ```bash
 # from root of repository
