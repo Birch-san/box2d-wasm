@@ -936,6 +936,7 @@ enum b2BendingModel {
 };
 
 interface b2RopeTuning {
+  void b2RopeTuning();
 	attribute b2StretchingModel stretchingModel;
 	attribute b2BendingModel bendingModel;
 	attribute float damping;
