@@ -80,6 +80,7 @@
     // rope
     let massesBuffer: any | undefined;
     let verticesBuffer: any | undefined;
+    const rope = new b2Rope();
     {
       const ropeLen = 20;
       const masses = new Float32Array(ropeLen);
@@ -93,9 +94,9 @@
       const vertices = new Float32Array(ropeLen * floatsPerVertex);
 
       // Populate the array with the values
-      for (let i = 0; i < ropeLen; i += 2) {
-        vertices[i] = 0;
-        vertices[i+1] = 20 - 0.25 * i;
+      for (let i = 0; i < ropeLen; i++) {
+        vertices[i*2] = 0;
+        vertices[i*2+1] = 5 - 0.25 * i;
       }
 
       // Allocate some space in the heap for the data (making sure to use the appropriate memory size of the elements)
@@ -107,7 +108,7 @@
       HEAPF32.set(vertices, verticesBuffer >> 2);
 
       const tuning = new b2RopeTuning();
-      tuning.set_damping(0.1);
+      // tuning.set_damping(0.1);
 
       const ropeDef = new b2RopeDef();
       // for (let i = 0; i < 2; i ++)
@@ -120,9 +121,8 @@
       ropeDef.set_count(ropeLen);
       ropeDef.set_gravity(new b2Vec2(0, -10));
       ropeDef.set_tuning(tuning);
-      ropeDef.set_position(new b2Vec2(8, 0));
+      ropeDef.set_position(new b2Vec2(3, 0));
 
-      const rope = new b2Rope();
       rope.Create(ropeDef);
     }
 
@@ -185,6 +185,7 @@
       
       ctx!.fillStyle = 'rgb(255,255,0)';
       world.DebugDraw();
+      rope.Draw(debugDraw);
       
       // if ( mouseJoint != null ) {
       //     //mouse joint is not drawn with regular joints in debug draw
@@ -211,6 +212,7 @@
       const delta = Math.min(nowMs-prevMs, maxTimeStep);
 
 			world.Step(delta/1000, 3, 2);
+			rope.Step(delta/1000, 3, new b2Vec2(3, 0));
       draw();
 		}(window.performance.now()));
 
