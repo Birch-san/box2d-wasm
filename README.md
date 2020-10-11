@@ -4,7 +4,6 @@ Box2D compiled to WebAssembly. Project aims (compared to existing [`box2d.js`](h
 
 - Support Box2D v2.4.0 (for better ropes)
 - Support Box2D v2.4.0's new cmake build system
-- Offload processing to web worker
 - Add source maps back to original C++ source (could be fun!)
 - Demo should demonstrate how to consume library via TypeScript
 - Strive for nice development experience (try to eliminate steps that involve manual copying of build artifacts)
@@ -13,6 +12,12 @@ Box2D compiled to WebAssembly. Project aims (compared to existing [`box2d.js`](h
 - Keep build artifacts out of git (prefer to publish to npm)
 - If multiple versions of Box2D are to be maintained, this should be done via branches (and changing the commit of the box2d submodule)
 - Documentation not currently planned, but TypeScript declarations and demos would be a start.
+- ~~Offload processing to web worker~~
+  - This is possible, but the development experience (in rollup at least) is horrid (no debugging, no livereload)
+  - Project structure, build system and serving get pretty complicated
+  - Proof-of-concept: https://github.com/Birch-san/box2d-wasm/tree/web-workers
+    - The only remaining step would be to implement a renderer (make the worker `postMessage()` the world data to the UI thread for rendering)
+    - But it could be fiddly to work out "when should I clear the canvas" between draws
 
 Compatibility: Box2D v2.4.0+ @[f0f9d50](https://github.com/erincatto/box2d/tree/f0f9d50a328a709cc3a287a61b864e7d0e3ef35f)
 
