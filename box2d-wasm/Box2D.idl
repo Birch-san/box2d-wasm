@@ -957,7 +957,7 @@ interface b2RopeDef {
 	attribute b2Vec2 vertices;
 	attribute long count;
   // this is a float*, but seems variable-length array works.
-	attribute float[] masses;
+	// attribute float[] masses;
 	[Value] attribute b2Vec2 gravity;
 	[Value] attribute b2RopeTuning tuning;
 };

@@ -27,4 +27,4 @@ esac
 EMIT_OPTS=-fno-rtti
 TARGET_EMIT_OPTS="-s ALLOW_MEMORY_GROWTH=1 -o Box2D.js"
 
-emcc $LINK_OPTS $FLAVOUR_LINK_OPTS -I "$DIR/../box2d/include" "$DIR/glue_stub.cpp" src/libbox2d.a $EMIT_OPTS $TARGET_EMIT_OPTS
+emcc $LINK_OPTS $FLAVOUR_LINK_OPTS -I "$DIR/../box2d/include" '--post-js' "$DIR/glue_stub.js" "$DIR/glue_stub.cpp" src/libbox2d.a $EMIT_OPTS $TARGET_EMIT_OPTS

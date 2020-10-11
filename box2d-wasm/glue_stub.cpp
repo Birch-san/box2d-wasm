@@ -11,7 +11,7 @@
 #include <box2d/b2_rope.h>
 
 // import emscripten macros so that we can attempt manual binding of functions that cannot be described in WebIDL
-#include <emscripten.h>
+// #include <emscripten.h>
 #include <emscripten/bind.h>
 
 using namespace emscripten;
@@ -54,3 +54,14 @@ EMSCRIPTEN_BINDINGS(my_module) {
 }
 
 #include "build/box2d_glue.cpp"
+
+// member functions that we weren't quite able to describe in WebIDL
+extern "C" {
+float* EMSCRIPTEN_KEEPALIVE emscripten_bind_b2RopeDef_get_masses_0(b2RopeDef* self) {
+  return self->masses;
+}
+
+void EMSCRIPTEN_KEEPALIVE emscripten_bind_b2RopeDef_set_masses_1(b2RopeDef* self, float* arg0) {
+  self->masses = arg0;
+}
+}
