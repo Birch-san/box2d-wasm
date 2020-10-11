@@ -466,9 +466,8 @@ interface b2ContactID {
 };
 
 interface b2ContactImpulse {
-  // TODO: webidl_binder support for array types.
-  // attribute float[] normalImpulses;
-  // attribute float[] tangentImpulses;
+  attribute float[] normalImpulses;
+  attribute float[] tangentImpulses;
   attribute long count;
 };
 
@@ -602,8 +601,7 @@ enum b2ManifoldType {
 
 interface b2Manifold {
   void b2Manifold();
-  // TODO: webidl_binder support for array types.
-  // [Value] attribute b2ManifoldPoint[] points;
+  [Value] attribute b2ManifoldPoint[] points;
   [Value] attribute b2Vec2 localNormal;
   [Value] attribute b2Vec2 localPoint;
   attribute b2ManifoldType type;
@@ -612,7 +610,7 @@ interface b2Manifold {
 
 interface b2WorldManifold {
   void b2WorldManifold();
-  void Initialize(b2Manifold manifold, [Ref] b2Transform xfA, float radiusA, [Ref] b2Transform xfB, float radiusB);
+  void Initialize([Const] b2Manifold manifold, [Const, Ref] b2Transform xfA, float radiusA, [Const, Ref] b2Transform xfB, float radiusB);
   [Value] attribute b2Vec2 normal;
   [Value] attribute b2Vec2[] points;
   attribute float[] separations;
@@ -683,10 +681,8 @@ interface b2PolygonShape {
   void SetAsBox(float hx, float hy);
   void SetAsBox(float hx, float hy, [Ref] b2Vec2 center, float angle);
   [Value] attribute b2Vec2 m_centroid;
-
-  // TODO: webidl_binder support for array types.
-  // [Value] attribute b2Vec2[] m_vertices;
-  // [Value] attribute b2Vec2[] m_normals;
+  [Value] attribute b2Vec2[] m_vertices;
+  [Value] attribute b2Vec2[] m_normals;
 
   attribute long m_count;
 };
@@ -914,5 +910,87 @@ enum b2PointState {
   "b2_removeState"
 };
 
-// TODO: b2_collision.h
-// TODO: b2_rope
+enum b2StretchingModel {
+	"b2_pbdStretchingModel",
+	"b2_xpbdStretchingModel"
+};
+
+enum b2BendingModel {
+	"b2_springAngleBendingModel",
+	"b2_pbdAngleBendingModel",
+	"b2_xpbdAngleBendingModel",
+	"b2_pbdDistanceBendingModel",
+	"b2_pbdHeightBendingModel"
+};
+
+interface b2RopeTuning {
+	attribute b2StretchingModel stretchingModel;
+	attribute b2BendingModel bendingModel;
+	attribute float damping;
+	attribute float stretchStiffness;
+	attribute float stretchHertz;
+	attribute float stretchDamping;
+	attribute float bendStiffness;
+	attribute float bendHertz;
+	attribute float bendDamping;
+	attribute boolean isometric;
+	attribute boolean fixedEffectiveMass;
+	attribute boolean warmStart;
+};
+
+interface b2RopeDef {
+  void b2RopeDef();
+  [Value] attribute b2Vec2 position;
+	attribute b2Vec2 vertices;
+	attribute long count;
+  // this is a float*, but none of the WebIDL types I tried could be assigned to it (any, VoidPtr, unsigned long, float)
+	// attribute any masses;
+	[Value] attribute b2Vec2 gravity;
+	[Value] attribute b2RopeTuning tuning;
+};
+
+interface b2Rope {
+  void b2Rope();
+  void Create([Const, Ref] b2RopeDef def);
+  void SetTuning([Const, Ref] b2RopeTuning tuning);
+  void Step(float timeStep, long iterations, [Const, Ref] b2Vec2 position);
+  void Reset([Const, Ref] b2Vec2 position);
+  void Draw(b2Draw draw);
+
+  // the following are private methods or properties. I decided not to expose them,
+  // as they included references to symbols such as b2RopeStretch and b2RopeBend,
+  // which aren't even published in box2d/include.
+  // if one day you find a reason to expose them: feel free to use this as a starting point.
+
+  // void SolveStretch_PBD();
+	// void SolveStretch_XPBD(float dt);
+	// void SolveBend_PBD_Angle();
+	// void SolveBend_XPBD_Angle(float dt);
+	// void SolveBend_PBD_Distance();
+	// void SolveBend_PBD_Height();
+	// void ApplyBendForces(float dt);
+
+	// [Value] attribute b2Vec2 m_position;
+
+	// attribute long m_count;
+	// attribute long m_stretchCount;
+	// attribute long m_bendCount;
+
+  // attribute b2RopeStretch m_stretchConstraints;
+	// attribute b2RopeBend m_bendConstraints;
+
+	// attribute b2Vec2 m_bindPositions;
+	// attribute b2Vec2 m_ps;
+	// attribute b2Vec2 m_p0s;
+	// attribute b2Vec2 m_vs;
+
+	// attribute float m_invMasses;
+	// [Value] attribute b2Vec2 m_gravity;
+
+	// [Value] attribute b2RopeTuning m_tuning;
+};
+
+interface b2ClipVertex {
+  [Value] attribute b2Vec2 v;
+	[Value] attribute b2ContactID id;
+};
