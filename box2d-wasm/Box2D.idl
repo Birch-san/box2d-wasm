@@ -39,11 +39,17 @@ interface JSContactListener {
 
   void BeginContact(b2Contact contact);
   void EndContact(b2Contact contact);
-  // TODO: Declare another b2ContactListener implementation without PreSolve/PostSolve,
-  // for efficiency (otherwise the JS implementations of these functions must get called
-  // even if unused).
   void PreSolve(b2Contact contact, [Const] b2Manifold oldManifold);
   void PostSolve(b2Contact contact, [Const] b2ContactImpulse impulse);
+};
+
+// provided for efficiency in the case where you do not use PreSolve/PostSolve
+[JSImplementation="b2ContactListener"]
+interface JSContactListenerWithoutSolveCallbacks {
+  void JSContactListener();
+
+  void BeginContact(b2Contact contact);
+  void EndContact(b2Contact contact);
 };
 
 interface b2World {
