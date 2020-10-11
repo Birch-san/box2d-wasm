@@ -1,4 +1,5 @@
 {
+  "recommendations": ["svelte.svelte-vscode"],
 	"eslint.validate": [
 		"svelte"
 	]
