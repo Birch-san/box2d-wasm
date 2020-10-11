@@ -267,6 +267,8 @@ interface b2Body {
   boolean IsSleepingAllowed();
   void SetAwake(boolean flag);
   boolean IsAwake();
+  void SetEnabled(boolean flag);
+  boolean IsEnabled();
   void SetFixedRotation(boolean flag);
   boolean IsFixedRotation();
   b2Fixture GetFixtureList();
@@ -950,6 +952,7 @@ interface b2RopeDef {
 	attribute b2Vec2 vertices;
 	attribute long count;
   // this is a float*, but none of the WebIDL types I tried could be assigned to it (any, VoidPtr, unsigned long, float)
+  // so, we bind this manually in glue_stub.cpp
 	// attribute any masses;
 	[Value] attribute b2Vec2 gravity;
 	[Value] attribute b2RopeTuning tuning;
