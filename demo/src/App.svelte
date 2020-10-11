@@ -24,8 +24,9 @@
       y: canvas.height/2
     };
 
-    const { b2_dynamicBody, b2BodyDef, b2CircleShape, b2Draw: { e_shapeBit }, b2EdgeShape, b2Fixture,
-      b2Vec2, b2World, destroy, JSQueryCallback, wrapPointer } = box2D;
+    const { b2_dynamicBody, b2BodyDef, b2CircleShape, b2Draw: { e_jointBit, e_shapeBit }, b2EdgeShape, b2Fixture,
+      b2Rope, b2RopeDef, b2RopeTuning,
+      b2Vec2, b2World, destroy, JSQueryCallback, wrapPointer, _malloc, _free, HEAPF32 } = box2D;
     const myQueryCallback = new JSQueryCallback();
 
     myQueryCallback.ReportFixture = (fixturePtr: any) => {
@@ -38,7 +39,7 @@
     const helpers = new Helpers(box2D);
     const { createPolygonShape, createRandomPolygonShape, createChainShape } = helpers;
     const debugDraw = new CanvasDebugDraw(box2D, helpers, ctx!).constructJSDraw();
-    debugDraw.SetFlags(e_shapeBit);
+    debugDraw.SetFlags(e_shapeBit | e_jointBit);
     const world = new b2World(new b2Vec2(0.0, -10.0));
     world.SetDebugDraw(debugDraw);
     const bd_ground = new b2BodyDef();
@@ -56,23 +57,74 @@
     const cshape = new b2CircleShape();
     cshape.set_m_radius(0.5);
 
-    //falling shapes
-    const ZERO = new b2Vec2(0, 0);
-    const temp = new b2Vec2(0, 0);
-    new Array(20).fill(undefined).forEach((_, index: number) => {
-      const bd = new b2BodyDef();
-      bd.set_type(b2_dynamicBody);
-      bd.set_position(ZERO);
-      const body = world.CreateBody(bd);
-      const randomValue = Math.random();
-      const shape = randomValue < 0.2 ? cshape : createRandomPolygonShape(0.5);
-      body.CreateFixture(shape, 1.0);
-      temp.Set(16*(Math.random()-0.5), 4.0 + 2.5*index);
-      body.SetTransform(temp, 0.0);
-      body.SetLinearVelocity(ZERO);
-      body.SetAwake(1);
-      // body.SetActive(1); // no longer exists
-    });
+    {
+      //falling shapes
+      const ZERO = new b2Vec2(0, 0);
+      const temp = new b2Vec2(0, 0);
+      for (let i = 0; i < 20; i++) {
+        const bd = new b2BodyDef();
+        bd.set_type(b2_dynamicBody);
+        bd.set_position(ZERO);
+        const body = world.CreateBody(bd);
+        const randomValue = Math.random();
+        const shape = randomValue < 0.2 ? cshape : createRandomPolygonShape(0.5);
+        body.CreateFixture(shape, 1.0);
+        temp.Set(16*(Math.random()-0.5), 4.0 + 2.5 * i);
+        body.SetTransform(temp, 0.0);
+        body.SetLinearVelocity(ZERO);
+        body.SetEnabled(1);
+      }
+    }
+
+
+    // rope
+    let massesBuffer: any | undefined;
+    let verticesBuffer: any | undefined;
+    {
+      const ropeLen = 20;
+      const masses = new Float32Array(ropeLen);
+      // https://csharp.hotexamples.com/examples/Box2D.Rope/b2RopeDef/-/php-b2ropedef-class-examples.html
+      // https://becominghuman.ai/passing-and-returning-webassembly-array-parameters-a0f572c65d97
+      masses.fill(1);
+      masses[0] = 0;
+      masses[1] = 0;
+
+      const floatsPerVertex = 2; // b2Vec is a struct of `float x, y`
+      const vertices = new Float32Array(ropeLen * floatsPerVertex);
+
+      // Populate the array with the values
+      for (let i = 0; i < ropeLen; i += 2) {
+        vertices[i] = 0;
+        vertices[i+1] = 20 - 0.25 * i;
+      }
+
+      // Allocate some space in the heap for the data (making sure to use the appropriate memory size of the elements)
+      massesBuffer = _malloc(masses.length * masses.BYTES_PER_ELEMENT);
+      verticesBuffer = _malloc(vertices.length * floatsPerVertex * vertices.BYTES_PER_ELEMENT);
+
+      // Assign the data to the heap - Keep in mind bytes per element
+      HEAPF32.set(masses, massesBuffer >> 2);
+      HEAPF32.set(vertices, verticesBuffer >> 2);
+
+      const tuning = new b2RopeTuning();
+      tuning.set_damping(0.1);
+
+      const ropeDef = new b2RopeDef();
+      // for (let i = 0; i < 2; i ++)
+      //   ropeDef.set_masses(i, 0);
+      // for (let i = 2; i < ropeLen; i ++)
+      //   ropeDef.set_masses(i, 1);
+      ropeDef.set_masses(massesBuffer);
+      ropeDef.set_vertices(verticesBuffer);
+      // ropeDef.set_vertices(wrapPointer(verticesBuffer, b2Vec2));
+      ropeDef.set_count(ropeLen);
+      ropeDef.set_gravity(new b2Vec2(0, -10));
+      ropeDef.set_tuning(tuning);
+      ropeDef.set_position(new b2Vec2(8, 0));
+
+      const rope = new b2Rope();
+      rope.Create(ropeDef);
+    }
 
     //static polygon and chain shapes
     {
@@ -148,12 +200,15 @@
       ctx!.restore();
     };
 
+    // calculate no more than a 20th of a second during one world.Step() call
+    const maxTimeStep = 1/20*1000;
+
     let handle: number | undefined;
 
     (function loop(prevMs: number) {
       const nowMs = window.performance.now();
       handle = requestAnimationFrame(loop.bind(null, nowMs));
-      const delta = nowMs-prevMs;
+      const delta = Math.min(nowMs-prevMs, maxTimeStep);
 
 			world.Step(delta/1000, 3, 2);
       draw();
@@ -162,6 +217,8 @@
 		return () => {
       cancelAnimationFrame(handle!);
       destroy(world);
+      _free(massesBuffer);
+      _free(verticesBuffer);
 		};
 	});
 </script>
