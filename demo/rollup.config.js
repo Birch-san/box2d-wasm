@@ -6,6 +6,7 @@ import livereload from 'rollup-plugin-livereload';
 import { terser } from 'rollup-plugin-terser';
 import sveltePreprocess from 'svelte-preprocess';
 import typescript from '@rollup/plugin-typescript';
+import webWorkerLoader from 'rollup-plugin-web-worker-loader';
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -31,7 +32,7 @@ function serve() {
 }
 
 export default {
-	input: 'src/main.ts',
+	input: 'src/main/main.ts',
 	output: {
 		sourcemap: true,
 		format: 'iife',
@@ -64,7 +65,11 @@ export default {
 		typescript({
 			sourceMap: !production,
 			inlineSources: !production
-		}),
+    }),
+    webWorkerLoader({
+      targetPlatform: 'browser',
+      extensions: ['.ts']
+    }),
 
 		// In dev mode, call `npm run start` once
 		// the bundle has been generated
