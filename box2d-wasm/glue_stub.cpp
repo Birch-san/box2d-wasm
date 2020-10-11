@@ -53,15 +53,4 @@ EMSCRIPTEN_BINDINGS(my_module) {
   function("b2TestOverlap_6", select_overload<bool(const b2Shape*, int32, const b2Shape*, int32, const b2Transform&, const b2Transform&)>(&b2TestOverlap), allow_raw_pointers());
 }
 
-// member functions that we weren't quite able to describe in WebIDL
-extern "C" {
-float* EMSCRIPTEN_KEEPALIVE emscripten_bind_b2RopeDef_get_masses_0(b2RopeDef* self) {
-  return self->masses;
-}
-
-void EMSCRIPTEN_KEEPALIVE emscripten_bind_b2RopeDef_set_masses_1(b2RopeDef* self, float* arg0) {
-  self->masses = arg0;
-}
-}
-
 #include "build/box2d_glue.cpp"

@@ -474,8 +474,9 @@ interface b2ContactID {
 };
 
 interface b2ContactImpulse {
-  attribute float[] normalImpulses;
-  attribute float[] tangentImpulses;
+  // TODO: expose when WebIDL binder supports fixed-length arrays
+  // [Value] attribute float[2] normalImpulses;
+  // [Value] attribute float[2] tangentImpulses;
   attribute long count;
 };
 
@@ -609,7 +610,8 @@ enum b2ManifoldType {
 
 interface b2Manifold {
   void b2Manifold();
-  [Value] attribute b2ManifoldPoint[] points;
+  // TODO: expose when WebIDL binder supports fixed-length arrays
+  // [Value] attribute b2ManifoldPoint[2] points;
   [Value] attribute b2Vec2 localNormal;
   [Value] attribute b2Vec2 localPoint;
   attribute b2ManifoldType type;
@@ -620,8 +622,9 @@ interface b2WorldManifold {
   void b2WorldManifold();
   void Initialize([Const] b2Manifold manifold, [Const, Ref] b2Transform xfA, float radiusA, [Const, Ref] b2Transform xfB, float radiusB);
   [Value] attribute b2Vec2 normal;
-  [Value] attribute b2Vec2[] points;
-  attribute float[] separations;
+  // TODO: expose when WebIDL binder supports fixed-length arrays
+  // [Value] attribute b2Vec2[2] points;
+  // [Value] attribute float[2] separations;
 };
 
 interface b2ManifoldPoint {
@@ -689,8 +692,9 @@ interface b2PolygonShape {
   void SetAsBox(float hx, float hy);
   void SetAsBox(float hx, float hy, [Ref] b2Vec2 center, float angle);
   [Value] attribute b2Vec2 m_centroid;
-  [Value] attribute b2Vec2[] m_vertices;
-  [Value] attribute b2Vec2[] m_normals;
+  // TODO: expose when WebIDL binder supports fixed-length arrays
+  // [Value] attribute b2Vec2[8] m_vertices;
+  // [Value] attribute b2Vec2[8] m_normals;
 
   attribute long m_count;
 };
@@ -951,9 +955,8 @@ interface b2RopeDef {
   [Value] attribute b2Vec2 position;
 	attribute b2Vec2 vertices;
 	attribute long count;
-  // this is a float*, but none of the WebIDL types I tried could be assigned to it (any, VoidPtr, unsigned long, float)
-  // so, we bind this manually in glue_stub.cpp
-	// attribute any masses;
+  // this is a float*, but seems variable-length array works.
+	attribute float[] masses;
 	[Value] attribute b2Vec2 gravity;
 	[Value] attribute b2RopeTuning tuning;
 };
