@@ -25,6 +25,6 @@ case "$TARGET_TYPE" in
 esac
 
 EMIT_OPTS=-fno-rtti
-TARGET_EMIT_OPTS="-s BUILD_AS_WORKER=1 -s ALLOW_MEMORY_GROWTH=1 -o Box2D.js"
+TARGET_EMIT_OPTS="-s ALLOW_MEMORY_GROWTH=1 -o Box2D.js"
 
 emcc $LINK_OPTS $FLAVOUR_LINK_OPTS -I "$DIR/../box2d/include" "$DIR/glue_stub.cpp" src/libbox2d.a $EMIT_OPTS $TARGET_EMIT_OPTS
