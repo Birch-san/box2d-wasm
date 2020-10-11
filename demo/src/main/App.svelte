@@ -16,6 +16,9 @@
     const worker = new WebWorker();
     console.log(worker);
     worker.postMessage({type: 'init', args: 'This instance was created in a worker'});
+    worker.addEventListener('message', e => {
+      console.log('App received message from worker', e);
+    });
     // const box2D = await Box2D();
 
     // const ctx = canvas.getContext('2d');

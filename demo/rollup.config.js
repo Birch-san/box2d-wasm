@@ -68,7 +68,8 @@ export default {
     }),
     webWorkerLoader({
       targetPlatform: 'browser',
-      extensions: ['.ts']
+      extensions: ['.ts'],
+      sourcemap: true
     }),
 
 		// In dev mode, call `npm run start` once

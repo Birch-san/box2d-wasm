@@ -1,4 +1,4 @@
-import type { Helpers } from './helpers';
+import type { Helpers } from '../dedicated-worker/helpers';
 
 /**
  * Forked from Box2D.js

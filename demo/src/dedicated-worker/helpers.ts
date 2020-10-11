@@ -1,3 +1,4 @@
+/* eslint-env worker */
 /**
  * Forked from Box2D.js
  * @see https://github.com/kripken/box2d.js/blob/f75077b/helpers/embox2d-helpers.js
