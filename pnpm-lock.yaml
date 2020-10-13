@@ -51,24 +51,28 @@ importers:
       typescript: ^4.0.0
   webidl-to-ts:
     devDependencies:
+      '@types/fs-extra': 9.0.2
       '@types/node': 14.11.8
       '@types/webidl2': 23.13.5
       '@types/yargs': 15.0.8
       '@typescript-eslint/eslint-plugin': 4.4.1_08be5cdc80d109b060448e8ad59a1c67
       '@typescript-eslint/parser': 4.4.1_eslint@7.11.0+typescript@4.0.3
       eslint: 7.11.0
+      fs-extra: 9.0.1
       source-map-support: 0.5.19
       ts-node: 9.0.0_typescript@4.0.3
       typescript: 4.0.3
       webidl2: 23.13.0
       yargs: 16.0.3
     specifiers:
+      '@types/fs-extra': ^9.0.2
       '@types/node': ^14.11.8
       '@types/webidl2': ^23.13.5
       '@types/yargs': ^15.0.8
       '@typescript-eslint/eslint-plugin': ^4.4.1
       '@typescript-eslint/parser': ^4.4.1
       eslint: ^7.11.0
+      fs-extra: ^9.0.1
       source-map-support: ^0.5.19
       ts-node: ^9.0.0
       typescript: ^4.0.3
@@ -239,6 +243,12 @@ packages:
     dev: true
     resolution:
       integrity: sha512-jnqIUKDUqJbDIUxm0Uj7bnlMnRm1T/eZ9N+AVMqhPgzrba2GhGG5o/jCTwmdPK709nEZsGoMzXEDUjcXHa3W0g==
+  /@types/fs-extra/9.0.2:
+    dependencies:
+      '@types/node': 14.11.8
+    dev: true
+    resolution:
+      integrity: sha512-jp0RI6xfZpi5JL8v7WQwpBEQTq63RqW2kxwTZt+m27LcJqQdPVU1yGnT1ZI4EtCDynQQJtIGyQahkiCGCS7e+A==
   /@types/json-schema/7.0.6:
     dev: true
     resolution:
@@ -631,6 +641,12 @@ packages:
     dev: true
     resolution:
       integrity: sha512-csOlWGAcRFJaI6m+F2WKdnMKr4HhdhFVBk0H/QbJFMCr+uO2kwohwXQPxw/9OCxp05r5ghVBFSyioixx3gfkNQ==
+  /at-least-node/1.0.0:
+    dev: true
+    engines:
+      node: '>= 4.0.0'
+    resolution:
+      integrity: sha512-+q/t7Ekv1EDY2l6Gda6LLiX14rU9TV20Wa3ofeQmwPFZbOMo9DXrLbOjFaaclkXKWidIaopwAObQDqwWtGUjqg==
   /atob/2.1.2:
     dev: true
     engines:
@@ -1394,6 +1410,17 @@ packages:
       node: '>=6 <7 || >=8'
     resolution:
       integrity: sha512-YJDaCJZEnBmcbw13fvdAM9AwNOJwOzrE4pqMqBq5nFiEqXUqHwlK4B+3pUw6JNvfSPtX05xFHtYy/1ni01eGCw==
+  /fs-extra/9.0.1:
+    dependencies:
+      at-least-node: 1.0.0
+      graceful-fs: 4.2.4
+      jsonfile: 6.0.1
+      universalify: 1.0.0
+    dev: true
+    engines:
+      node: '>=10'
+    resolution:
+      integrity: sha512-h2iAoN838FqAFJY2/qVpzFXy+EBxfVE220PalAqQLDVsFOHLJrZvut5puAbCdNv6WJk+B8ihI+k0c7JK5erwqQ==
   /fs.realpath/1.0.0:
     dev: true
     resolution:
@@ -1777,6 +1804,14 @@ packages:
       graceful-fs: 4.2.4
     resolution:
       integrity: sha1-h3Gq4HmbZAdrdmQPygWPnBDjPss=
+  /jsonfile/6.0.1:
+    dependencies:
+      universalify: 1.0.0
+    dev: true
+    optionalDependencies:
+      graceful-fs: 4.2.4
+    resolution:
+      integrity: sha512-jR2b5v7d2vIOust+w3wtFKZIfpC2pnRmFAhAC/BuweZFQR8qZzxH1OyrQ10HmdVYiXWkYUqPVsz91cG7EL2FBg==
   /kind-of/3.2.2:
     dependencies:
       is-buffer: 1.1.6
@@ -2979,6 +3014,12 @@ packages:
       node: '>= 4.0.0'
     resolution:
       integrity: sha512-rBJeI5CXAlmy1pV+617WB9J63U6XcazHHF2f2dbJix4XzpUF0RS3Zbj0FGIOCAva5P/d/GBOYaACQ1w+0azUkg==
+  /universalify/1.0.0:
+    dev: true
+    engines:
+      node: '>= 10.0.0'
+    resolution:
+      integrity: sha512-rb6X1W158d7pRQBg5gkR8uPaSfiids68LTJQYOtEUhoJUWBdaQHsuT/EUduxXYxcrt4r5PJ4fuHW1MHT6p0qug==
   /unset-value/1.0.0:
     dependencies:
       has-value: 0.3.1
