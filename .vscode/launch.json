@@ -7,7 +7,7 @@
     {
       "type": "pwa-node",
       "request": "launch",
-      "name": "Generate WebIDL2 typings",
+      "name": "Generate WebIDL typings",
       "runtimeArgs": [
         "--loader",
         "ts-node/esm",
@@ -19,7 +19,7 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "cwd": "${workspaceFolder}/webidl2-to-ts",
+      "cwd": "${workspaceFolder}/webidl-to-ts",
       "program": "src/index.ts",
       "outFiles": [
         "${workspaceFolder}/**/*.js"
