@@ -1,3 +1,4 @@
+/* eslint-env node */
 import svelte from 'rollup-plugin-svelte';
 import nodePolyfills from 'rollup-plugin-node-polyfills';
 import resolve from '@rollup/plugin-node-resolve';

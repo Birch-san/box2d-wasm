@@ -1,3 +1,4 @@
+/* eslint-env node */
 const eslintSveltePreprocess = require('eslint-svelte3-preprocess');
 const svelteConfig = require('./svelte.config');
 

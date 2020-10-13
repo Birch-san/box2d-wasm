@@ -1,3 +1,4 @@
+/* eslint-env node */
 const sveltePreprocess = require('svelte-preprocess');
 
 module.exports = {
