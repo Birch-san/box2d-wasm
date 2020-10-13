@@ -21,6 +21,10 @@
       ],
       "cwd": "${workspaceFolder}/webidl-to-ts",
       "program": "src/index.ts",
+      "args": [
+        "-f",
+        "../box2d-wasm/Box2D.idl"
+      ],
       "outFiles": [
         "${workspaceFolder}/**/*.js"
       ]

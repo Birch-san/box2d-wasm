@@ -1,8 +1,21 @@
 import ts from 'typescript';
-import { parse } from 'webidl2';
+import yargs from 'yargs';
 import path from 'path';
 
-parse(path.resolve(__dirname, '..', '..', 'box2d-wasm', 'Box2D.idl'));
+const argv = yargs(process.argv.slice(2))
+  .usage('Usage: node --loader ts-node/esm --experimental-specifier-resolution=node --harmony -r source-map-support/register src/index.ts [options]')
+  .example('node --loader ts-node/esm --experimental-specifier-resolution=node --harmony -r source-map-support/register src/index.ts -f ../box2d-wasm/Box2D.idl', 'count the lines in the given file')
+  .option('f', {
+    type: 'string',
+    demandOption: true,
+    alias: 'file',
+    nargs: 1,
+    describe: 'Load a file'
+  })
+  .help('h')
+  .alias('h', 'help')
+  .argv;
+console.log(path.resolve(argv.f));
 
 function makeFactorialFunction() {
   const functionName = ts.createIdentifier("factorial");

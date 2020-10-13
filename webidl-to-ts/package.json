@@ -5,7 +5,7 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "start": "node --loader ts-node/esm --experimental-specifier-resolution=node --harmony -r source-map-support/register run.js",
+    "start": "node --loader ts-node/esm --experimental-specifier-resolution=node --harmony -r source-map-support/register src/index.ts -f ../box2d-wasm/Box2D.idl",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint src/**/*.ts"
   },
@@ -14,13 +14,15 @@
   "devDependencies": {
     "@types/node": "^14.11.8",
     "@types/webidl2": "^23.13.5",
+    "@types/yargs": "^15.0.8",
     "@typescript-eslint/eslint-plugin": "^4.4.1",
     "@typescript-eslint/parser": "^4.4.1",
     "eslint": "^7.11.0",
     "source-map-support": "^0.5.19",
     "ts-node": "^9.0.0",
     "typescript": "^4.0.3",
-    "webidl2": "^23.13.0"
+    "webidl2": "^23.13.0",
+    "yargs": "^16.0.3"
   },
   "engines": {
     "node": ">= 14.0.0"
