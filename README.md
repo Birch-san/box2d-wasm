@@ -1,6 +1,8 @@
 # box2d-wasm
 
-Box2D compiled to WebAssembly. Project aims (compared to existing [`box2d.js`](https://github.com/kripken/box2d.js/)):
+Box2D compiled to WebAssembly. [Demo](https://birchlabs.co.uk/box2d-wasm/).
+
+Project aims (compared to existing [`box2d.js`](https://github.com/kripken/box2d.js/)):
 
 - Support Box2D v2.4.0 (for better ropes)
 - Support Box2D v2.4.0's new cmake build system
