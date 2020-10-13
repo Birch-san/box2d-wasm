@@ -1,5 +1,5 @@
 {
-  "name": "svelte-app",
+  "name": "box2d-wasm-demo-rollup-svelte",
   "version": "1.0.0",
   "scripts": {
     "build": "rollup -c",
@@ -8,6 +8,7 @@
     "validate": "svelte-check",
     "postinstall": "patch-package"
   },
+  "license": "Zlib",
   "devDependencies": {
     "@rollup/plugin-commonjs": "^14.0.0",
     "@rollup/plugin-node-resolve": "^8.0.0",
