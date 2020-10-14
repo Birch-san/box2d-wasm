@@ -8,13 +8,27 @@ const { parse } = WebIDL2;
 
 const argv = yargs(process.argv.slice(2))
   .usage('Usage: node --loader ts-node/esm --experimental-specifier-resolution=node --harmony -r source-map-support/register src/index.ts [options]')
-  .example('node --loader ts-node/esm --experimental-specifier-resolution=node --harmony -r source-map-support/register src/index.ts -f ../box2d-wasm/Box2D.idl -o dist/Box2D.d.ts', 'count the lines in the given file')
+  .example('node --loader ts-node/esm --experimental-specifier-resolution=node --harmony -r source-map-support/register src/index.ts -f ../box2d-wasm/Box2D.idl -m box2d-wasm -n Box2D -o dist/Box2D.d.ts', 'count the lines in the given file')
   .option('f', {
     type: 'string',
     demandOption: true,
     alias: 'file',
     nargs: 1,
     describe: 'Read WebIDL input from a .idl file'
+  })
+  .option('m', {
+    type: 'string',
+    demandOption: true,
+    alias: 'moduleName',
+    nargs: 1,
+    describe: "module name to be used in declaration: declare module '' {}"
+  })
+  .option('n', {
+    type: 'string',
+    demandOption: true,
+    alias: 'namespaceName',
+    nargs: 1,
+    describe: "namespaceName name to be used in declaration"
   })
   .option('o', {
     type: 'string',
@@ -94,7 +108,7 @@ const compile = (webIDLRoots: WebIDL2.IDLRootType[], options: ts.CompilerOptions
       afterDeclarations: [(context: ts.TransformationContext): ts.Transformer<ts.SourceFile> => (rootNode: ts.SourceFile): ts.SourceFile => 
         context.factory.updateSourceFile(
           rootNode,
-          new CodeGen(context/*, program.getTypeChecker()*/).codegen(webIDLRoots),
+          new CodeGen(context/*, program.getTypeChecker()*/).codegen(webIDLRoots, argv.m, argv.n),
           /*isDeclarationFile*/true
         )
       ]

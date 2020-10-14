@@ -24,6 +24,10 @@
       "args": [
         "-f",
         "../box2d-wasm/Box2D.idl",
+        "-m",
+        "box2d-wasm",
+        "-n",
+        "Box2D"
         // "-o",
         // "dist/Box2D.d.ts"
       ],
