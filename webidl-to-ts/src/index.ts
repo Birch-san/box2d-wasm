@@ -1,4 +1,4 @@
-import ts, { SourceFileLike } from 'typescript';
+import ts from 'typescript';
 import yargs from 'yargs';
 import path from 'path';
 import fs from 'fs';
@@ -60,8 +60,9 @@ const makeW3CCompliant = (emscriptenIdl: string): string /*[compliantSource: str
   return inheritedInterfacesAsMixins;
 };
 // const [compliantSource, implementsStatements] = makeW3CCompliant(content);
-const compliantSource = makeW3CCompliant(content);
 // process.stderr.write(implementsStatements);
+
+const compliantSource = makeW3CCompliant(content);
 const roots: WebIDL2.IDLRootType[] = parse(compliantSource);
 console.log(roots);
 
@@ -104,6 +105,10 @@ console.log(roots);
 const compile = (options: ts.CompilerOptions): void => {
   const host = ts.createCompilerHost(options);
   host.readFile = () => '';
+  host.writeFile = (fileName: string, contents: string) => {
+    console.log(fileName);
+    console.log(contents);
+  };
   // host.writeFile = (fileName: string, contents: string, writeByteOrderMark: boolean, onError: (message: string) => void) =>
   //   fs.writeFile(path.resolve('dist', fileName), contents, {
   //     encoding: 'utf8'
@@ -111,25 +116,50 @@ const compile = (options: ts.CompilerOptions): void => {
   //     onError(err.message);
   //   });
   // const program = ts.createProgram([], options, host);
+  // const program = ts.createProgram([path.resolve('dist', 'out.ts')], options, host);
   const program = ts.createProgram(['out.ts'], options, host);
   program.emit(
     /*targetSourceFile?: SourceFile*/ undefined,
     /*writeFile?: WriteFileCallback*/ undefined,
     /*cancellationToken?: CancellationToken*/ undefined,
-    /*emitOnlyDtsFiles?: boolean*/ undefined,
+    /*emitOnlyDtsFiles?: boolean*/ true,
     /*customTransformers?: CustomTransformers*/ {
-      before: [(context: ts.TransformationContext): ts.Transformer<ts.SourceFile> => (node: ts.SourceFile): ts.SourceFile => {
-        console.log(node);
-        console.log(context);
-        const sourceFile = ts.createSourceFile("someFileName.ts", "", ts.ScriptTarget.Latest, /*setParentNodes*/ false, ts.ScriptKind.TS);
-        return sourceFile;
+      afterDeclarations: [({ factory }: ts.TransformationContext): ts.Transformer<ts.SourceFile> => (rootNode: ts.SourceFile): ts.SourceFile => {
+        // context.enable
+        return factory.updateSourceFile(
+          rootNode,
+          /*ts.setTextRange(
+            factory.createNodeArray(*/[
+              factory.createInterfaceDeclaration(
+                /*decorators*/ undefined,
+                /*modifiers*/ [factory.createToken(ts.SyntaxKind.ExportKeyword)],
+                factory.createIdentifier('TestInterface'),
+                /*typeParameters*/ undefined,
+                /*heritageClauses*/ undefined,
+                /*members*/ []
+              )
+            ]/*),
+            *//*location*//*rootNode.statements
+          )*/,
+        /*isDeclarationFile*/true);
+        // const visit = (node: ts.Node): ts.Node => {
+        //   return ts.visitEachChild(node, visit, context);
+        // };
+        // return ts.visitNode(rootNode, visit);
+        // context.factory.statem
+
+        // context.factory.add
+        // context.factory.createInterfaceDeclaration().
+        // const sourceFile = ts.createSourceFile("someFileName.ts", "", ts.ScriptTarget.Latest, /*setParentNodes*/ false, ts.ScriptKind.TS);
+        // return sourceFile;
+        // return rootNode;
       }]
     });
 };
 
 compile({
-  // declaration: true,
-  // emitDeclarationOnly: true,
+  declaration: true,
+  emitDeclarationOnly: true,
 });
 
 // const resultFile = ts.createSourceFile("someFileName.ts", "", ts.ScriptTarget.Latest, /*setParentNodes*/ false, ts.ScriptKind.TS);
