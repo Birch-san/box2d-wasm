@@ -6,20 +6,50 @@ export class CodeGen {
     private readonly context: ts.TransformationContext/*,
     private readonly typeChecker: ts.TypeChecker*/
     ) {
-  }
+      const { factory } = this.context;
+      this.primitives = {
+        'boolean': () => factory.createKeywordTypeNode(ts.SyntaxKind.BooleanKeyword),
+        'long': () => factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+        'float': () => factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+        'void': () => factory.createKeywordTypeNode(ts.SyntaxKind.VoidKeyword),
+      }
+    }
 
-  private getTypeNode = (type: WebIDL2.IDLTypeDescription): ts.TypeNode => {
+  private readonly primitives: {
+    [idlType: string]: () => ts.TypeNode
+  };
+
+  private getSingleType = (type: WebIDL2.SingleTypeDescription): ts.TypeNode => {
     const { factory } = this.context;
-    // not implemented: type.nullable
+    if (type.idlType in this.primitives) {
+      return this.primitives[type.idlType]();
+    }
+    return factory.createTypeReferenceNode(
+      factory.createIdentifier(type.idlType),
+      /*typeArguments*/undefined
+    );
+  };
+
+  private getType = (type: WebIDL2.IDLTypeDescription): ts.TypeNode => {
     if (type.generic === '') {
       if (type.union === false) {
-        return factory.createTypeReferenceNode(
-          factory.createIdentifier(type.idlType),
-          /*typeArguments*/undefined
-        );
+        return this.getSingleType(type);
       }
     }
     throw new Error('erk');
+  };
+
+  private getParameterType = (type: WebIDL2.IDLTypeDescription): ts.TypeNode => {
+    // not implemented: type.nullable
+    return this.getType(type);
+  };
+
+  private getReturnType = (type: WebIDL2.IDLTypeDescription | null): ts.TypeNode => {
+    const { factory } = this.context;
+    if (type === null) {
+      throw new Error('erk');
+    }
+    return this.getType(type);
   };
 
   codegen = (roots: WebIDL2.IDLRootType[]): readonly ts.Statement[] => {
@@ -46,10 +76,10 @@ export class CodeGen {
                     /*dotDotDotToken*/undefined,
                     /*name*/factory.createIdentifier(arg.name),
                     /*questionToken*/undefined,
-                    /*type*/this.getTypeNode(arg.idlType),
+                    /*type*/this.getParameterType(arg.idlType),
                   )
                 ),
-                factory.createKeywordTypeNode(ts.SyntaxKind.VoidKeyword)
+                this.getReturnType(member.idlType)
               );
             }
             throw new Error('erk');
