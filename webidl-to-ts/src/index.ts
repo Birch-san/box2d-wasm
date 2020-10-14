@@ -57,7 +57,7 @@ const compliantSource = makeW3CCompliant(content);
 const roots: WebIDL2.IDLRootType[] = parse(compliantSource);
 console.log(roots);
 
-const compile = (options: ts.CompilerOptions): void => {
+const compile = (webIDLRoots: WebIDL2.IDLRootType[], options: ts.CompilerOptions): void => {
   const host = ts.createCompilerHost(options);
   host.writeFile = (_fileName: string, contents: string, _writeByteOrderMark: boolean, onError: (message: string) => void) => {
     // ignore provided filename; we've allowed user to optionally configure a filename of their choosing,
@@ -90,26 +90,29 @@ const compile = (options: ts.CompilerOptions): void => {
     /*cancellationToken?: CancellationToken*/ undefined,
     /*emitOnlyDtsFiles?: boolean*/ true,
     /*customTransformers?: CustomTransformers*/ {
-      afterDeclarations: [({ factory }: ts.TransformationContext): ts.Transformer<ts.SourceFile> => (rootNode: ts.SourceFile): ts.SourceFile => {
-        // context.enable
-        return factory.updateSourceFile(
+      afterDeclarations: [(context: ts.TransformationContext): ts.Transformer<ts.SourceFile> => (rootNode: ts.SourceFile): ts.SourceFile => {
+        return context.factory.updateSourceFile(
           rootNode,
-          [
-            factory.createInterfaceDeclaration(
-              /*decorators*/ undefined,
-              /*modifiers*/ [factory.createToken(ts.SyntaxKind.ExportKeyword)],
-              factory.createIdentifier('TestInterface'),
-              /*typeParameters*/ undefined,
-              /*heritageClauses*/ undefined,
-              /*members*/ []
-            )
-          ],
+          codegen(webIDLRoots, context),
         /*isDeclarationFile*/true);
       }]
     });
 };
 
-compile({
+compile(roots, {
   declaration: true,
   emitDeclarationOnly: true,
 });
+
+const codegen = (roots: WebIDL2.IDLRootType[], { factory }: ts.TransformationContext): readonly ts.Statement[] => {
+  return [
+    factory.createInterfaceDeclaration(
+      /*decorators*/ undefined,
+      /*modifiers*/ [factory.createToken(ts.SyntaxKind.ExportKeyword)],
+      factory.createIdentifier('TestInterface'),
+      /*typeParameters*/ undefined,
+      /*heritageClauses*/ undefined,
+      /*members*/ []
+    )
+  ];
+};
