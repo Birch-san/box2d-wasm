@@ -57,6 +57,34 @@ const compliantSource = makeW3CCompliant(content);
 const roots: WebIDL2.IDLRootType[] = parse(compliantSource);
 console.log(roots);
 
+const codegen = (roots: WebIDL2.IDLRootType[], { factory }: ts.TransformationContext): readonly ts.Statement[] => {
+  return roots.slice(0, 1).map((root: WebIDL2.IDLRootType): ts.Statement => {
+    if (root.type === 'interface') {
+      return factory.createInterfaceDeclaration(
+        /*decorators*/ undefined,
+        /*modifiers*/ [factory.createToken(ts.SyntaxKind.ExportKeyword)],
+        factory.createIdentifier(root.name),
+        /*typeParameters*/ undefined,
+        /*heritageClauses*/ undefined,
+        /*members*/ root.members.slice(0, 1).map((member: WebIDL2.IDLInterfaceMemberType): ts.TypeElement => {
+          if (member.type === 'operation') {
+            return factory.createMethodSignature(
+              /*modifiers*/ [],
+              /*name*/ factory.createIdentifier(member.name),
+              /*questionToken*/ undefined,
+              /*typeParameters*/ [],
+              /*parameters*/ [],
+              factory.createKeywordTypeNode(ts.SyntaxKind.VoidKeyword)
+            );
+          }
+          throw new Error('erk');
+        })
+      )
+    }
+    throw new Error('erk');
+  });
+};
+
 const compile = (webIDLRoots: WebIDL2.IDLRootType[], options: ts.CompilerOptions): void => {
   const host = ts.createCompilerHost(options);
   host.writeFile = (_fileName: string, contents: string, _writeByteOrderMark: boolean, onError: (message: string) => void) => {
@@ -94,7 +122,8 @@ const compile = (webIDLRoots: WebIDL2.IDLRootType[], options: ts.CompilerOptions
         return context.factory.updateSourceFile(
           rootNode,
           codegen(webIDLRoots, context),
-        /*isDeclarationFile*/true);
+          /*isDeclarationFile*/true
+          );
       }]
     });
 };
@@ -103,16 +132,3 @@ compile(roots, {
   declaration: true,
   emitDeclarationOnly: true,
 });
-
-const codegen = (roots: WebIDL2.IDLRootType[], { factory }: ts.TransformationContext): readonly ts.Statement[] => {
-  return [
-    factory.createInterfaceDeclaration(
-      /*decorators*/ undefined,
-      /*modifiers*/ [factory.createToken(ts.SyntaxKind.ExportKeyword)],
-      factory.createIdentifier('TestInterface'),
-      /*typeParameters*/ undefined,
-      /*heritageClauses*/ undefined,
-      /*members*/ []
-    )
-  ];
-};
