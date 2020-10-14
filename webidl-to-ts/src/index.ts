@@ -3,6 +3,7 @@ import yargs from 'yargs';
 import path from 'path';
 import fs from 'fs';
 import WebIDL2 from 'webidl2';
+import { CodeGen } from './codegen';
 const { parse } = WebIDL2;
 
 const argv = yargs(process.argv.slice(2))
@@ -55,35 +56,6 @@ const makeW3CCompliant = (emscriptenIdl: string): string => {
 
 const compliantSource = makeW3CCompliant(content);
 const roots: WebIDL2.IDLRootType[] = parse(compliantSource);
-console.log(roots);
-
-const codegen = (roots: WebIDL2.IDLRootType[], { factory }: ts.TransformationContext): readonly ts.Statement[] => {
-  return roots.slice(0, 1).map((root: WebIDL2.IDLRootType): ts.Statement => {
-    if (root.type === 'interface') {
-      return factory.createInterfaceDeclaration(
-        /*decorators*/ undefined,
-        /*modifiers*/ [factory.createToken(ts.SyntaxKind.ExportKeyword)],
-        factory.createIdentifier(root.name),
-        /*typeParameters*/ undefined,
-        /*heritageClauses*/ undefined,
-        /*members*/ root.members.slice(0, 1).map((member: WebIDL2.IDLInterfaceMemberType): ts.TypeElement => {
-          if (member.type === 'operation') {
-            return factory.createMethodSignature(
-              /*modifiers*/ [],
-              /*name*/ factory.createIdentifier(member.name),
-              /*questionToken*/ undefined,
-              /*typeParameters*/ [],
-              /*parameters*/ [],
-              factory.createKeywordTypeNode(ts.SyntaxKind.VoidKeyword)
-            );
-          }
-          throw new Error('erk');
-        })
-      )
-    }
-    throw new Error('erk');
-  });
-};
 
 const compile = (webIDLRoots: WebIDL2.IDLRootType[], options: ts.CompilerOptions): void => {
   const host = ts.createCompilerHost(options);
@@ -105,6 +77,7 @@ const compile = (webIDLRoots: WebIDL2.IDLRootType[], options: ts.CompilerOptions
       });
     } else {
       process.stderr.write(`Writing typings to stdout`);
+      console.log(contents); // temporary; VSCode debugger is not attached to stdout
       process.stdout.write(contents);
     }
   };
@@ -118,13 +91,13 @@ const compile = (webIDLRoots: WebIDL2.IDLRootType[], options: ts.CompilerOptions
     /*cancellationToken?: CancellationToken*/ undefined,
     /*emitOnlyDtsFiles?: boolean*/ true,
     /*customTransformers?: CustomTransformers*/ {
-      afterDeclarations: [(context: ts.TransformationContext): ts.Transformer<ts.SourceFile> => (rootNode: ts.SourceFile): ts.SourceFile => {
-        return context.factory.updateSourceFile(
+      afterDeclarations: [(context: ts.TransformationContext): ts.Transformer<ts.SourceFile> => (rootNode: ts.SourceFile): ts.SourceFile => 
+        context.factory.updateSourceFile(
           rootNode,
-          codegen(webIDLRoots, context),
+          new CodeGen(context/*, program.getTypeChecker()*/).codegen(webIDLRoots),
           /*isDeclarationFile*/true
-          );
-      }]
+        )
+      ]
     });
 };
 
