@@ -23,7 +23,9 @@
       "program": "src/index.ts",
       "args": [
         "-f",
-        "../box2d-wasm/Box2D.idl"
+        "../box2d-wasm/Box2D.idl",
+        // "-o",
+        // "dist/Box2D.d.ts"
       ],
       "outFiles": [
         "${workspaceFolder}/**/*.js"
