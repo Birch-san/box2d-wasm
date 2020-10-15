@@ -1,4 +1,4 @@
-import ts from 'typescript';
+import ts, { factory } from 'typescript';
 import WebIDL2 from 'webidl2';
 
 export class CodeGen {
@@ -190,9 +190,50 @@ export class CodeGen {
     ];
   };
 
+  private getParameterDeclaration = (arg: WebIDL2.Argument): ts.ParameterDeclaration => {
+    const { factory } = this.context;
+    return factory.createParameterDeclaration(
+      /*decorators*/undefined,
+      /*modifiers*/undefined,
+      /*dotDotDotToken*/undefined,
+      /*name*/factory.createIdentifier(arg.name),
+      /*questionToken*/undefined,
+      /*type*/this.getParameterType(arg.idlType),
+    );
+  };
+
+  private getConstructor = (member: WebIDL2.ConstructorMemberType | WebIDL2.OperationMemberType): [ts.ConstructorDeclaration] | [] => {
+    const { factory } = this.context;
+    if (!member.arguments.length) {
+      // JS classes already have an implicit no-args constructor
+      return [];
+    }
+    return [factory.createConstructorDeclaration(
+      /*decorators*/undefined,
+      /*modifiers*/undefined,
+      /*parameters*/member.arguments.map(this.getParameterDeclaration),
+      /*body*/undefined
+    )];
+  };
+
+  private getOperation = (member: WebIDL2.OperationMemberType): ts.MethodDeclaration => {
+    const { factory } = this.context;
+    return factory.createMethodDeclaration(
+      /*decorators*/undefined,
+      /*modifiers*/undefined,
+      /*asteriskToken*/undefined,
+      /*name*/factory.createIdentifier(member.name),
+      /*questionToken*/undefined,
+      /*typeParameters*/undefined,
+      /*parameters*/member.arguments.map(this.getParameterDeclaration),
+      this.getReturnType(member.idlType),
+      /*body*/undefined
+    );
+  };
+
   private roots = (roots: WebIDL2.IDLRootType[]): readonly ts.Statement[] => {
     const { factory } = this.context;
-    return roots.slice(0, 1).map((root: WebIDL2.IDLRootType): ts.Statement => {
+    return roots.slice(1, 5).map((root: WebIDL2.IDLRootType): ts.Statement => {
       if (root.type === 'interface') {
         return factory.createClassDeclaration(
           /*decorators*/undefined,
@@ -200,31 +241,19 @@ export class CodeGen {
           factory.createIdentifier(root.name),
           /*typeParameters*/undefined,
           /*heritageClauses*/undefined,
-          /*members*/root.members.map((member: WebIDL2.IDLInterfaceMemberType): ts.ClassElement => {
+          /*members*/root.members.flatMap((member: WebIDL2.IDLInterfaceMemberType): ts.ClassElement[] => {
+            if (member.type === 'constructor') {
+              return this.getConstructor(member);
+            }
             if (member.type === 'operation') {
-              return factory.createMethodDeclaration(
-                /*decorators*/undefined,
-                /*modifiers*/undefined,
-                /*asteriskToken*/undefined,
-                /*name*/factory.createIdentifier(member.name),
-                /*questionToken*/undefined,
-                /*typeParameters*/undefined,
-                /*parameters*/member.arguments.map((arg: WebIDL2.Argument): ts.ParameterDeclaration =>
-                  factory.createParameterDeclaration(
-                    /*decorators*/undefined,
-                    /*modifiers*/undefined,
-                    /*dotDotDotToken*/undefined,
-                    /*name*/factory.createIdentifier(arg.name),
-                    /*questionToken*/undefined,
-                    /*type*/this.getParameterType(arg.idlType),
-                  )
-                ),
-                this.getReturnType(member.idlType),
-                /*parameters*/undefined
-              );
+              if (member.name === root.name) {
+                // suspect W3C WebIDL doesn't use the same conventions for constructors as Emscripten WebIDL
+                return this.getConstructor(member);
+              }
+              return [this.getOperation(member)];
             }
             throw new Error('erk');
-          })
+          }, [])
         )
       }
       throw new Error('erk');
