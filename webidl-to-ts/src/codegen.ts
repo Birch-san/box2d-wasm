@@ -120,7 +120,7 @@ export class CodeGen {
   };
 
   /**
-   * export const wrapPointer: <Class extends PointerWrappable[keyof PointerWrappable]>(pointer: number, targetType: Class) => Class;
+   * export const wrapPointer: <Class extends PointerWrappable[keyof PointerWrappable]>(pointer: number, targetType: Class) => InstanceType<Class>;
    */
   private constructWrapPointer = (): ts.VariableStatement => {
     const { factory } = this.context;
@@ -171,10 +171,68 @@ export class CodeGen {
                 undefined
               )
             ],
-            factory.createTypeReferenceNode(
-              factory.createIdentifier('Class'),
-              undefined
+            ts.createTypeReferenceNode(
+              ts.createIdentifier("InstanceType"),
+              [ts.createTypeReferenceNode(
+                ts.createIdentifier("Class"),
+                undefined
+              )]
             )
+          ),
+          undefined
+        )],
+        ts.NodeFlags.Const | ts.NodeFlags.ContextFlags
+      )
+    )
+  };
+
+  /**
+   * export const getPointer: <Class extends PointerWrappable[keyof PointerWrappable]>(instance: InstanceType<Class>) => number;
+   */
+  private constructGetPointer = (): ts.VariableStatement => {
+    const { factory } = this.context;
+    return factory.createVariableStatement(
+      [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
+      factory.createVariableDeclarationList(
+        [factory.createVariableDeclaration(
+          factory.createIdentifier('getPointer'),
+          undefined,
+          factory.createFunctionTypeNode(
+            [factory.createTypeParameterDeclaration(
+              factory.createIdentifier('Class'),
+              factory.createIndexedAccessTypeNode(
+                factory.createTypeReferenceNode(
+                  factory.createIdentifier('PointerWrappable'),
+                  undefined
+                ),
+                factory.createTypeOperatorNode(
+                  ts.SyntaxKind.KeyOfKeyword,
+                  factory.createTypeReferenceNode(
+                    factory.createIdentifier('PointerWrappable'),
+                    undefined
+                  )
+                )
+              ),
+              undefined
+            )],
+            [
+              factory.createParameterDeclaration(
+                undefined,
+                undefined,
+                undefined,
+                factory.createIdentifier('instance'),
+                undefined,
+                ts.createTypeReferenceNode(
+                  ts.createIdentifier("InstanceType"),
+                  [ts.createTypeReferenceNode(
+                    ts.createIdentifier("Class"),
+                    undefined
+                  )]
+                ),
+                undefined
+              )
+            ],
+            ts.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword)
           ),
           undefined
         )],
@@ -186,7 +244,8 @@ export class CodeGen {
   private helpers = (): ts.Statement[] => {
     return [
       this.constructPointerWrappableType(),
-      this.constructWrapPointer()
+      this.constructWrapPointer(),
+      this.constructGetPointer()
     ];
   };
 
