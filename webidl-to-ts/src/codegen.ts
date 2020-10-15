@@ -242,7 +242,7 @@ export class CodeGen {
           [
             factory.createModuleDeclaration(
               /*decorators*/undefined,
-              /*modifiers*/undefined,
+              /*modifiers*/[ts.createModifier(ts.SyntaxKind.ExportKeyword)],
               /*name*/factory.createIdentifier(namespaceName),
               factory.createModuleBlock(
                 this.roots(roots).concat(
