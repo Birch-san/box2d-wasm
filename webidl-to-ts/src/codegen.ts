@@ -51,10 +51,143 @@ export class CodeGen {
     return this.getType(type);
   };
 
+  /**
+   * type PointerWrappable = {
+   *   [Key in keyof typeof Box2D]: typeof Box2D[Key] extends {
+   *     new (...args: any[]): Box2D[Key];
+   *   } ? typeof Box2D[Key] : never;
+   * };
+   */
+  private constructPointerWrappableType = (): ts.TypeAliasDeclaration => {
+    const { factory } = this.context;
+    return factory.createTypeAliasDeclaration(
+      undefined,
+      undefined,
+      factory.createIdentifier('PointerWrappable'),
+      undefined,
+      factory.createMappedTypeNode(
+        undefined,
+        factory.createTypeParameterDeclaration(
+          factory.createIdentifier('Key'),
+          factory.createTypeOperatorNode(
+            ts.SyntaxKind.KeyOfKeyword,
+            factory.createTypeQueryNode(factory.createIdentifier('Box2D'))
+            ),
+          undefined
+        ),
+        undefined,
+        factory.createConditionalTypeNode(
+          factory.createIndexedAccessTypeNode(
+            factory.createTypeQueryNode(factory.createIdentifier('Box2D')),
+            factory.createTypeReferenceNode(
+              factory.createIdentifier('Key'),
+              undefined
+            )
+          ),
+          factory.createTypeLiteralNode([factory.createConstructSignature(
+            undefined,
+            [factory.createParameterDeclaration(
+              undefined,
+              undefined,
+              factory.createToken(ts.SyntaxKind.DotDotDotToken),
+              factory.createIdentifier('args'),
+              undefined,
+              factory.createArrayTypeNode(factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)),
+              undefined
+            )],
+            factory.createIndexedAccessTypeNode(
+              factory.createTypeReferenceNode(
+                factory.createIdentifier('Box2D'),
+                undefined
+              ),
+              factory.createTypeReferenceNode(
+                factory.createIdentifier('Key'),
+                undefined
+              )
+            )
+          )]),
+          factory.createIndexedAccessTypeNode(
+            factory.createTypeQueryNode(factory.createIdentifier('Box2D')),
+            factory.createTypeReferenceNode(
+              factory.createIdentifier('Key'),
+              undefined
+            )
+          ),
+          factory.createKeywordTypeNode(ts.SyntaxKind.NeverKeyword)
+        )
+      )
+    )
+  };
+
+  /**
+   * export const wrapPointer: <Class extends PointerWrappable[keyof PointerWrappable]>(pointer: number, targetType: Class) => Class;
+   */
+  private constructWrapPointer = (): ts.VariableStatement => {
+    const { factory } = this.context;
+    return factory.createVariableStatement(
+      [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
+      factory.createVariableDeclarationList(
+        [factory.createVariableDeclaration(
+          factory.createIdentifier('wrapPointer'),
+          undefined,
+          factory.createFunctionTypeNode(
+            [factory.createTypeParameterDeclaration(
+              factory.createIdentifier('Class'),
+              factory.createIndexedAccessTypeNode(
+                factory.createTypeReferenceNode(
+                  factory.createIdentifier('PointerWrappable'),
+                  undefined
+                ),
+                factory.createTypeOperatorNode(
+                  ts.SyntaxKind.KeyOfKeyword,
+                  factory.createTypeReferenceNode(
+                    factory.createIdentifier('PointerWrappable'),
+                    undefined
+                  )
+                )
+              ),
+              undefined
+            )],
+            [
+              factory.createParameterDeclaration(
+                undefined,
+                undefined,
+                undefined,
+                factory.createIdentifier('pointer'),
+                undefined,
+                factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+                undefined
+              ),
+              factory.createParameterDeclaration(
+                undefined,
+                undefined,
+                undefined,
+                factory.createIdentifier('targetType'),
+                undefined,
+                factory.createTypeReferenceNode(
+                  factory.createIdentifier('Class'),
+                  undefined
+                ),
+                undefined
+              )
+            ],
+            factory.createTypeReferenceNode(
+              factory.createIdentifier('Class'),
+              undefined
+            )
+          ),
+          undefined
+        )],
+        ts.NodeFlags.Const | ts.NodeFlags.ContextFlags
+      )
+    )
+  };
+
   private helpers = (): ts.Statement[] => {
-    // such as:
-    // wrapPointer<T>(pointer: number, idlClass: T): T
-    return [];
+    return [
+      this.constructPointerWrappableType(),
+      this.constructWrapPointer()
+    ];
   };
 
   private roots = (roots: WebIDL2.IDLRootType[]): readonly ts.Statement[] => {
