@@ -849,18 +849,21 @@ export class CodeGen {
     return JSON.parse(extAttr.rhs.value);
   }
 
-  private static isConstructorMember = (root: WebIDL2.InterfaceType, member: WebIDL2.IDLInterfaceMemberType): boolean => {
+  private static isConstructorMember = (root: WebIDL2.InterfaceType | WebIDL2.InterfaceMixinType, member: WebIDL2.IDLInterfaceMemberType | WebIDL2.IDLInterfaceMixinMemberType): boolean => {
     return member.type === 'constructor' || member.type === 'operation' && member.name === root.name;
   };
 
-  private static isConstructibleType = (root: WebIDL2.InterfaceType): boolean => {
+  private static isConstructibleType = (root: WebIDL2.InterfaceType | WebIDL2.InterfaceMixinType): boolean => {
+    if (root.type === 'interface mixin') {
+      return false;
+    }
     return root.members.some((member: WebIDL2.IDLInterfaceMemberType): boolean => CodeGen.isConstructorMember(root, member));
   };
 
   private roots = (roots: WebIDL2.IDLRootType[]): readonly ts.Statement[] => {
     const { factory } = this.context;
-    return roots.slice(0, 6).flatMap((root: WebIDL2.IDLRootType): ts.Statement[] => {
-      if (root.type === 'interface') {
+    return roots.slice(6, 8).flatMap((root: WebIDL2.IDLRootType): ts.Statement[] => {
+      if (root.type === 'interface' || root.type === 'interface mixin') {
         const jsImplementation: WebIDL2.ExtendedAttribute | undefined =
           root.extAttrs.find((extAttr: WebIDL2.ExtendedAttribute): boolean =>
           extAttr.name === 'JSImplementation');
@@ -885,17 +888,22 @@ export class CodeGen {
           /*members*/this.getCommonClassBoilerplateMembers(classIdentifierFactory)
           .concat(isDeletable ? this.getDeletableClassBoilerplateMembers() : [])
           .concat(isConstructibleType ? this.getConstructibleClassBoilerplateMembers() : [])
-          .concat(root.members.flatMap((member: WebIDL2.IDLInterfaceMemberType): ts.ClassElement[] => {
-            if (CodeGen.isConstructorMember(root, member)) {
-              // tried to get this cast for free via type guard from ::isConstructorMember,
-              // but it makes TS wrongly eliminate 'operation' as a possible type outside of this block
-              return this.getConstructor(member as WebIDL2.ConstructorMemberType | WebIDL2.OperationMemberType);
-            }
-            if (member.type === 'operation') {
-              return [this.getOperation(member)];
-            }
-            throw new Error('erk');
-          }, []))
+          .concat(
+            (root.members as Array<WebIDL2.IDLInterfaceMemberType | WebIDL2.IDLInterfaceMixinMemberType>)
+            .flatMap<ts.ClassElement, Array<WebIDL2.IDLInterfaceMemberType | WebIDL2.IDLInterfaceMixinMemberType>>(
+              (member) => {
+                if (CodeGen.isConstructorMember(root, member)) {
+                  // tried to get this cast for free via type guard from ::isConstructorMember,
+                  // but it makes TS wrongly eliminate 'operation' as a possible type outside of this block
+                  return this.getConstructor(member as WebIDL2.ConstructorMemberType | WebIDL2.OperationMemberType);
+                }
+                if (member.type === 'operation') {
+                  return [this.getOperation(member)];
+                }
+                throw new Error('erk');
+              }, []
+            )
+          )
         )]
       }
       if (root.type === 'enum') {
