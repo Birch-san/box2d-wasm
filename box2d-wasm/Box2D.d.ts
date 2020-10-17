@@ -6,57 +6,71 @@ declare module 'box2d-wasm' {
 // declare module "box2d-wasm" {
 //   // maybe rename to Module
 //   export namespace Box2D {
-//       export class WrapperObject {
-//         static __class__: typeof WrapperObject;
-//         readonly prototype: typeof WrapperObject;
-//         ptr?: number;
-//       }
-//       export abstract class b2ContactListener extends WrapperObject {
-//         // technically there's a constructor, but it throws
-//         static __class__: typeof b2ContactListener;
-//         readonly prototype: typeof b2ContactListener;
-//         static __destroy__(): void;
-//         static __cache__: { [ptr: number]: b2ContactListener };
-//       }
-//       export class b2Contact extends WrapperObject {
-//         static __class__: typeof b2Contact;
-//         readonly prototype: typeof b2Contact;
-//         static __destroy__(): void;
-//         ptr: number;
-//         GetManifold(): b2Manifold;
-//         GetWorldManifold(manifold: b2WorldManifold): void;
-//         IsTouching(): boolean;
-//         SetEnabled(flag: boolean): void;
-//         IsEnabled(): boolean;
-//         GetNext(): b2Contact;
-//         GetFixtureA(): b2Fixture;
-//         GetChildIndexA(): number;
-//         GetFixtureB(): b2Fixture;
-//         GetChildIndexB(): number;
-//         SetFriction(friction: number): void;
-//         GetFriction(): number;
-//         ResetFriction(): void;
-//         SetRestitution(restitution: number): void;
-//         GetRestitution(): number;
-//         ResetRestitution(): void;
-//         SetTangentSpeed(speed: number): void;
-//         GetTangentSpeed(): number;
-//       }
-//       export class b2Contact2 extends WrapperObject {
-//         readonly prototype: typeof b2Contact2;
-//       }
-//       type PointerWrappable = {
-//         [Key in keyof typeof Box2D]: typeof Box2D[Key] extends { new(...args: any[]): Box2D[Key] } ? typeof Box2D[Key] : never;
+//     export class WrapperObject {
+//       static readonly __cache__: { [ptr: number]: WrapperObject };
+//       readonly __class__: typeof WrapperObject;
+//       ptr?: number;
+//     }
+//     export abstract class b2ContactListener extends WrapperObject {
+//       // technically there's a constructor, but it throws
+//       static readonly __cache__: { [ptr: number]: b2ContactListener };
+//       readonly __class__: typeof b2ContactListener;
+//       __destroy__(): void;
+//     }
+//     export class b2Contact extends WrapperObject {
+//       static readonly __cache__: { [ptr: number]: b2Contact };
+//       readonly __class__: typeof b2Contact;
+//       ptr: number;
+//       __destroy__(): void;
+//       GetManifold(): b2Manifold;
+//       GetWorldManifold(manifold: b2WorldManifold): void;
+//       IsTouching(): boolean;
+//       SetEnabled(flag: boolean): void;
+//       IsEnabled(): boolean;
+//       GetNext(): b2Contact;
+//       GetFixtureA(): b2Fixture;
+//       GetChildIndexA(): number;
+//       GetFixtureB(): b2Fixture;
+//       GetChildIndexB(): number;
+//       SetFriction(friction: number): void;
+//       GetFriction(): number;
+//       ResetFriction(): void;
+//       SetRestitution(restitution: number): void;
+//       GetRestitution(): number;
+//       ResetRestitution(): void;
+//       SetTangentSpeed(speed: number): void;
+//       GetTangentSpeed(): number;
+//     }
+//     export class b2Contact2 extends WrapperObject {
+//       static readonly __cache__: { [ptr: number]: b2Contact2 };
+//       readonly __class__: typeof b2Contact2;
+//       ptr: number;
+//       __destroy__(): void;
+//     }
+//     interface HasPointer {
+//       ptr: number;
+//     }
+//     export const wrapPointer: <TargetClass extends {
+//       readonly __cache__: { [ptr: number]: InstanceType<TargetClass> }
+//     } = typeof WrapperObject>(pointer: number, targetType?: TargetClass) => InstanceType<TargetClass>;
+//     export const getPointer: (instance: HasPointer) => number;
+//     export const castObject: <TargetClass extends {
+//       readonly __cache__: { [ptr: number]: InstanceType<TargetClass> }
+//     } = typeof WrapperObject>(instance: HasPointer, targetType?: TargetClass) => InstanceType<TargetClass>;
+//     export const compare: (instance: HasPointer, instance2: HasPointer) => boolean;
+//     export const getCache: <Class extends {
+//       readonly __cache__;
+//     } = typeof WrapperObject>(type?: Class) => Class['__cache__'];
+//     export const destroy: <Instance extends {
+//       __destroy__(): void;
+//       readonly __class__: {
+//         readonly __cache__: { [ptr: number]: Instance }
 //       };
-//       export const wrapPointer: <Class extends PointerWrappable[keyof PointerWrappable] = typeof WrapperObject>(pointer: number, targetType?: Class) => InstanceType<Class>;
-//       export const getPointer: <Class extends PointerWrappable[keyof PointerWrappable]>(instance: InstanceType<Class>) => number;
-//       export const castObject: <Class extends PointerWrappable[keyof PointerWrappable], TargetClass extends PointerWrappable[keyof PointerWrappable] = typeof WrapperObject>(instance: InstanceType<Class>, targetType?: TargetClass) => InstanceType<TargetClass>;
-//       export const compare: <Class extends PointerWrappable[keyof PointerWrappable], Class2 extends PointerWrappable[keyof PointerWrappable]>(instance: InstanceType<Class>, instance2: InstanceType<Class2>) => boolean;
-//       export const getCache: <Class extends PointerWrappable[keyof PointerWrappable] = WrapperObject>(type?: Class) => { [ptr: number]: InstanceType<Class> };
-//       export const destroy: <Class extends PointerWrappable[keyof PointerWrappable]>(instance: InstanceType<Class>) => void;
-//       // export const getClass: <Class extends PointerWrappable[keyof PointerWrappable]>(instance: InstanceType<infer Class>) => Class;
-//       export const getClass: <Class extends PointerWrappable[keyof PointerWrappable]>(instance: { prototype: { __class__: Class } }) => Class;
-//       export const NULL: WrapperObject & { ptr: 0 };
+//     }>(instance: Instance) => void;
+//     export const getClass: <Obj extends {
+//       readonly __class__;
+//     }>(instance: Obj) => Obj['__class__'];
+//     export const NULL: WrapperObject & { ptr: 0 };
 //   }
 //   const Box2DFactory: () => Promise<typeof Box2D>;
 //   export = Box2DFactory;
