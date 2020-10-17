@@ -104,8 +104,70 @@ export class CodeGen {
           undefined
         )
       ]
-    );    
+    );
   };
+
+  private constructVoidPtrHelper = (): ts.ClassDeclaration => {
+    const { factory } = this.context;
+    return factory.createClassDeclaration(
+      undefined,
+      [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
+      factory.createIdentifier("VoidPtr"),
+      undefined,
+      [factory.createHeritageClause(
+        ts.SyntaxKind.ExtendsKeyword,
+        [factory.createExpressionWithTypeArguments(
+          factory.createIdentifier('WrapperObject'),
+          undefined
+        )]
+      )],
+      [
+        factory.createPropertyDeclaration(
+          undefined,
+          [
+            factory.createModifier(ts.SyntaxKind.StaticKeyword),
+            factory.createModifier(ts.SyntaxKind.ReadonlyKeyword)
+          ],
+          factory.createIdentifier("__cache__"),
+          undefined,
+          factory.createTypeLiteralNode([factory.createIndexSignature(
+            undefined,
+            undefined,
+            [factory.createParameterDeclaration(
+              undefined,
+              undefined,
+              undefined,
+              factory.createIdentifier("ptr"),
+              undefined,
+              factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+              undefined
+            )],
+            factory.createTypeReferenceNode(
+              factory.createIdentifier("VoidPtr"),
+              undefined
+            )
+          )]),
+          undefined
+        ),
+        factory.createPropertyDeclaration(
+          undefined,
+          [factory.createModifier(ts.SyntaxKind.ReadonlyKeyword)],
+          factory.createIdentifier("__class__"),
+          undefined,
+          factory.createTypeQueryNode(factory.createIdentifier("VoidPtr")),
+          undefined
+        ),
+        factory.createPropertyDeclaration(
+          undefined,
+          undefined,
+          factory.createIdentifier("ptr"),
+          factory.createToken(ts.SyntaxKind.QuestionToken),
+          factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+          undefined
+        )
+      ]
+    );
+  }
 
   /**
    * export const wrapPointer: <TargetClass extends {
@@ -651,6 +713,7 @@ export class CodeGen {
   private helpers = (): ts.Statement[] => {
     return [
       this.constructWrapperObjectHelper(),
+      this.constructVoidPtrHelper(),
       this.constructHasPointerHelper(),
       this.constructWrapPointerHelper(),
       this.constructGetPointerHelper(),
@@ -796,7 +859,7 @@ export class CodeGen {
 
   private roots = (roots: WebIDL2.IDLRootType[]): readonly ts.Statement[] => {
     const { factory } = this.context;
-    return roots.slice(0, 5).map((root: WebIDL2.IDLRootType): ts.Statement => {
+    return roots.slice(0, 7).map((root: WebIDL2.IDLRootType): ts.Statement => {
       if (root.type === 'interface') {
         const jsImplementation: WebIDL2.ExtendedAttribute | undefined =
           root.extAttrs.find((extAttr: WebIDL2.ExtendedAttribute): boolean =>
@@ -834,6 +897,9 @@ export class CodeGen {
             throw new Error('erk');
           }, []))
         )
+      }
+      if (root.type === 'enum') {
+        throw new Error('erk');
       }
       throw new Error('erk');
     });
