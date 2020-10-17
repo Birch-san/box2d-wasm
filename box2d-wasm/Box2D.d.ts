@@ -11,8 +11,7 @@ declare module 'box2d-wasm' {
 //       readonly __class__: typeof WrapperObject;
 //       ptr?: number;
 //     }
-//     export abstract class b2ContactListener extends WrapperObject {
-//       // technically there's a constructor, but it throws
+//     export class b2ContactListener extends WrapperObject {
 //       static readonly __cache__: { [ptr: number]: b2ContactListener };
 //       readonly __class__: typeof b2ContactListener;
 //       __destroy__(): void;
@@ -51,10 +50,12 @@ declare module 'box2d-wasm' {
 //       ptr: number;
 //     }
 //     export const wrapPointer: <TargetClass extends {
+//       new(...args: any[]): InstanceType<TargetClass>;
 //       readonly __cache__: { [ptr: number]: InstanceType<TargetClass> }
 //     } = typeof WrapperObject>(pointer: number, targetType?: TargetClass) => InstanceType<TargetClass>;
 //     export const getPointer: (instance: HasPointer) => number;
 //     export const castObject: <TargetClass extends {
+//       new(...args: any[]): InstanceType<TargetClass>;
 //       readonly __cache__: { [ptr: number]: InstanceType<TargetClass> }
 //     } = typeof WrapperObject>(instance: HasPointer, targetType?: TargetClass) => InstanceType<TargetClass>;
 //     export const compare: (instance: HasPointer, instance2: HasPointer) => boolean;

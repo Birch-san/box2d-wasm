@@ -1,4 +1,4 @@
-import ts, { factory } from 'typescript';
+import ts from 'typescript';
 import WebIDL2 from 'webidl2';
 
 export class CodeGen {
@@ -51,109 +51,133 @@ export class CodeGen {
     return this.getType(type);
   };
 
-  /**
-   * type PointerWrappable = {
-   *   [Key in keyof typeof Box2D]: typeof Box2D[Key] extends {
-   *     new (...args: any[]): Box2D[Key];
-   *   } ? typeof Box2D[Key] : never;
-   * };
-   */
-  private constructPointerWrappableType = (): ts.TypeAliasDeclaration => {
+  private constructWrapperObjectHelper = (): ts.ClassDeclaration => {
     const { factory } = this.context;
-    return factory.createTypeAliasDeclaration(
+    return factory.createClassDeclaration(
+      undefined,
+      [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
+      factory.createIdentifier("WrapperObject"),
       undefined,
       undefined,
-      factory.createIdentifier('PointerWrappable'),
-      undefined,
-      factory.createMappedTypeNode(
-        undefined,
-        factory.createTypeParameterDeclaration(
-          factory.createIdentifier('Key'),
-          factory.createTypeOperatorNode(
-            ts.SyntaxKind.KeyOfKeyword,
-            factory.createTypeQueryNode(factory.createIdentifier('Box2D'))
-            ),
-          undefined
-        ),
-        undefined,
-        factory.createConditionalTypeNode(
-          factory.createIndexedAccessTypeNode(
-            factory.createTypeQueryNode(factory.createIdentifier('Box2D')),
-            factory.createTypeReferenceNode(
-              factory.createIdentifier('Key'),
-              undefined
-            )
-          ),
-          factory.createTypeLiteralNode([factory.createConstructSignature(
+      [
+        factory.createPropertyDeclaration(
+          undefined,
+          [
+            factory.createModifier(ts.SyntaxKind.StaticKeyword),
+            factory.createModifier(ts.SyntaxKind.ReadonlyKeyword)
+          ],
+          factory.createIdentifier("__cache__"),
+          undefined,
+          factory.createTypeLiteralNode([factory.createIndexSignature(
+            undefined,
             undefined,
             [factory.createParameterDeclaration(
               undefined,
               undefined,
-              factory.createToken(ts.SyntaxKind.DotDotDotToken),
-              factory.createIdentifier('args'),
               undefined,
-              factory.createArrayTypeNode(factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)),
+              factory.createIdentifier("ptr"),
+              undefined,
+              factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
               undefined
             )],
-            factory.createIndexedAccessTypeNode(
-              factory.createTypeReferenceNode(
-                factory.createIdentifier('Box2D'),
-                undefined
-              ),
-              factory.createTypeReferenceNode(
-                factory.createIdentifier('Key'),
-                undefined
-              )
-            )
-          )]),
-          factory.createIndexedAccessTypeNode(
-            factory.createTypeQueryNode(factory.createIdentifier('Box2D')),
             factory.createTypeReferenceNode(
-              factory.createIdentifier('Key'),
+              factory.createIdentifier("WrapperObject"),
               undefined
             )
-          ),
-          factory.createKeywordTypeNode(ts.SyntaxKind.NeverKeyword)
+          )]),
+          undefined
+        ),
+        factory.createPropertyDeclaration(
+          undefined,
+          [factory.createModifier(ts.SyntaxKind.ReadonlyKeyword)],
+          factory.createIdentifier("__class__"),
+          undefined,
+          factory.createTypeQueryNode(factory.createIdentifier("WrapperObject")),
+          undefined
+        ),
+        factory.createPropertyDeclaration(
+          undefined,
+          undefined,
+          factory.createIdentifier("ptr"),
+          factory.createToken(ts.SyntaxKind.QuestionToken),
+          factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+          undefined
         )
-      )
-    )
+      ]
+    );    
   };
 
   /**
-   * export const wrapPointer: <Class extends PointerWrappable[keyof PointerWrappable]>(pointer: number, targetType: Class) => InstanceType<Class>;
+   * export const wrapPointer: <TargetClass extends {
+   *   new(args: any[]): InstanceType<TargetClass>;
+   *   readonly __cache__: { [ptr: number]: InstanceType<TargetClass> }
+   * } = typeof WrapperObject>(pointer: number, targetType?: TargetClass) => InstanceType<TargetClass>;
    */
-  private constructWrapPointer = (): ts.VariableStatement => {
+  private constructWrapPointerHelper = (): ts.VariableStatement => {
     const { factory } = this.context;
     return factory.createVariableStatement(
       [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
       factory.createVariableDeclarationList(
         [factory.createVariableDeclaration(
-          factory.createIdentifier('wrapPointer'),
+          factory.createIdentifier("wrapPointer"),
           undefined,
           factory.createFunctionTypeNode(
             [factory.createTypeParameterDeclaration(
-              factory.createIdentifier('Class'),
-              factory.createIndexedAccessTypeNode(
-                factory.createTypeReferenceNode(
-                  factory.createIdentifier('PointerWrappable'),
-                  undefined
-                ),
-                factory.createTypeOperatorNode(
-                  ts.SyntaxKind.KeyOfKeyword,
-                  factory.createTypeReferenceNode(
-                    factory.createIdentifier('PointerWrappable'),
+              factory.createIdentifier("TargetClass"),
+              factory.createTypeLiteralNode([
+                factory.createConstructSignature(
+                  undefined,
+                  [factory.createParameterDeclaration(
+                    undefined,
+                    undefined,
+                    factory.createToken(ts.SyntaxKind.DotDotDotToken),
+                    factory.createIdentifier("args"),
+                    undefined,
+                    factory.createArrayTypeNode(factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)),
                     undefined
+                  )],
+                  factory.createTypeReferenceNode(
+                    factory.createIdentifier("InstanceType"),
+                    [factory.createTypeReferenceNode(
+                      factory.createIdentifier("TargetClass"),
+                      undefined
+                    )]
                   )
+                ),
+                factory.createPropertySignature(
+                  [factory.createModifier(ts.SyntaxKind.ReadonlyKeyword)],
+                  factory.createIdentifier("__cache__"),
+                  undefined,
+                  factory.createTypeLiteralNode([factory.createIndexSignature(
+                    undefined,
+                    undefined,
+                    [factory.createParameterDeclaration(
+                      undefined,
+                      undefined,
+                      undefined,
+                      factory.createIdentifier("ptr"),
+                      undefined,
+                      factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+                      undefined
+                    )],
+                    factory.createTypeReferenceNode(
+                      factory.createIdentifier("InstanceType"),
+                      [factory.createTypeReferenceNode(
+                        factory.createIdentifier("TargetClass"),
+                        undefined
+                      )]
+                    )
+                  )])
                 )
-              ),
-              undefined
+              ]),
+              factory.createTypeQueryNode(factory.createIdentifier("WrapperObject"))
             )],
             [
               factory.createParameterDeclaration(
                 undefined,
                 undefined,
                 undefined,
-                factory.createIdentifier('pointer'),
+                factory.createIdentifier("pointer"),
                 undefined,
                 factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
                 undefined
@@ -162,19 +186,19 @@ export class CodeGen {
                 undefined,
                 undefined,
                 undefined,
-                factory.createIdentifier('targetType'),
-                undefined,
+                factory.createIdentifier("targetType"),
+                factory.createToken(ts.SyntaxKind.QuestionToken),
                 factory.createTypeReferenceNode(
-                  factory.createIdentifier('Class'),
+                  factory.createIdentifier("TargetClass"),
                   undefined
                 ),
                 undefined
               )
             ],
-            ts.createTypeReferenceNode(
-              ts.createIdentifier("InstanceType"),
-              [ts.createTypeReferenceNode(
-                ts.createIdentifier("Class"),
+            factory.createTypeReferenceNode(
+              factory.createIdentifier("InstanceType"),
+              [factory.createTypeReferenceNode(
+                factory.createIdentifier("TargetClass"),
                 undefined
               )]
             )
@@ -183,69 +207,442 @@ export class CodeGen {
         )],
         ts.NodeFlags.Const | ts.NodeFlags.ContextFlags
       )
-    )
+    );    
   };
 
   /**
-   * export const getPointer: <Class extends PointerWrappable[keyof PointerWrappable]>(instance: InstanceType<Class>) => number;
+   * interface HasPointer {
+   *   ptr: number;
+   * }
    */
-  private constructGetPointer = (): ts.VariableStatement => {
+  private constructHasPointerHelper = (): ts.InterfaceDeclaration => {
+    const { factory } = this.context;
+    return factory.createInterfaceDeclaration(
+      undefined,
+      undefined,
+      factory.createIdentifier("HasPointer"),
+      undefined,
+      undefined,
+      [factory.createPropertySignature(
+        undefined,
+        factory.createIdentifier("ptr"),
+        undefined,
+        factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword)
+      )]
+    );
+  };
+
+  /**
+   * export const getPointer: (instance: HasPointer) => number;
+   */
+  private constructGetPointerHelper = (): ts.VariableStatement => {
     const { factory } = this.context;
     return factory.createVariableStatement(
       [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
       factory.createVariableDeclarationList(
         [factory.createVariableDeclaration(
-          factory.createIdentifier('getPointer'),
+          factory.createIdentifier("getPointer"),
+          undefined,
+          factory.createFunctionTypeNode(
+            undefined,
+            [factory.createParameterDeclaration(
+              undefined,
+              undefined,
+              undefined,
+              factory.createIdentifier("instance"),
+              undefined,
+              factory.createTypeReferenceNode(
+                factory.createIdentifier("HasPointer"),
+                undefined
+              ),
+              undefined
+            )],
+            factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword)
+          ),
+          undefined
+        )],
+        ts.NodeFlags.Const | ts.NodeFlags.ContextFlags
+      )
+    );    
+  };
+
+  /**
+   * export const castObject: <TargetClass extends {
+   *   new(...args: any[]): InstanceType<TargetClass>;
+   *   readonly __cache__: { [ptr: number]: InstanceType<TargetClass> }
+   * } = typeof WrapperObject>(instance: HasPointer, targetType?: TargetClass) => InstanceType<TargetClass>;
+   */
+  private constructCastObjectHelper = (): ts.VariableStatement => {
+    const { factory } = this.context;
+    return factory.createVariableStatement(
+      [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
+      factory.createVariableDeclarationList(
+        [factory.createVariableDeclaration(
+          factory.createIdentifier("castObject"),
           undefined,
           factory.createFunctionTypeNode(
             [factory.createTypeParameterDeclaration(
-              factory.createIdentifier('Class'),
-              factory.createIndexedAccessTypeNode(
-                factory.createTypeReferenceNode(
-                  factory.createIdentifier('PointerWrappable'),
-                  undefined
-                ),
-                factory.createTypeOperatorNode(
-                  ts.SyntaxKind.KeyOfKeyword,
-                  factory.createTypeReferenceNode(
-                    factory.createIdentifier('PointerWrappable'),
+              factory.createIdentifier("TargetClass"),
+              factory.createTypeLiteralNode([
+                factory.createConstructSignature(
+                  undefined,
+                  [factory.createParameterDeclaration(
+                    undefined,
+                    undefined,
+                    factory.createToken(ts.SyntaxKind.DotDotDotToken),
+                    factory.createIdentifier("args"),
+                    undefined,
+                    factory.createArrayTypeNode(factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)),
                     undefined
+                  )],
+                  factory.createTypeReferenceNode(
+                    factory.createIdentifier("InstanceType"),
+                    [factory.createTypeReferenceNode(
+                      factory.createIdentifier("TargetClass"),
+                      undefined
+                    )]
                   )
+                ),
+                factory.createPropertySignature(
+                  [factory.createModifier(ts.SyntaxKind.ReadonlyKeyword)],
+                  factory.createIdentifier("__cache__"),
+                  undefined,
+                  factory.createTypeLiteralNode([factory.createIndexSignature(
+                    undefined,
+                    undefined,
+                    [factory.createParameterDeclaration(
+                      undefined,
+                      undefined,
+                      undefined,
+                      factory.createIdentifier("ptr"),
+                      undefined,
+                      factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+                      undefined
+                    )],
+                    factory.createTypeReferenceNode(
+                      factory.createIdentifier("InstanceType"),
+                      [factory.createTypeReferenceNode(
+                        factory.createIdentifier("TargetClass"),
+                        undefined
+                      )]
+                    )
+                  )])
                 )
-              ),
-              undefined
+              ]),
+              factory.createTypeQueryNode(factory.createIdentifier("WrapperObject"))
             )],
             [
               factory.createParameterDeclaration(
                 undefined,
                 undefined,
                 undefined,
-                factory.createIdentifier('instance'),
+                factory.createIdentifier("instance"),
                 undefined,
-                ts.createTypeReferenceNode(
-                  ts.createIdentifier("InstanceType"),
-                  [ts.createTypeReferenceNode(
-                    ts.createIdentifier("Class"),
-                    undefined
-                  )]
+                factory.createTypeReferenceNode(
+                  factory.createIdentifier("HasPointer"),
+                  undefined
+                ),
+                undefined
+              ),
+              factory.createParameterDeclaration(
+                undefined,
+                undefined,
+                undefined,
+                factory.createIdentifier("targetType"),
+                factory.createToken(ts.SyntaxKind.QuestionToken),
+                factory.createTypeReferenceNode(
+                  factory.createIdentifier("TargetClass"),
+                  undefined
                 ),
                 undefined
               )
             ],
-            ts.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword)
+            factory.createTypeReferenceNode(
+              factory.createIdentifier("InstanceType"),
+              [factory.createTypeReferenceNode(
+                factory.createIdentifier("TargetClass"),
+                undefined
+              )]
+            )
           ),
           undefined
         )],
         ts.NodeFlags.Const | ts.NodeFlags.ContextFlags
       )
-    )
+    );    
+  };
+
+  /**
+   * export const compare: (instance: HasPointer, instance2: HasPointer) => boolean;
+   */
+  private constructCompareHelper = (): ts.VariableStatement => {
+    const { factory } = this.context;
+    return factory.createVariableStatement(
+      [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
+      factory.createVariableDeclarationList(
+        [factory.createVariableDeclaration(
+          factory.createIdentifier("compare"),
+          undefined,
+          factory.createFunctionTypeNode(
+            undefined,
+            [
+              factory.createParameterDeclaration(
+                undefined,
+                undefined,
+                undefined,
+                factory.createIdentifier("instance"),
+                undefined,
+                factory.createTypeReferenceNode(
+                  factory.createIdentifier("HasPointer"),
+                  undefined
+                ),
+                undefined
+              ),
+              factory.createParameterDeclaration(
+                undefined,
+                undefined,
+                undefined,
+                factory.createIdentifier("instance2"),
+                undefined,
+                factory.createTypeReferenceNode(
+                  factory.createIdentifier("HasPointer"),
+                  undefined
+                ),
+                undefined
+              )
+            ],
+            factory.createKeywordTypeNode(ts.SyntaxKind.BooleanKeyword)
+          ),
+          undefined
+        )],
+        ts.NodeFlags.Const | ts.NodeFlags.ContextFlags
+      )
+    );
+  };
+
+  /**
+   * export const getCache: <Class extends {
+   *   readonly __cache__;
+   * } = typeof WrapperObject>(type?: Class) => Class['__cache__'];
+   */
+  private constructGetCacheHelper = (): ts.VariableStatement => {
+    const { factory } = this.context;
+    return factory.createVariableStatement(
+      [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
+      factory.createVariableDeclarationList(
+        [factory.createVariableDeclaration(
+          factory.createIdentifier("getCache"),
+          undefined,
+          factory.createFunctionTypeNode(
+            [factory.createTypeParameterDeclaration(
+              factory.createIdentifier("Class"),
+              factory.createTypeLiteralNode([factory.createPropertySignature(
+                [factory.createModifier(ts.SyntaxKind.ReadonlyKeyword)],
+                factory.createIdentifier("__cache__"),
+                undefined,
+                undefined
+              )]),
+              factory.createTypeQueryNode(factory.createIdentifier("WrapperObject"))
+            )],
+            [factory.createParameterDeclaration(
+              undefined,
+              undefined,
+              undefined,
+              factory.createIdentifier("type"),
+              factory.createToken(ts.SyntaxKind.QuestionToken),
+              factory.createTypeReferenceNode(
+                factory.createIdentifier("Class"),
+                undefined
+              ),
+              undefined
+            )],
+            factory.createIndexedAccessTypeNode(
+              factory.createTypeReferenceNode(
+                factory.createIdentifier("Class"),
+                undefined
+              ),
+              factory.createLiteralTypeNode(factory.createStringLiteral("__cache__"))
+            )
+          ),
+          undefined
+        )],
+        ts.NodeFlags.Const | ts.NodeFlags.ContextFlags
+      )
+    );    
+  };
+
+  /**
+   * export const destroy: <Instance extends {
+   *   __destroy__(): void;
+   *   readonly __class__: {
+   *     readonly __cache__: { [ptr: number]: Instance }
+   *   };
+   * }>(instance: Instance) => void;
+   */
+  private constructDestroyHelper = (): ts.VariableStatement => {
+    const { factory } = this.context;
+    return factory.createVariableStatement(
+      [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
+      factory.createVariableDeclarationList(
+        [factory.createVariableDeclaration(
+          factory.createIdentifier("destroy"),
+          undefined,
+          factory.createFunctionTypeNode(
+            [factory.createTypeParameterDeclaration(
+              factory.createIdentifier("Instance"),
+              factory.createTypeLiteralNode([
+                factory.createMethodSignature(
+                  undefined,
+                  factory.createIdentifier("__destroy__"),
+                  undefined,
+                  undefined,
+                  [],
+                  factory.createToken(ts.SyntaxKind.VoidKeyword)
+                ),
+                factory.createPropertySignature(
+                  [factory.createModifier(ts.SyntaxKind.ReadonlyKeyword)],
+                  factory.createIdentifier("__class__"),
+                  undefined,
+                  factory.createTypeLiteralNode([factory.createPropertySignature(
+                    [factory.createModifier(ts.SyntaxKind.ReadonlyKeyword)],
+                    factory.createIdentifier("__cache__"),
+                    undefined,
+                    factory.createTypeLiteralNode([factory.createIndexSignature(
+                      undefined,
+                      undefined,
+                      [factory.createParameterDeclaration(
+                        undefined,
+                        undefined,
+                        undefined,
+                        factory.createIdentifier("ptr"),
+                        undefined,
+                        factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+                        undefined
+                      )],
+                      factory.createTypeReferenceNode(
+                        factory.createIdentifier("Instance"),
+                        undefined
+                      )
+                    )])
+                  )])
+                )
+              ]),
+              undefined
+            )],
+            [factory.createParameterDeclaration(
+              undefined,
+              undefined,
+              undefined,
+              factory.createIdentifier("instance"),
+              undefined,
+              factory.createTypeReferenceNode(
+                factory.createIdentifier("Instance"),
+                undefined
+              ),
+              undefined
+            )],
+            factory.createToken(ts.SyntaxKind.VoidKeyword)
+          ),
+          undefined
+        )],
+        ts.NodeFlags.Const | ts.NodeFlags.ContextFlags
+      )
+    );    
+  };
+
+  /**
+   * export const getClass: <Obj extends {
+   *   readonly __class__;
+   * }>(instance: Obj) => Obj['__class__'];
+   */
+  private constructGetClassHelper = (): ts.VariableStatement => {
+    const { factory } = this.context;
+    return factory.createVariableStatement(
+      [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
+      factory.createVariableDeclarationList(
+        [factory.createVariableDeclaration(
+          factory.createIdentifier("getClass"),
+          undefined,
+          factory.createFunctionTypeNode(
+            [factory.createTypeParameterDeclaration(
+              factory.createIdentifier("Obj"),
+              factory.createTypeLiteralNode([factory.createPropertySignature(
+                [factory.createModifier(ts.SyntaxKind.ReadonlyKeyword)],
+                factory.createIdentifier("__class__"),
+                undefined,
+                undefined
+              )]),
+              undefined
+            )],
+            [factory.createParameterDeclaration(
+              undefined,
+              undefined,
+              undefined,
+              factory.createIdentifier("instance"),
+              undefined,
+              factory.createTypeReferenceNode(
+                factory.createIdentifier("Obj"),
+                undefined
+              ),
+              undefined
+            )],
+            factory.createIndexedAccessTypeNode(
+              factory.createTypeReferenceNode(
+                factory.createIdentifier("Obj"),
+                undefined
+              ),
+              factory.createLiteralTypeNode(factory.createStringLiteral("__class__"))
+            )
+          ),
+          undefined
+        )],
+        ts.NodeFlags.Const | ts.NodeFlags.ContextFlags
+      )
+    );    
+  };
+
+  /**
+   * export const NULL: WrapperObject & { ptr: 0 };
+   */
+  private constructNullHelper = (): ts.VariableStatement => {
+    const { factory } = this.context;
+    return factory.createVariableStatement(
+      [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
+      factory.createVariableDeclarationList(
+        [factory.createVariableDeclaration(
+          factory.createIdentifier("NULL"),
+          undefined,
+          factory.createIntersectionTypeNode([
+            factory.createTypeReferenceNode(
+              factory.createIdentifier("WrapperObject"),
+              undefined
+            ),
+            factory.createTypeLiteralNode([factory.createPropertySignature(
+              undefined,
+              factory.createIdentifier("ptr"),
+              undefined,
+              factory.createLiteralTypeNode(factory.createNumericLiteral("0"))
+            )])
+          ]),
+          undefined
+        )],
+        ts.NodeFlags.Const | ts.NodeFlags.ContextFlags
+      )
+    );    
   };
 
   private helpers = (): ts.Statement[] => {
     return [
-      this.constructPointerWrappableType(),
-      this.constructWrapPointer(),
-      this.constructGetPointer()
+      this.constructWrapperObjectHelper(),
+      this.constructHasPointerHelper(),
+      this.constructWrapPointerHelper(),
+      this.constructGetPointerHelper(),
+      this.constructCastObjectHelper(),
+      this.constructCompareHelper(),
+      this.constructGetCacheHelper(),
+      this.constructDestroyHelper(),
+      this.constructGetClassHelper(),
+      this.constructNullHelper(),
     ];
   };
 
@@ -290,17 +687,95 @@ export class CodeGen {
     );
   };
 
+  private getClassBoilerplateMembers = (classIdentifierFactory: () => ts.EntityName): ts.ClassElement[] => {
+    const { factory } = this.context;
+    return [
+      factory.createPropertyDeclaration(
+        undefined,
+        [
+          ts.createModifier(ts.SyntaxKind.StaticKeyword),
+          ts.createModifier(ts.SyntaxKind.ReadonlyKeyword)
+        ],
+        factory.createIdentifier("__cache__"),
+        undefined,
+        factory.createTypeLiteralNode([factory.createIndexSignature(
+          undefined,
+          undefined,
+          [factory.createParameterDeclaration(
+            undefined,
+            undefined,
+            undefined,
+            factory.createIdentifier("ptr"),
+            undefined,
+            factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+            undefined
+          )],
+          factory.createTypeReferenceNode(
+            classIdentifierFactory(),
+            undefined
+          )
+        )]),
+        undefined
+      ),
+      factory.createPropertyDeclaration(
+        undefined,
+        [ts.createModifier(ts.SyntaxKind.ReadonlyKeyword)],
+        factory.createIdentifier("__class__"),
+        undefined,
+        factory.createTypeQueryNode(classIdentifierFactory()),
+        undefined
+      ),
+      factory.createMethodDeclaration(
+        undefined,
+        undefined,
+        undefined,
+        factory.createIdentifier("__destroy__"),
+        undefined,
+        undefined,
+        [],
+        factory.createToken(ts.SyntaxKind.VoidKeyword),
+        undefined
+      )      
+    ];
+  };
+
+  /**
+   * Additional members for classes which have a public constructor bound
+   */
+  private getConcreteClassBoilerplateMembers = (): ts.ClassElement[] => {
+    const { factory } = this.context;
+    return [
+      factory.createPropertyDeclaration(
+        undefined,
+        undefined,
+        factory.createIdentifier("ptr"),
+        undefined,
+        factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+        undefined
+      )
+    ];
+  };
+
   private roots = (roots: WebIDL2.IDLRootType[]): readonly ts.Statement[] => {
     const { factory } = this.context;
-    return roots.slice(1, 5).map((root: WebIDL2.IDLRootType): ts.Statement => {
+    return roots.slice(0, 5).map((root: WebIDL2.IDLRootType): ts.Statement => {
       if (root.type === 'interface') {
+        const classIdentifierFactory = () => factory.createIdentifier(root.name);
         return factory.createClassDeclaration(
           /*decorators*/undefined,
           /*modifiers*/[factory.createToken(ts.SyntaxKind.ExportKeyword)],
-          factory.createIdentifier(root.name),
+          classIdentifierFactory(),
           /*typeParameters*/undefined,
-          /*heritageClauses*/undefined,
-          /*members*/root.members.flatMap((member: WebIDL2.IDLInterfaceMemberType): ts.ClassElement[] => {
+          /*heritageClauses*/[factory.createHeritageClause(
+            ts.SyntaxKind.ExtendsKeyword,
+            [factory.createExpressionWithTypeArguments(
+              factory.createIdentifier("WrapperObject"),
+              undefined
+            )]
+          )],
+          /*members*/this.getClassBoilerplateMembers(classIdentifierFactory)
+          .concat(this.getConcreteClassBoilerplateMembers())
+          .concat(root.members.flatMap((member: WebIDL2.IDLInterfaceMemberType): ts.ClassElement[] => {
             if (member.type === 'constructor') {
               return this.getConstructor(member);
             }
@@ -312,7 +787,7 @@ export class CodeGen {
               return [this.getOperation(member)];
             }
             throw new Error('erk');
-          }, [])
+          }, []))
         )
       }
       throw new Error('erk');
@@ -324,13 +799,13 @@ export class CodeGen {
     return [
       factory.createModuleDeclaration(
         /*decorators*/undefined,
-        /*modifiers*/[ts.createModifier(ts.SyntaxKind.DeclareKeyword)],
+        /*modifiers*/[factory.createModifier(ts.SyntaxKind.DeclareKeyword)],
         /*name*/factory.createStringLiteral(moduleName),
         /*body*/factory.createModuleBlock(
           [
             factory.createModuleDeclaration(
               /*decorators*/undefined,
-              /*modifiers*/[ts.createModifier(ts.SyntaxKind.ExportKeyword)],
+              /*modifiers*/[factory.createModifier(ts.SyntaxKind.ExportKeyword)],
               /*name*/factory.createIdentifier(namespaceName),
               factory.createModuleBlock(
                 this.roots(roots).concat(
