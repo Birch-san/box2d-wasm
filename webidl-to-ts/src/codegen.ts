@@ -1,4 +1,4 @@
-import ts from 'typescript';
+import ts, { createTypePredicateNodeWithModifier, visitNodes, VisitResult } from 'typescript';
 import WebIDL2 from 'webidl2';
 
 export class CodeGen {
@@ -985,7 +985,21 @@ export class CodeGen {
   codegen = (roots: WebIDL2.IDLRootType[], moduleName: string, namespaceName: string): readonly ts.Statement[] => {
     const { factory } = this.context;
     const { statements, knownEnumNames } = this.roots(roots);
-    console.log(knownEnumNames);
+    // const moduleNominal = factory.createModuleBlock(
+    //   statements
+    // );
+    const visitor: ts.Visitor = node => {
+      if (ts.isTypeReferenceNode(node)) {
+        if (node.typeName.kind === ts.SyntaxKind.Identifier) {
+          if (knownEnumNames.includes(node.typeName.text)) {
+            return factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword);
+          }
+        }
+      }
+      return ts.visitEachChild(node, visitor, this.context);
+    };
+    // const statementsWithEnumsElided = ts.visitNodes(moduleNominal.statements, visitor);
+    const statementsWithEnumsElided = statements.map(statement => ts.visitNode(statement, visitor));
     return [
       factory.createModuleDeclaration(
         /*decorators*/undefined,
@@ -998,9 +1012,9 @@ export class CodeGen {
               /*modifiers*/[factory.createModifier(ts.SyntaxKind.ExportKeyword)],
               /*name*/factory.createIdentifier(namespaceName),
               factory.createModuleBlock(
-                statements.concat(
+                statementsWithEnumsElided.concat(
                   this.helpers()
-                )
+                ),
               ),
               /*flags*/ts.NodeFlags.Namespace | ts.NodeFlags.ExportContext | ts.NodeFlags.ContextFlags,
             ),
