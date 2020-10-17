@@ -9,6 +9,7 @@ export class CodeGen {
       const { factory } = this.context;
       this.primitives = {
         'boolean': () => factory.createKeywordTypeNode(ts.SyntaxKind.BooleanKeyword),
+        'unsigned long': () => factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
         'long': () => factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
         'float': () => factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
         'void': () => factory.createKeywordTypeNode(ts.SyntaxKind.VoidKeyword),
@@ -40,6 +41,11 @@ export class CodeGen {
   };
 
   private getParameterType = (type: WebIDL2.IDLTypeDescription): ts.TypeNode => {
+    // not implemented: type.nullable
+    return this.getType(type);
+  };
+
+  private getAttributeType = (type: WebIDL2.IDLTypeDescription): ts.TypeNode => {
     // not implemented: type.nullable
     return this.getType(type);
   };
@@ -767,6 +773,18 @@ export class CodeGen {
     );
   };
 
+  private getAttribute = (member: WebIDL2.AttributeMemberType): ts.PropertyDeclaration => {
+    const { factory } = this.context;
+    return factory.createPropertyDeclaration(
+      undefined,
+      undefined,
+      factory.createIdentifier(member.name),
+      undefined,
+      this.getAttributeType(member.idlType),
+      undefined
+    );
+  };
+
   private getCommonClassBoilerplateMembers = (classIdentifierFactory: () => ts.EntityName): ts.ClassElement[] => {
     const { factory } = this.context;
     return [
@@ -860,9 +878,9 @@ export class CodeGen {
     return root.members.some((member: WebIDL2.IDLInterfaceMemberType): boolean => CodeGen.isConstructorMember(root, member));
   };
 
-  private roots = (roots: WebIDL2.IDLRootType[]): readonly ts.Statement[] => {
+  private roots = (roots: WebIDL2.IDLRootType[]): Roots => {
     const { factory } = this.context;
-    return roots.slice(6, 8).flatMap((root: WebIDL2.IDLRootType): ts.Statement[] => {
+    return roots.slice(0, 8).reduce<Roots>((acc: Roots, root: WebIDL2.IDLRootType): Roots => {
       if (root.type === 'interface' || root.type === 'interface mixin') {
         const jsImplementation: WebIDL2.ExtendedAttribute | undefined =
           root.extAttrs.find((extAttr: WebIDL2.ExtendedAttribute): boolean =>
@@ -873,7 +891,7 @@ export class CodeGen {
           extAttr.name === 'NoDelete');
         const isConstructibleType = CodeGen.isConstructibleType(root);
         const classIdentifierFactory = () => factory.createIdentifier(root.name);
-        return [factory.createClassDeclaration(
+        acc.statements.push(factory.createClassDeclaration(
           /*decorators*/undefined,
           /*modifiers*/[factory.createToken(ts.SyntaxKind.ExportKeyword)],
           classIdentifierFactory(),
@@ -900,15 +918,20 @@ export class CodeGen {
                 if (member.type === 'operation') {
                   return [this.getOperation(member)];
                 }
+                if (member.type === 'attribute') {
+                  return [this.getAttribute(member)];
+                }
                 throw new Error('erk');
               }, []
             )
           )
-        )]
+        ));
+        return acc;
       }
       if (root.type === 'enum') {
+        acc.knownEnumNames.push(root.name);
         if (!root.values.length) {
-          return [];
+          return acc;
         }
         const parseEnumPath = (path: string): { namespace: string[], constant: string } => {
           const pathParts: string[] = path.split('::');
@@ -945,14 +968,24 @@ export class CodeGen {
               ts.NodeFlags.Namespace | ts.NodeFlags.ExportContext | ts.NodeFlags.ContextFlags
             );
           }, variableStatements);
-        return Array.isArray(accumulated) ? accumulated : [accumulated];
+        if (Array.isArray(accumulated)) {
+          acc.statements.push(...accumulated);
+        } else {
+          acc.statements.push(accumulated);
+        }
+        return acc;
       }
       throw new Error('erk');
+    }, {
+      statements: [],
+      knownEnumNames: []
     });
   };
 
   codegen = (roots: WebIDL2.IDLRootType[], moduleName: string, namespaceName: string): readonly ts.Statement[] => {
     const { factory } = this.context;
+    const { statements, knownEnumNames } = this.roots(roots);
+    console.log(knownEnumNames);
     return [
       factory.createModuleDeclaration(
         /*decorators*/undefined,
@@ -965,7 +998,7 @@ export class CodeGen {
               /*modifiers*/[factory.createModifier(ts.SyntaxKind.ExportKeyword)],
               /*name*/factory.createIdentifier(namespaceName),
               factory.createModuleBlock(
-                this.roots(roots).concat(
+                statements.concat(
                   this.helpers()
                 )
               ),
@@ -1006,4 +1039,8 @@ export class CodeGen {
       )
     ];
   };
+}
+interface Roots {
+  statements: ts.Statement[];
+  knownEnumNames: string[]
 }
