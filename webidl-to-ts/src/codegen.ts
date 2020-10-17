@@ -551,9 +551,11 @@ export class CodeGen {
   };
 
   /**
-   * export const getClass: <Obj extends {
-   *   readonly __class__;
-   * }>(instance: Obj) => Obj['__class__'];
+   * export const getClass: <Instance extends {
+   *   readonly __class__: {
+   *     new(...args: any[]): Instance;
+   *    };
+   * }>(instance: Instance) => Instance['__class__'];
    */
   private constructGetClassHelper = (): ts.VariableStatement => {
     const { factory } = this.context;
@@ -565,12 +567,27 @@ export class CodeGen {
           undefined,
           factory.createFunctionTypeNode(
             [factory.createTypeParameterDeclaration(
-              factory.createIdentifier("Obj"),
+              factory.createIdentifier("Instance"),
               factory.createTypeLiteralNode([factory.createPropertySignature(
                 [factory.createModifier(ts.SyntaxKind.ReadonlyKeyword)],
                 factory.createIdentifier("__class__"),
                 undefined,
-                undefined
+                factory.createTypeLiteralNode([factory.createConstructSignature(
+                  undefined,
+                  [factory.createParameterDeclaration(
+                    undefined,
+                    undefined,
+                    factory.createToken(ts.SyntaxKind.DotDotDotToken),
+                    factory.createIdentifier("args"),
+                    undefined,
+                    factory.createArrayTypeNode(factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)),
+                    undefined
+                  )],
+                  factory.createTypeReferenceNode(
+                    factory.createIdentifier("Instance"),
+                    undefined
+                  )
+                )])
               )]),
               undefined
             )],
@@ -581,14 +598,14 @@ export class CodeGen {
               factory.createIdentifier("instance"),
               undefined,
               factory.createTypeReferenceNode(
-                factory.createIdentifier("Obj"),
+                factory.createIdentifier("Instance"),
                 undefined
               ),
               undefined
             )],
             factory.createIndexedAccessTypeNode(
               factory.createTypeReferenceNode(
-                factory.createIdentifier("Obj"),
+                factory.createIdentifier("Instance"),
                 undefined
               ),
               factory.createLiteralTypeNode(factory.createStringLiteral("__class__"))
@@ -598,7 +615,7 @@ export class CodeGen {
         )],
         ts.NodeFlags.Const | ts.NodeFlags.ContextFlags
       )
-    );    
+    );
   };
 
   /**
@@ -687,14 +704,14 @@ export class CodeGen {
     );
   };
 
-  private getClassBoilerplateMembers = (classIdentifierFactory: () => ts.EntityName): ts.ClassElement[] => {
+  private getCommonClassBoilerplateMembers = (classIdentifierFactory: () => ts.EntityName): ts.ClassElement[] => {
     const { factory } = this.context;
     return [
       factory.createPropertyDeclaration(
         undefined,
         [
-          ts.createModifier(ts.SyntaxKind.StaticKeyword),
-          ts.createModifier(ts.SyntaxKind.ReadonlyKeyword)
+          factory.createModifier(ts.SyntaxKind.StaticKeyword),
+          factory.createModifier(ts.SyntaxKind.ReadonlyKeyword)
         ],
         factory.createIdentifier("__cache__"),
         undefined,
@@ -719,12 +736,18 @@ export class CodeGen {
       ),
       factory.createPropertyDeclaration(
         undefined,
-        [ts.createModifier(ts.SyntaxKind.ReadonlyKeyword)],
+        [factory.createModifier(ts.SyntaxKind.ReadonlyKeyword)],
         factory.createIdentifier("__class__"),
         undefined,
         factory.createTypeQueryNode(classIdentifierFactory()),
         undefined
-      ),
+      )
+    ];
+  };
+
+  private getDeletableClassBoilerplateMembers = (): ts.ClassElement[] => {
+    const { factory } = this.context;
+    return [
       factory.createMethodDeclaration(
         undefined,
         undefined,
@@ -735,14 +758,14 @@ export class CodeGen {
         [],
         factory.createToken(ts.SyntaxKind.VoidKeyword),
         undefined
-      )      
-    ];
+      )
+    ]
   };
 
   /**
    * Additional members for classes which have a public constructor bound
    */
-  private getConcreteClassBoilerplateMembers = (): ts.ClassElement[] => {
+  private getConstructibleClassBoilerplateMembers = (): ts.ClassElement[] => {
     const { factory } = this.context;
     return [
       factory.createPropertyDeclaration(
@@ -756,10 +779,33 @@ export class CodeGen {
     ];
   };
 
+  private static getParentClassName = (extAttr: WebIDL2.ExtendedAttribute): string => {
+    if (extAttr.rhs.type !== 'string') {
+      throw new Error('Unexpected rhs ${extAttr.rhs}');
+    }
+    return JSON.parse(extAttr.rhs.value);
+  }
+
+  private static isConstructorMember = (root: WebIDL2.InterfaceType, member: WebIDL2.IDLInterfaceMemberType): boolean => {
+    return member.type === 'constructor' || member.type === 'operation' && member.name === root.name;
+  };
+
+  private static isConstructibleType = (root: WebIDL2.InterfaceType): boolean => {
+    return root.members.some((member: WebIDL2.IDLInterfaceMemberType): boolean => CodeGen.isConstructorMember(root, member));
+  };
+
   private roots = (roots: WebIDL2.IDLRootType[]): readonly ts.Statement[] => {
     const { factory } = this.context;
     return roots.slice(0, 5).map((root: WebIDL2.IDLRootType): ts.Statement => {
       if (root.type === 'interface') {
+        const jsImplementation: WebIDL2.ExtendedAttribute | undefined =
+          root.extAttrs.find((extAttr: WebIDL2.ExtendedAttribute): boolean =>
+          extAttr.name === 'JSImplementation');
+        const parentClassName: string = jsImplementation ? CodeGen.getParentClassName(jsImplementation)
+        : 'WrapperObject';
+        const isDeletable = !root.extAttrs.some((extAttr: WebIDL2.ExtendedAttribute): boolean =>
+          extAttr.name === 'NoDelete');
+        const isConstructibleType = CodeGen.isConstructibleType(root);
         const classIdentifierFactory = () => factory.createIdentifier(root.name);
         return factory.createClassDeclaration(
           /*decorators*/undefined,
@@ -769,21 +815,20 @@ export class CodeGen {
           /*heritageClauses*/[factory.createHeritageClause(
             ts.SyntaxKind.ExtendsKeyword,
             [factory.createExpressionWithTypeArguments(
-              factory.createIdentifier("WrapperObject"),
+              factory.createIdentifier(parentClassName),
               undefined
             )]
           )],
-          /*members*/this.getClassBoilerplateMembers(classIdentifierFactory)
-          .concat(this.getConcreteClassBoilerplateMembers())
+          /*members*/this.getCommonClassBoilerplateMembers(classIdentifierFactory)
+          .concat(isDeletable ? this.getDeletableClassBoilerplateMembers() : [])
+          .concat(isConstructibleType ? this.getConstructibleClassBoilerplateMembers() : [])
           .concat(root.members.flatMap((member: WebIDL2.IDLInterfaceMemberType): ts.ClassElement[] => {
-            if (member.type === 'constructor') {
-              return this.getConstructor(member);
+            if (CodeGen.isConstructorMember(root, member)) {
+              // tried to get this cast for free via type guard from ::isConstructorMember,
+              // but it makes TS wrongly eliminate 'operation' as a possible type outside of this block
+              return this.getConstructor(member as WebIDL2.ConstructorMemberType | WebIDL2.OperationMemberType);
             }
             if (member.type === 'operation') {
-              if (member.name === root.name) {
-                // suspect W3C WebIDL doesn't use the same conventions for constructors as Emscripten WebIDL
-                return this.getConstructor(member);
-              }
               return [this.getOperation(member)];
             }
             throw new Error('erk');
