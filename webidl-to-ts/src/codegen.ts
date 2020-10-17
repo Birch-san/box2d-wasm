@@ -985,9 +985,6 @@ export class CodeGen {
   codegen = (roots: WebIDL2.IDLRootType[], moduleName: string, namespaceName: string): readonly ts.Statement[] => {
     const { factory } = this.context;
     const { statements, knownEnumNames } = this.roots(roots);
-    // const moduleNominal = factory.createModuleBlock(
-    //   statements
-    // );
     const visitor: ts.Visitor = node => {
       if (ts.isTypeReferenceNode(node)) {
         if (node.typeName.kind === ts.SyntaxKind.Identifier) {
@@ -998,8 +995,7 @@ export class CodeGen {
       }
       return ts.visitEachChild(node, visitor, this.context);
     };
-    // const statementsWithEnumsElided = ts.visitNodes(moduleNominal.statements, visitor);
-    const statementsWithEnumsElided = statements.map(statement => ts.visitNode(statement, visitor));
+    const statementsWithEnumsElided = ts.visitNodes(factory.createNodeArray(statements), visitor);
     return [
       factory.createModuleDeclaration(
         /*decorators*/undefined,
