@@ -859,7 +859,7 @@ export class CodeGen {
 
   private roots = (roots: WebIDL2.IDLRootType[]): readonly ts.Statement[] => {
     const { factory } = this.context;
-    return roots.slice(0, 7).map((root: WebIDL2.IDLRootType): ts.Statement => {
+    return roots.slice(0, 6).flatMap((root: WebIDL2.IDLRootType): ts.Statement[] => {
       if (root.type === 'interface') {
         const jsImplementation: WebIDL2.ExtendedAttribute | undefined =
           root.extAttrs.find((extAttr: WebIDL2.ExtendedAttribute): boolean =>
@@ -870,7 +870,7 @@ export class CodeGen {
           extAttr.name === 'NoDelete');
         const isConstructibleType = CodeGen.isConstructibleType(root);
         const classIdentifierFactory = () => factory.createIdentifier(root.name);
-        return factory.createClassDeclaration(
+        return [factory.createClassDeclaration(
           /*decorators*/undefined,
           /*modifiers*/[factory.createToken(ts.SyntaxKind.ExportKeyword)],
           classIdentifierFactory(),
@@ -896,10 +896,48 @@ export class CodeGen {
             }
             throw new Error('erk');
           }, []))
-        )
+        )]
       }
       if (root.type === 'enum') {
-        throw new Error('erk');
+        if (!root.values.length) {
+          return [];
+        }
+        const parseEnumPath = (path: string): { namespace: string[], constant: string } => {
+          const pathParts: string[] = path.split('::');
+          const namespace: string[] = pathParts.slice(0, pathParts.length-1);
+          const constant = pathParts[pathParts.length-1];
+          return { namespace, constant };
+        };
+        const representative = parseEnumPath(root.values[0].value);
+        const variableStatements: ts.VariableStatement[] = root.values.map(({ value }: WebIDL2.EnumType['values'][number]): ts.VariableStatement => {
+          const { namespace, constant } = parseEnumPath(value);
+          if (namespace.join('::') !== representative.namespace.join('::')) {
+            throw new Error (`Didn't expect WebIDL enums to contain values with differing namespaces. First was '${representative.namespace.join('::')}::${representative.constant}', but sibling '${namespace.join('::')}::${constant}' had a different namespace.`);
+          }
+          return factory.createVariableStatement(
+            undefined,
+            factory.createVariableDeclarationList(
+              [factory.createVariableDeclaration(
+                factory.createIdentifier(constant),
+                undefined,
+                factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+                undefined
+              )],
+              ts.NodeFlags.Const | ts.NodeFlags.ContextFlags
+            )
+          );
+        });
+        const accumulated: ts.ModuleDeclaration | ts.VariableStatement[] =
+          representative.namespace.reduceRight<ts.ModuleDeclaration | ts.VariableStatement[]>((acc: ts.ModuleDeclaration | ts.VariableStatement[], namespacePart: string): ts.ModuleDeclaration | ts.VariableStatement[] => {
+            return factory.createModuleDeclaration(
+              undefined,
+              [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
+              factory.createIdentifier(namespacePart),
+              factory.createModuleBlock(Array.isArray(acc) ? acc : [acc]),
+              ts.NodeFlags.Namespace | ts.NodeFlags.ExportContext | ts.NodeFlags.ContextFlags
+            );
+          }, variableStatements);
+        return Array.isArray(accumulated) ? accumulated : [accumulated];
       }
       throw new Error('erk');
     });
