@@ -775,7 +775,11 @@ export class CodeGen {
 
   private getAttribute = (member: WebIDL2.AttributeMemberType): [ts.PropertyDeclaration, ts.MethodDeclaration, ts.MethodDeclaration] => {
     const { factory } = this.context;
-    member.type
+    /**
+     * TODO: Box2D.idl doesn't currently use readonly attributes,
+     * but if we did need to support them, then we'd likely want to add a readonly modifier
+     * to the property declaration, and refrain from emitting a setter method.
+     */
     return [factory.createPropertyDeclaration(
       undefined,
       undefined,
@@ -917,7 +921,7 @@ export class CodeGen {
 
   private roots = (roots: WebIDL2.IDLRootType[]): Roots => {
     const { factory } = this.context;
-    return roots.slice(0, 8).reduce<Roots>((acc: Roots, root: WebIDL2.IDLRootType): Roots => {
+    return roots.reduce<Roots>((acc: Roots, root: WebIDL2.IDLRootType): Roots => {
       if (root.type === 'interface' || root.type === 'interface mixin') {
         const jsImplementation: WebIDL2.ExtendedAttribute | undefined =
           root.extAttrs.find((extAttr: WebIDL2.ExtendedAttribute): boolean =>
@@ -1012,17 +1016,22 @@ export class CodeGen {
         }
         return acc;
       }
+      if (root.type === 'includes') {
+        acc.includes[root.target] = root.includes;
+        return acc;
+      }
       throw new Error('erk');
     }, {
       statements: [],
-      knownEnumNames: []
+      knownEnumNames: [],
+      includes: {}
     });
   };
 
   codegen = (roots: WebIDL2.IDLRootType[], moduleName: string, namespaceName: string): readonly ts.Statement[] => {
     const { factory } = this.context;
-    const { statements, knownEnumNames } = this.roots(roots);
-    const visitor: ts.Visitor = node => {
+    const { statements, knownEnumNames, includes } = this.roots(roots);
+    const elideElideVisitor: ts.Visitor = node => {
       if (ts.isTypeReferenceNode(node)) {
         if (node.typeName.kind === ts.SyntaxKind.Identifier) {
           if (knownEnumNames.includes(node.typeName.text)) {
@@ -1030,9 +1039,34 @@ export class CodeGen {
           }
         }
       }
-      return ts.visitEachChild(node, visitor, this.context);
+      return ts.visitEachChild(node, elideElideVisitor, this.context);
     };
-    const statementsWithEnumsElided = ts.visitNodes(factory.createNodeArray(statements), visitor);
+    const statementsWithEnumsElided = ts.visitNodes(factory.createNodeArray(statements), elideElideVisitor);
+    const applyIncludeVisitor: ts.Visitor = node => {
+      if (ts.isClassDeclaration(node)) {
+        if (node.name.text in includes) {
+          if (node.heritageClauses?.length !== 1) {
+            throw new Error(`Expected exactly 1 heritage clause; found ${node.heritageClauses?.length}`);
+          }
+          return factory.updateClassDeclaration(
+            node,
+            node.decorators,
+            node.modifiers,
+            node.name,
+            node.typeParameters,
+            [factory.updateHeritageClause(node.heritageClauses[0], [
+              factory.createExpressionWithTypeArguments(
+                factory.createIdentifier(includes[node.name.text]),
+                undefined
+              )
+            ])],
+            node.members
+          );
+        }
+      }
+      return ts.visitEachChild(node, applyIncludeVisitor, this.context);
+    };
+    const statementsWithIncludesApplied = ts.visitNodes(statementsWithEnumsElided, applyIncludeVisitor);
     return [
       factory.createModuleDeclaration(
         /*decorators*/undefined,
@@ -1045,7 +1079,7 @@ export class CodeGen {
               /*modifiers*/[factory.createModifier(ts.SyntaxKind.ExportKeyword)],
               /*name*/factory.createIdentifier(namespaceName),
               factory.createModuleBlock(
-                statementsWithEnumsElided.concat(
+                statementsWithIncludesApplied.concat(
                   this.helpers()
                 ),
               ),
@@ -1089,5 +1123,8 @@ export class CodeGen {
 }
 interface Roots {
   statements: ts.Statement[];
-  knownEnumNames: string[]
+  knownEnumNames: string[];
+  includes: {
+    [includer: string]: string;
+  }
 }
