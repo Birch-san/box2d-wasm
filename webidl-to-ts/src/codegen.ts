@@ -1,4 +1,4 @@
-import ts, { createTypePredicateNodeWithModifier, visitNodes, VisitResult } from 'typescript';
+import ts from 'typescript';
 import WebIDL2 from 'webidl2';
 
 export class CodeGen {
@@ -9,6 +9,7 @@ export class CodeGen {
       const { factory } = this.context;
       this.primitives = {
         'boolean': () => factory.createKeywordTypeNode(ts.SyntaxKind.BooleanKeyword),
+        'unsigned short': () => factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
         'unsigned long': () => factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
         'long': () => factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
         'float': () => factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
