@@ -1,5 +1,6 @@
 <script lang="typescript">
-  import Box2D from 'box2d-wasm';
+  import Box2DFactory from 'box2d-wasm';
+  import type { Box2D } from 'box2d-wasm';
   import { onMount } from 'svelte';
   import { CanvasDebugDraw } from './debugDraw';
   import { Helpers } from './helpers';
@@ -12,7 +13,32 @@
   }
 
 	onMount(async () => {
-    const box2D: typeof box2D.Box2D & { _malloc: any, _free: any, HEAPF32: any } = await Box2D();
+    const nominal = await Box2DFactory();
+    const box2D = nominal as typeof Box2D & {
+      /**
+       * these are emscripten-specific, and not related to .idl
+       * might want to consider including them in the generated typings though,
+       * potentially in box2d-wasm rather than in the idl-to-ts generator
+       */
+      _malloc: any;
+      _free: any;
+      HEAPF32: any;
+      /*
+       * maybe this is a clue that we should describe the types using class-to-interface decomposition
+       * https://github.com/joshtynjala/typescript-notes/blob/9b4ef98aa3298ccbaa6247047daae8bfd1fd1a11/Class-Decomposition.md
+       */
+      b2RopeDef: {
+        new(...args: any[]): InstanceType<typeof Box2D.b2RopeDef> & {
+          /**
+           * Box2D.idl was not able to describe float* attribute, so it's absent from typings
+           * these additional typings should probably be moved into box2d-wasm
+           */
+          masses: number; // pointer to float
+          get_masses(): number; // pointer to float
+          set_masses(masses: number /* pointer to float */): void;
+        }
+      }
+    };
 
     const ctx = canvas.getContext('2d');
     const canvasOffset: Point = {
@@ -72,7 +98,7 @@
         temp.Set(16*(Math.random()-0.5), 4.0 + 2.5 * i);
         body.SetTransform(temp, 0.0);
         body.SetLinearVelocity(ZERO);
-        body.SetEnabled(1);
+        body.SetEnabled(true);
       }
     }
 

@@ -1,13 +1,12 @@
 {
   "recommendations": ["svelte.svelte-vscode"],
 	"eslint.validate": [
-    // "svelte",
+    "svelte",
     "typescript"
   ],
   "eslint.workingDirectories": [
     "./demo",
     "./webidl2-to-ts"
   ],
-  "eslint.enable": true,
   "eslint.packageManager": "pnpm"
 }

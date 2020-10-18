@@ -5,8 +5,7 @@
     "build": "rollup -c",
     "dev": "rollup -c -w",
     "start": "sirv public",
-    "validate": "svelte-check",
-    "postinstall": "patch-package"
+    "validate": "svelte-check"
   },
   "license": "Zlib",
   "devDependencies": {
@@ -17,9 +16,8 @@
     "@typescript-eslint/eslint-plugin": "^4.4.0",
     "@typescript-eslint/parser": "^4.4.0",
     "eslint": "^7.10.0",
-    "eslint-plugin-svelte3": "2.7.3",
+    "eslint-plugin-svelte3": "^2.7.3",
     "eslint-svelte3-preprocess": "^0.0.4",
-    "patch-package": "^6.2.2",
     "rollup": "^2.3.4",
     "rollup-plugin-livereload": "^2.0.0",
     "rollup-plugin-node-polyfills": "^0.2.1",
