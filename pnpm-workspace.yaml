@@ -1,4 +1,4 @@
 packages:
   - demo
   - box2d-wasm
-  - webidl2-to-ts
+  - webidl-to-ts

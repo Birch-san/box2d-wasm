@@ -5,10 +5,18 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "start": "node --loader ts-node/esm --experimental-specifier-resolution=node --harmony -r source-map-support/register src/index.ts -f ../box2d-wasm/Box2D.idl -o dist/Box2D.d.ts",
+    "start": "node --loader ts-node/esm --experimental-specifier-resolution=node --harmony -r source-map-support/register src/index.ts",
+    "build": "tsc",
+    "example": "npm start -- -f ../box2d-wasm/Box2D.idl -m box2d-wasm -n Box2D -o out/Box2D.d.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint src/**/*.ts"
   },
+  "files": [
+    "dist/**/*.d.ts",
+    "dist/**/*.d.ts.map",
+    "dist/**/*.js",
+    "dist/**/*.js.map"
+  ],
   "author": "",
   "license": "MIT",
   "devDependencies": {

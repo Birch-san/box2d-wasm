@@ -40,7 +40,7 @@ const argv = yargs(process.argv.slice(2))
   .help('h')
   .alias('h', 'help')
   .argv;
-process.stderr.write(`Parsing ${path.resolve(argv.f)}`);
+process.stderr.write(`Parsing ${path.resolve(argv.f)}\n`);
 
 const content = fs.readFileSync(argv.f, { encoding: 'utf8'} );
 
@@ -77,7 +77,7 @@ const compile = (webIDLRoots: WebIDL2.IDLRootType[], options: ts.CompilerOptions
     // ignore provided filename; we've allowed user to optionally configure a filename of their choosing,
     // unrelated to the placeholder name we gave to our empty source file
     if (argv.o) {
-      process.stderr.write(`Writing typings to ${path.resolve(argv.o)}`);
+      process.stderr.write(`Writing typings to ${path.resolve(argv.o)}\n`);
       if (!fs.existsSync(path.dirname(argv.o))) {
         fs.mkdirSync(path.dirname(argv.o), { recursive: true });
       }
@@ -90,9 +90,9 @@ const compile = (webIDLRoots: WebIDL2.IDLRootType[], options: ts.CompilerOptions
         }
       });
     } else {
-      process.stderr.write(`Writing typings to stdout`);
-      console.log(contents); // temporary; VSCode debugger is not attached to stdout
+      process.stderr.write(`Writing typings to stdout\n`);
       process.stdout.write(contents);
+      process.stdout.write('\n');
     }
   };
   // the empty source file we'll use as input doesn't need to exist; we can just pretend to read its content

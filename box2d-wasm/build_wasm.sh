@@ -1,8 +1,13 @@
 #!/usr/bin/env bash
+set -eo pipefail
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
+Red='\033[0;31m'
+Purple='\033[0;35m'
+NC='\033[0m' # No Color
+
 if ! [[ "$PWD" -ef "$DIR/build" ]]; then
-  echo "This script is meant to be run from <repository_root>/box2d-wasm/build"
+  >&2 echo -e "${Red}This script is meant to be run from <repository_root>/box2d-wasm/build${NC}"
   exit 1
 fi
 
@@ -18,8 +23,9 @@ case "$TARGET_TYPE" in
     ;;
   
   *)
-    echo "Please set TARGET_TYPE to 'Debug' or 'RelWithDebInfo'. For example, with:"
-    echo "export TARGET_TYPE='Debug'"
+    >&2 echo -e "${Red}TARGET_TYPE not set.${NC}"
+    >&2 echo -e "Please set TARGET_TYPE to 'Debug' or 'RelWithDebInfo'. For example, with:"
+    >&2 echo -e "${Purple}export TARGET_TYPE='Debug'${NC}"
     exit 1
     ;;
 esac
@@ -27,4 +33,4 @@ esac
 EMIT_OPTS=-fno-rtti
 TARGET_EMIT_OPTS="-s ALLOW_MEMORY_GROWTH=1 -o Box2D.js"
 
-emcc $LINK_OPTS $FLAVOUR_LINK_OPTS -I "$DIR/../box2d/include" '--post-js' "$DIR/glue_stub.js" "$DIR/glue_stub.cpp" src/libbox2d.a $EMIT_OPTS $TARGET_EMIT_OPTS
+exec emcc $LINK_OPTS $FLAVOUR_LINK_OPTS -I "$DIR/../box2d/include" '--post-js' "$DIR/glue_stub.js" "$DIR/glue_stub.cpp" src/libbox2d.a $EMIT_OPTS $TARGET_EMIT_OPTS

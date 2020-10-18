@@ -2,6 +2,8 @@
 
 Confirmed working with emscripten 2.0.5.
 
+The following steps are encoded in [`build_all.sh`](build_all.sh) too, with some added validation to ensure you're running from the correct directory and have variables set appropriately.
+
 ```bash
 mkdir build
 cd build
@@ -29,6 +31,10 @@ export PYTHON="${EMSCRIPTEN:-"$(which python3)"}"
 # use Box2D.idl to create ./box2d_glue.{js,cpp} for invoking functionality from libbox2d
 ../build_idl_bindings.sh
 
-# generate Box2D_*.{wasm,js} from glue code + libbox2d.a
+# generate Box2D.{wasm,js} from glue code + libbox2d.a
 ../build_wasm.sh
+
+cd ..
+# generate Box2D.d.ts from Box2D.idl
+./build_typings.sh
 ```

@@ -6,14 +6,19 @@
   "files": [
     "build/Box2D.js",
     "build/Box2D.wasm",
-    "Box2D.d.ts"
+    "build/Box2D.d.ts"
   ],
-  "types": "Box2D.d.ts",
+  "types": "build/Box2D.d.ts",
   "repository": {
     "url": "https://github.com/Birch-san/box2d-wasm/tree/master/box2d-wasm"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build_typings": "npm start --prefix node_modules/webidl-to-ts -- -f $(realpath Box2D.idl) -m box2d-wasm -n Box2D -o $(realpath .)/build/Box2D.d.ts",
+    "build": "./build_all.sh"
+  },
+  "devDependencies": {
+    "webidl-to-ts": "workspace:*"
   },
   "author": "Alex Birch",
   "license": "Zlib"

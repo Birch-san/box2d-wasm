@@ -27,9 +27,9 @@
         "-m",
         "box2d-wasm",
         "-n",
-        "Box2D"
-        // "-o",
-        // "dist/Box2D.d.ts"
+        "Box2D",
+        "-o",
+        "dist/Box2D.d.ts"
       ],
       "outFiles": [
         "${workspaceFolder}/**/*.js"

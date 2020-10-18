@@ -12,7 +12,7 @@
   }
 
 	onMount(async () => {
-    const box2D = await Box2D();
+    const box2D: typeof box2D.Box2D & { _malloc: any, _free: any, HEAPF32: any } = await Box2D();
 
     const ctx = canvas.getContext('2d');
     const canvasOffset: Point = {

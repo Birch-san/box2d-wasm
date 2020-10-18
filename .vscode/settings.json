@@ -1,7 +1,7 @@
 {
   "recommendations": ["svelte.svelte-vscode"],
 	"eslint.validate": [
-    "svelte",
+    // "svelte",
     "typescript"
   ],
   "eslint.workingDirectories": [

@@ -1,3 +1,5 @@
+import type { Box2D } from 'box2d-wasm';
+
 /**
  * Forked from Box2D.js
  * @see https://github.com/kripken/box2d.js/blob/f75077b/helpers/embox2d-helpers.js
@@ -7,35 +9,29 @@
  *   "box2d.js is zlib licensed, just like Box2D."
  */
 export class Helpers {
-  constructor(private readonly box2D: any) {
-    this.copyVec2 = this.copyVec2.bind(this);
-    this.scaleVec2 = this.scaleVec2.bind(this);
-    this.scaledVec2 = this.scaledVec2.bind(this);
-    this.createChainShape = this.createChainShape.bind(this);
-    this.createPolygonShape = this.createPolygonShape.bind(this);
-    this.createRandomPolygonShape = this.createRandomPolygonShape.bind(this);
+  constructor(private readonly box2D: typeof Box2D & { _malloc: any, HEAPF32: any }) {
   }
 
   /** to replace original C++ operator = */
-  copyVec2(vec: any) {
+  copyVec2 = (vec: Box2D.b2Vec2): Box2D.b2Vec2 => {
     const { b2Vec2 } = this.box2D;
     return new b2Vec2(vec.get_x(), vec.get_y());
   }
 
   /** to replace original C++ operator * (float) */
-  scaleVec2(vec: any, scale: any): void {
+  scaleVec2 = (vec: Box2D.b2Vec2, scale: number): void => {
     vec.set_x( scale * vec.get_x() );
     vec.set_y( scale * vec.get_y() );            
   }
 
   /** to replace original C++ operator *= (float) */
-  scaledVec2(vec: any, scale: any): any {
+  scaledVec2 = (vec: Box2D.b2Vec2, scale: number): Box2D.b2Vec2 => {
     const { b2Vec2 } = this.box2D;
     return new b2Vec2(scale * vec.get_x(), scale * vec.get_y());
   }
 
   // http://stackoverflow.com/questions/12792486/emscripten-bindings-how-to-create-an-accessible-c-c-array-from-javascript
-  createChainShape(vertices: any[], closedLoop: any): any {
+  createChainShape = (vertices: Box2D.b2Vec2[], closedLoop: boolean): Box2D.b2ChainShape => {
     const { _malloc, b2Vec2, b2ChainShape, HEAPF32, wrapPointer } = this.box2D;
     const shape = new b2ChainShape();            
     const buffer = _malloc(vertices.length * 8);
@@ -49,12 +45,13 @@ export class Helpers {
     if (closedLoop) {
       shape.CreateLoop(ptr_wrapped, vertices.length);
     } else {
-      shape.CreateChain(ptr_wrapped, vertices.length);
+      throw new Error('CreateChain API has changed in Box2D 2.4, need to update this')
+      // shape.CreateChain(ptr_wrapped, vertices.length);
     }
     return shape;
   }
 
-  createPolygonShape(vertices: any[]): any {
+  createPolygonShape = (vertices: Box2D.b2Vec2[]): Box2D.b2PolygonShape => {
     const { _malloc, b2Vec2, b2PolygonShape, HEAPF32, wrapPointer } = this.box2D;
     const shape = new b2PolygonShape();            
     const buffer = _malloc(vertices.length * 8);
@@ -69,7 +66,7 @@ export class Helpers {
     return shape;
   }
 
-  createRandomPolygonShape(radius: number): any {
+  createRandomPolygonShape = (radius: number): Box2D.b2PolygonShape => {
     const { b2Vec2 } = this.box2D;
     let numVerts = 3.5 + Math.random() * 5;
     numVerts = numVerts | 0;
