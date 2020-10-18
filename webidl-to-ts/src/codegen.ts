@@ -773,16 +773,53 @@ export class CodeGen {
     );
   };
 
-  private getAttribute = (member: WebIDL2.AttributeMemberType): ts.PropertyDeclaration => {
+  private getAttribute = (member: WebIDL2.AttributeMemberType): [ts.PropertyDeclaration, ts.MethodDeclaration, ts.MethodDeclaration] => {
     const { factory } = this.context;
-    return factory.createPropertyDeclaration(
+    member.type
+    return [factory.createPropertyDeclaration(
       undefined,
       undefined,
       factory.createIdentifier(member.name),
       undefined,
       this.getAttributeType(member.idlType),
       undefined
-    );
+    ),
+    factory.createMethodDeclaration(
+      undefined,
+      undefined,
+      undefined,
+      factory.createIdentifier(`get_${member.name}`),
+      undefined,
+      undefined,
+      [],
+      this.getAttributeType(member.idlType),
+      undefined
+    ),
+    /**
+     * TODO: Box2D.idl doesn't currently use variable-length array attributes (e.g. float[])
+     * but if we did need to support them, be aware that such setters would take a 
+     * second parameter, index — something like:
+     *   set_mycoolattr(float value, size_t index);
+     */
+    factory.createMethodDeclaration(
+      undefined,
+      undefined,
+      undefined,
+      factory.createIdentifier(`set_${member.name}`),
+      undefined,
+      undefined,
+      [factory.createParameterDeclaration(
+        undefined,
+        undefined,
+        undefined,
+        factory.createIdentifier(member.name),
+        undefined,
+        this.getAttributeType(member.idlType),
+        undefined
+      )],
+      factory.createToken(ts.SyntaxKind.VoidKeyword),
+      undefined
+    )];
   };
 
   private getCommonClassBoilerplateMembers = (classIdentifierFactory: () => ts.EntityName): ts.ClassElement[] => {
@@ -919,7 +956,7 @@ export class CodeGen {
                   return [this.getOperation(member)];
                 }
                 if (member.type === 'attribute') {
-                  return [this.getAttribute(member)];
+                  return this.getAttribute(member);
                 }
                 throw new Error('erk');
               }, []
