@@ -1,4 +1,5 @@
 import type { Box2D } from 'box2d-wasm';
+import type Box2DAugmented from './box2DAugmented';
 import type { Helpers } from './helpers';
 
 /**
@@ -11,7 +12,7 @@ import type { Helpers } from './helpers';
  */
 export class CanvasDebugDraw {
   constructor(
-    private readonly box2D: typeof Box2D,
+    private readonly box2D: Box2DAugmented,
     private readonly helpers: Helpers,
     private readonly context: CanvasRenderingContext2D
     ) {
