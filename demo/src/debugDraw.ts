@@ -1,5 +1,7 @@
-import type { Box2DEmscriptenModule } from 'box2d-wasm';
+import { box2D } from './box2d';
 import type { Helpers } from './helpers';
+
+const { b2Color, b2Vec2, b2Transform, JSDraw, getPointer, wrapPointer } = box2D;
 
 /**
  * Forked from Box2D.js
@@ -11,7 +13,6 @@ import type { Helpers } from './helpers';
  */
 export class CanvasDebugDraw {
   constructor(
-    private readonly box2D: Box2DEmscriptenModule,
     private readonly helpers: Helpers,
     private readonly context: CanvasRenderingContext2D
     ) {
@@ -31,7 +32,6 @@ export class CanvasDebugDraw {
   }
   
   setColorFromDebugDrawCallback = (color_p: number): void => {
-    const { wrapPointer, b2Color } = this.box2D;
     const col = wrapPointer(color_p, b2Color);
     const red = (col.get_r() * 255)|0;
     const green = (col.get_g() * 255)|0;
@@ -42,14 +42,12 @@ export class CanvasDebugDraw {
   }
 
   drawPoint = (vec_p: number, size: number, color_p: number): void => {
-    const { wrapPointer, b2Vec2 } = this.box2D;
     const vert = wrapPointer(vec_p, b2Vec2);
     this.setColorFromDebugDrawCallback(color_p);
     this.context.fillRect(vert.get_x(), vert.get_y(), size, size);
   }
   
   drawSegment = (vert1_p: number, vert2_p: number): void => {
-    const { wrapPointer, b2Vec2 } = this.box2D;
     const vert1V = wrapPointer(vert1_p, b2Vec2);
     const vert2V = wrapPointer(vert2_p, b2Vec2);                    
     this.context.beginPath();
@@ -59,7 +57,6 @@ export class CanvasDebugDraw {
   }
   
   drawPolygon = (vertices: number, vertexCount: number, fill: boolean): void => {
-    const { wrapPointer, b2Vec2 } = this.box2D;
     this.context.beginPath();
     for(let tmpI=0; tmpI < vertexCount; tmpI++) {
       const vert = wrapPointer(vertices+(tmpI*8), b2Vec2);
@@ -77,7 +74,6 @@ export class CanvasDebugDraw {
   }
   
   drawCircle = (center_p: number, radius: number, axis_p: number, fill: boolean): void => {
-    const { wrapPointer, b2Vec2 } = this.box2D;
     const { copyVec2, scaledVec2 } = this.helpers;
     const centerV = wrapPointer(center_p, b2Vec2);
     const axisV = wrapPointer(axis_p, b2Vec2);
@@ -101,7 +97,6 @@ export class CanvasDebugDraw {
   }
   
   drawTransform = (transform_p: number): void => {
-    const { wrapPointer, b2Transform } = this.box2D;
     const trans = wrapPointer(transform_p, b2Transform);
     const pos = trans.get_p();
     const rot = trans.get_q();
@@ -116,7 +111,6 @@ export class CanvasDebugDraw {
   }
 
   constructJSDraw = (): Box2D.JSDraw => {
-    const { JSDraw, b2Vec2, getPointer } = this.box2D;
     const debugDraw = Object.assign(new JSDraw(), {
       DrawSegment: (vert1_p: number, vert2_p: number, color_p: number): void => {
         this.setColorFromDebugDrawCallback(color_p);

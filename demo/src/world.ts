@@ -1,4 +1,4 @@
-import type { Box2DEmscriptenModule } from 'box2d-wasm';
+import { box2D } from './box2d';
 import { Helpers } from './helpers';
 
 export interface World {
@@ -8,11 +8,9 @@ export interface World {
 }
 
 export class WorldFactory {
-  constructor(private readonly box2D: Box2DEmscriptenModule) {
-  }
   create(debugDraw: Box2D.JSDraw): World {
     const { b2_dynamicBody, b2BodyDef, b2CircleShape, b2Draw: { e_jointBit, e_shapeBit }, b2EdgeShape, b2Fixture,
-    b2Vec2, b2World, destroy, JSQueryCallback, wrapPointer } = this.box2D;
+    b2Vec2, b2World, destroy, JSQueryCallback, wrapPointer } = box2D;
     const myQueryCallback = new JSQueryCallback();
 
     myQueryCallback.ReportFixture = (fixturePtr: number): boolean => {
@@ -22,7 +20,7 @@ export class WorldFactory {
         console.log(fixture);
         return false;
     };
-    const helpers = new Helpers(this.box2D);
+    const helpers = new Helpers(box2D);
     const { createPolygonShape, createRandomPolygonShape, createChainShape } = helpers;
     debugDraw.SetFlags(e_shapeBit | e_jointBit);
     const world = new b2World(new b2Vec2(0.0, -10.0));
@@ -98,7 +96,7 @@ export class WorldFactory {
     rope: Box2D.b2Rope;
     destroy(): void;
   } => {
-    const { b2Rope, b2RopeDef, b2RopeTuning, b2Vec2, wrapPointer, _malloc, _free, HEAPF32 } = this.box2D;
+    const { b2Rope, b2RopeDef, b2RopeTuning, b2Vec2, wrapPointer, _malloc, _free, HEAPF32 } = box2D;
     const rope = new b2Rope();
     const ropeLen = 20;
     const masses = new Float32Array(ropeLen);

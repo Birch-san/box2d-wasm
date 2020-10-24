@@ -1,5 +1,5 @@
 <script lang="typescript">
-  import Box2DFactory from 'box2d-wasm';
+  import { box2D } from './box2d';
   import { onMount } from 'svelte';
   import { CanvasDebugDraw } from './debugDraw';
   import { Helpers } from './helpers';
@@ -13,9 +13,8 @@
   let canvas: HTMLCanvasElement;
 
 	onMount(async () => {
-    const box2D = await Box2DFactory();
     const { b2Vec2 } = box2D;
-    const helpers = new Helpers(box2D);
+    const helpers = new Helpers();
     const ctx = canvas.getContext('2d');
     const canvasOffset: Point = {
       x: canvas.width/2,
@@ -25,8 +24,8 @@
       x: canvas.width/2,
       y: canvas.height/2
     };
-    const debugDraw = new CanvasDebugDraw(box2D, helpers, ctx!).constructJSDraw();
-    const { world, rope, destroy } = new WorldFactory(box2D).create(debugDraw);
+    const debugDraw = new CanvasDebugDraw(helpers, ctx!).constructJSDraw();
+    const { world, rope, destroy } = new WorldFactory().create(debugDraw);
 
     const PTM = 32;
 

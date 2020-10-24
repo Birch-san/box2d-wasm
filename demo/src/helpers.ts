@@ -1,4 +1,4 @@
-import type { Box2DEmscriptenModule } from 'box2d-wasm';
+import { box2D } from './box2d';
 
 /**
  * Forked from Box2D.js
@@ -9,12 +9,9 @@ import type { Box2DEmscriptenModule } from 'box2d-wasm';
  *   "box2d.js is zlib licensed, just like Box2D."
  */
 export class Helpers {
-  constructor(private readonly box2D: Box2DEmscriptenModule) {
-  }
-
   /** to replace original C++ operator = */
   copyVec2 = (vec: Box2D.b2Vec2): Box2D.b2Vec2 => {
-    const { b2Vec2 } = this.box2D;
+    const { b2Vec2 } = box2D;
     return new b2Vec2(vec.get_x(), vec.get_y());
   }
 
@@ -26,13 +23,13 @@ export class Helpers {
 
   /** to replace original C++ operator *= (float) */
   scaledVec2 = (vec: Box2D.b2Vec2, scale: number): Box2D.b2Vec2 => {
-    const { b2Vec2 } = this.box2D;
+    const { b2Vec2 } = box2D;
     return new b2Vec2(scale * vec.get_x(), scale * vec.get_y());
   }
 
   // http://stackoverflow.com/questions/12792486/emscripten-bindings-how-to-create-an-accessible-c-c-array-from-javascript
   createChainShape = (vertices: Box2D.b2Vec2[], closedLoop: boolean): Box2D.b2ChainShape => {
-    const { _malloc, b2Vec2, b2ChainShape, HEAPF32, wrapPointer } = this.box2D;
+    const { _malloc, b2Vec2, b2ChainShape, HEAPF32, wrapPointer } = box2D;
     const shape = new b2ChainShape();            
     const buffer = _malloc(vertices.length * 8);
     let offset = 0;
@@ -52,7 +49,7 @@ export class Helpers {
   }
 
   createPolygonShape = (vertices: Box2D.b2Vec2[]): Box2D.b2PolygonShape => {
-    const { _malloc, b2Vec2, b2PolygonShape, HEAPF32, wrapPointer } = this.box2D;
+    const { _malloc, b2Vec2, b2PolygonShape, HEAPF32, wrapPointer } = box2D;
     const shape = new b2PolygonShape();            
     const buffer = _malloc(vertices.length * 8);
     let offset = 0;
@@ -67,7 +64,7 @@ export class Helpers {
   }
 
   createRandomPolygonShape = (radius: number): Box2D.b2PolygonShape => {
-    const { b2Vec2 } = this.box2D;
+    const { b2Vec2 } = box2D;
     let numVerts = 3.5 + Math.random() * 5;
     numVerts = numVerts | 0;
     const verts = [];
