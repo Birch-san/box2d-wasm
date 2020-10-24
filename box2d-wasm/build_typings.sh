@@ -22,4 +22,4 @@ else
 fi
 
 # requires Node 14.0.0 for running ES modules
-exec node --experimental-specifier-resolution=node --harmony node_modules/webidl-to-ts/dist/index.js -f Box2D.idl -m box2d-wasm -n Box2D -o build/Box2D.d.ts
+exec node --experimental-specifier-resolution=node --harmony node_modules/webidl-to-ts/dist/index.js -f Box2D.idl -n Box2D -o build/Box2D.d.ts

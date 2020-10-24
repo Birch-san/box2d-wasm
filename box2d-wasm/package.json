@@ -4,12 +4,12 @@
   "description": "Box2D compiled to WebAssembly",
   "main": "build/Box2D.js",
   "files": [
-    "src/Box2DModule.d.ts",
+    "Box2DModule.d.ts",
     "build/Box2D.js",
     "build/Box2D.wasm",
     "build/Box2D.d.ts"
   ],
-  "types": "build/Box2D.d.ts",
+  "types": "Box2DModule.d.ts",
   "repository": {
     "url": "https://github.com/Birch-san/box2d-wasm/tree/master/box2d-wasm"
   },

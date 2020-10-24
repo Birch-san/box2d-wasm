@@ -24,12 +24,10 @@
       "args": [
         "-f",
         "../box2d-wasm/Box2D.idl",
-        "-m",
-        "box2d-wasm",
         "-n",
         "Box2D",
         "-o",
-        "dist/Box2D.d.ts"
+        "../box2d-wasm/build/Box2D.d.ts"
       ],
       "outFiles": [
         "${workspaceFolder}/**/*.js"

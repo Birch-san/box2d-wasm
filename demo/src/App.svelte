@@ -4,7 +4,6 @@
   import { CanvasDebugDraw } from './debugDraw';
   import { Helpers } from './helpers';
   import { createWorld } from './world';
-  import type Box2DAugmented from './box2DAugmented';
 
   interface Point {
     x: number;
@@ -14,8 +13,7 @@
   let canvas: HTMLCanvasElement;
 
 	onMount(async () => {
-    const nominal = await Box2DFactory();
-    const box2D = nominal as Box2DAugmented;
+    const box2D = await Box2DFactory();
     const { b2Vec2 } = box2D;
     const helpers = new Helpers(box2D);
     const ctx = canvas.getContext('2d');

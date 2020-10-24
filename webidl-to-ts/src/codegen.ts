@@ -9,10 +9,12 @@ export class CodeGen {
       const { factory } = this.context;
       this.primitives = {
         'boolean': () => factory.createKeywordTypeNode(ts.SyntaxKind.BooleanKeyword),
+        'float': () => factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+        'double': () => factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+        'long': () => factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
         'unsigned short': () => factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
         'unsigned long': () => factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
-        'long': () => factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
-        'float': () => factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+        'long long': () => factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
         'void': () => factory.createKeywordTypeNode(ts.SyntaxKind.VoidKeyword),
       }
     }
@@ -42,8 +44,17 @@ export class CodeGen {
   };
 
   private getParameterType = (type: WebIDL2.IDLTypeDescription): ts.TypeNode => {
+    const { factory } = this.context;
     // not implemented: type.nullable
-    return this.getType(type);
+    const typeNominal = this.getType(type);
+    if (ts.isTypeReferenceNode(typeNominal)) {
+      // user can submit either a WrappedObject, or a pointer
+      return factory.createUnionTypeNode([
+        typeNominal,
+        factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword)
+      ]);
+    }
+    return typeNominal;
   };
 
   private getAttributeType = (type: WebIDL2.IDLTypeDescription): ts.TypeNode => {
@@ -1029,7 +1040,7 @@ export class CodeGen {
     });
   };
 
-  codegen = (roots: WebIDL2.IDLRootType[], moduleName: string, namespaceName: string): readonly ts.Statement[] => {
+  codegen = (roots: WebIDL2.IDLRootType[], namespaceName: string): ts.Statement => {
     const { factory } = this.context;
     const { statements, knownEnumNames, includes } = this.roots(roots);
     const elideElideVisitor: ts.Visitor = node => {
@@ -1068,58 +1079,17 @@ export class CodeGen {
       return ts.visitEachChild(node, applyIncludeVisitor, this.context);
     };
     const statementsWithIncludesApplied = ts.visitNodes(statementsWithEnumsElided, applyIncludeVisitor);
-    return [
-      factory.createModuleDeclaration(
-        /*decorators*/undefined,
-        /*modifiers*/[factory.createModifier(ts.SyntaxKind.DeclareKeyword)],
-        /*name*/factory.createStringLiteral(moduleName),
-        /*body*/factory.createModuleBlock(
-          [
-            factory.createModuleDeclaration(
-              /*decorators*/undefined,
-              /*modifiers*/[factory.createModifier(ts.SyntaxKind.ExportKeyword)],
-              /*name*/factory.createIdentifier(namespaceName),
-              factory.createModuleBlock(
-                statementsWithIncludesApplied.concat(
-                  this.helpers()
-                ),
-              ),
-              /*flags*/ts.NodeFlags.Namespace | ts.NodeFlags.ExportContext | ts.NodeFlags.ContextFlags,
-            ),
-            factory.createVariableStatement(
-              /*modifiers*/undefined,
-              factory.createVariableDeclarationList([
-                factory.createVariableDeclaration(
-                  /*name*/factory.createIdentifier(`${namespaceName}Factory`),
-                  /*exclamationToken*/undefined,
-                  /*type*/factory.createFunctionTypeNode(
-                    /*typeParameters*/undefined,
-                    /*parameters*/[],
-                    factory.createTypeReferenceNode(
-                      factory.createIdentifier('Promise'),
-                      /*typeArguments*/[
-                        factory.createTypeQueryNode(
-                          factory.createIdentifier(namespaceName)
-                        )
-                      ]
-                      )
-                  ),
-                  /*initializer*/undefined
-                )
-              ],
-              /*flags*/ts.NodeFlags.Const | ts.NodeFlags.ContextFlags)
-            ),
-            factory.createExportAssignment(
-              /*decorators*/undefined,
-              /*modifiers*/undefined,
-              /*isExportEquals*/true,
-              /*expression*/factory.createIdentifier(`${namespaceName}Factory`)
-            )
-          ]
+    return factory.createModuleDeclaration(
+      /*decorators*/undefined,
+      /*modifiers*/[factory.createModifier(ts.SyntaxKind.DeclareKeyword)],
+      /*name*/factory.createIdentifier(namespaceName),
+      factory.createModuleBlock(
+        statementsWithIncludesApplied.concat(
+          this.helpers()
         ),
-        /*flags*/undefined,
-      )
-    ];
+      ),
+      /*flags*/ts.NodeFlags.Namespace | ts.NodeFlags.ContextFlags,
+    );
   };
 }
 interface Roots {

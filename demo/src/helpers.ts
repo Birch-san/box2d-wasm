@@ -1,4 +1,4 @@
-import type { Box2D } from 'box2d-wasm';
+import type { Box2DEmscriptenModule } from 'box2d-wasm';
 
 /**
  * Forked from Box2D.js
@@ -9,15 +9,7 @@ import type { Box2D } from 'box2d-wasm';
  *   "box2d.js is zlib licensed, just like Box2D."
  */
 export class Helpers {
-  constructor(private readonly box2D: typeof Box2D & {
-    /**
-     * these are emscripten-specific, and not related to .idl
-     * might want to consider including them in the generated typings though,
-     * potentially in box2d-wasm rather than in the idl-to-ts generator
-     */
-    _malloc: any,
-    HEAPF32: any
-  }) {
+  constructor(private readonly box2D: Box2DEmscriptenModule) {
   }
 
   /** to replace original C++ operator = */

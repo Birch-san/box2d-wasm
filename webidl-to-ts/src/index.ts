@@ -16,13 +16,6 @@ const argv = yargs(process.argv.slice(2))
     nargs: 1,
     describe: 'Read WebIDL input from a .idl file'
   })
-  .option('m', {
-    type: 'string',
-    demandOption: true,
-    alias: 'moduleName',
-    nargs: 1,
-    describe: "module name to be used in declaration: declare module '' {}"
-  })
   .option('n', {
     type: 'string',
     demandOption: true,
@@ -108,7 +101,7 @@ const compile = (webIDLRoots: WebIDL2.IDLRootType[], options: ts.CompilerOptions
       afterDeclarations: [(context: ts.TransformationContext): ts.Transformer<ts.SourceFile> => (rootNode: ts.SourceFile): ts.SourceFile => 
         context.factory.updateSourceFile(
           rootNode,
-          new CodeGen(context/*, program.getTypeChecker()*/).codegen(webIDLRoots, argv.m, argv.n),
+          [new CodeGen(context/*, program.getTypeChecker()*/).codegen(webIDLRoots, argv.n)],
           /*isDeclarationFile*/true
         )
       ]

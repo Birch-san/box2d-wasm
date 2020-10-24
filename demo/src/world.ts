@@ -1,9 +1,8 @@
-import type { Box2D } from 'box2d-wasm';
+import type { Box2DEmscriptenModule } from 'box2d-wasm';
 import { Helpers } from './helpers';
-import type Box2DAugmented from './box2DAugmented';
 
 export interface WorldParams {
-  box2D: Box2DAugmented;
+  box2D: Box2DEmscriptenModule;
   debugDraw: Box2D.JSDraw;
 }
 export interface World {
@@ -21,7 +20,7 @@ export const createWorld = ({
     b2Vec2, b2World, destroy, JSQueryCallback, wrapPointer, _malloc, _free, HEAPF32 } = box2D;
   const myQueryCallback = new JSQueryCallback();
 
-  myQueryCallback.ReportFixture = (fixturePtr: any) => {
+  myQueryCallback.ReportFixture = (fixturePtr: number): boolean => {
       const fixture = wrapPointer( fixturePtr, b2Fixture );
       if ( fixture.GetBody().GetType() != b2_dynamicBody ) //mouse cannot drag static bodies around
         return true;
@@ -69,8 +68,8 @@ export const createWorld = ({
 
 
   // rope
-  let massesBuffer: any | undefined;
-  let verticesBuffer: any | undefined;
+  let massesBuffer: number | undefined;
+  let verticesBuffer: number | undefined;
   const rope = new b2Rope();
   {
     const ropeLen = 20;
@@ -142,8 +141,8 @@ export const createWorld = ({
     rope,
     destroy() {
       destroy(world);
-      _free(massesBuffer);
-      _free(verticesBuffer);
+      _free(massesBuffer!);
+      _free(verticesBuffer!);
     }
   };
 }
