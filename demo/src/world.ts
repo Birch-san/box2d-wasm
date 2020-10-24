@@ -8,7 +8,10 @@ export interface World {
 }
 
 export class WorldFactory {
-  constructor(private readonly box2D: Box2DEmscriptenModule) {
+  constructor(
+    private readonly box2D: Box2DEmscriptenModule,
+    private readonly helpers: Helpers
+    ) {
   }
   create(debugDraw: Box2D.JSDraw): World {
     const { b2_dynamicBody, b2BodyDef, b2CircleShape, b2Draw: { e_jointBit, e_shapeBit }, b2EdgeShape, b2Fixture,
@@ -22,8 +25,6 @@ export class WorldFactory {
         console.log(fixture);
         return false;
     };
-    const helpers = new Helpers(this.box2D);
-    const { createPolygonShape, createRandomPolygonShape, createChainShape } = helpers;
     debugDraw.SetFlags(e_shapeBit | e_jointBit);
     const world = new b2World(new b2Vec2(0.0, -10.0));
     world.SetDebugDraw(debugDraw);
@@ -31,58 +32,14 @@ export class WorldFactory {
     const groundBody = world.CreateBody(bd_ground);
 
     //ground edges
-    const shape0 = new b2EdgeShape();
-    shape0.SetTwoSided(new b2Vec2(-40.0, -6.0), new b2Vec2(40.0, -6.0));
-    groundBody.CreateFixture(shape0, 0.0);
-    shape0.SetTwoSided(new b2Vec2(-9.0, -6.0), new b2Vec2(-9.0, -4.0));
-    groundBody.CreateFixture(shape0, 0.0);
-    shape0.SetTwoSided(new b2Vec2(9.0, -6.0), new b2Vec2(9.0, -4.0));
-    groundBody.CreateFixture(shape0, 0.0);
+    this.createFixtures(groundBody);
 
-    const cshape = new b2CircleShape();
-    cshape.set_m_radius(0.5);
-
-    {
-      //falling shapes
-      const ZERO = new b2Vec2(0, 0);
-      const temp = new b2Vec2(0, 0);
-      for (let i = 0; i < 20; i++) {
-        const bd = new b2BodyDef();
-        bd.set_type(b2_dynamicBody);
-        bd.set_position(ZERO);
-        const body = world.CreateBody(bd);
-        const randomValue = Math.random();
-        const shape = randomValue < 0.2 ? cshape : createRandomPolygonShape(0.5);
-        body.CreateFixture(shape, 1.0);
-        temp.Set(16*(Math.random()-0.5), 4.0 + 2.5 * i);
-        body.SetTransform(temp, 0.0);
-        body.SetLinearVelocity(ZERO);
-        body.SetEnabled(true);
-      }
-    }
-
+    this.createFallingShapes(world);
 
     // rope
     const { rope, destroy: destroyRope } = this.createRope();
 
-    //static polygon and chain shapes
-    {
-      const verts = [];
-      verts.push( new b2Vec2( 7,-1) );
-      verts.push( new b2Vec2( 8,-2) );
-      verts.push( new b2Vec2( 9, 3) );
-      verts.push( new b2Vec2( 7, 1) );
-      const polygonShape = createPolygonShape(verts);
-      groundBody.CreateFixture(polygonShape, 0.0);
-      
-      //mirror vertices in x-axis and use for chain shape
-      for (let i = 0; i < verts.length; i++)
-          verts[i].set_x( -verts[i].get_x() );
-      verts.reverse();
-      const chainShape = createChainShape(verts, true);//true for closed loop *** some problem with this atm
-      // polygonShape = createPolygonShape(verts);
-      groundBody.CreateFixture(chainShape, 0.0);
-    }
+    this.createStaticPolygonAndChainShapes(groundBody);
 
     return {
       world,
@@ -92,6 +49,62 @@ export class WorldFactory {
         destroyRope();
       }
     };
+  }
+
+  /** ground edges */
+  private createFixtures = (groundBody: Box2D.b2Body) => {
+    const { b2EdgeShape, b2Vec2 } = this.box2D;
+    const shape0 = new b2EdgeShape();
+    shape0.SetTwoSided(new b2Vec2(-40.0, -6.0), new b2Vec2(40.0, -6.0));
+    groundBody.CreateFixture(shape0, 0.0);
+    shape0.SetTwoSided(new b2Vec2(-9.0, -6.0), new b2Vec2(-9.0, -4.0));
+    groundBody.CreateFixture(shape0, 0.0);
+    shape0.SetTwoSided(new b2Vec2(9.0, -6.0), new b2Vec2(9.0, -4.0));
+    groundBody.CreateFixture(shape0, 0.0);
+  };
+
+  private createStaticPolygonAndChainShapes = (groundBody: Box2D.b2Body): void => {
+    const { createChainShape, createPolygonShape } = this.helpers;
+    const { b2BodyDef, b2Vec2, b2_dynamicBody } = this.box2D;
+    const verts = [];
+    verts.push( new b2Vec2( 7,-1) );
+    verts.push( new b2Vec2( 8,-2) );
+    verts.push( new b2Vec2( 9, 3) );
+    verts.push( new b2Vec2( 7, 1) );
+    const polygonShape = createPolygonShape(verts);
+    groundBody.CreateFixture(polygonShape, 0.0);
+    
+    //mirror vertices in x-axis and use for chain shape
+    for (let i = 0; i < verts.length; i++)
+        verts[i].set_x( -verts[i].get_x() );
+    verts.reverse();
+    const chainShape = createChainShape(verts, true);//true for closed loop *** some problem with this atm
+    // polygonShape = createPolygonShape(verts);
+    groundBody.CreateFixture(chainShape, 0.0);
+  };
+
+  private createFallingShapes = (world: Box2D.b2World): void => {
+    const { createRandomPolygonShape } = this.helpers;
+    const { b2BodyDef, b2CircleShape, b2Vec2, b2_dynamicBody } = this.box2D;
+
+    const cshape = new b2CircleShape();
+    cshape.set_m_radius(0.5);
+
+    const ZERO = new b2Vec2(0, 0);
+    const temp = new b2Vec2(0, 0);
+    for (let i = 0; i < 20; i++) {
+      const bd = new b2BodyDef();
+      bd.set_type(b2_dynamicBody);
+      bd.set_position(ZERO);
+      const body = world.CreateBody(bd);
+      const randomValue = Math.random();
+      const shape = randomValue < 0.2 ? cshape : createRandomPolygonShape(0.5);
+      body.CreateFixture(shape, 1.0);
+      temp.Set(16*(Math.random()-0.5), 4.0 + 2.5 * i);
+      body.SetTransform(temp, 0.0);
+      body.SetLinearVelocity(ZERO);
+      body.SetEnabled(true);
+    }
   }
 
   private createRope = (): {
@@ -106,15 +119,19 @@ export class WorldFactory {
     // https://becominghuman.ai/passing-and-returning-webassembly-array-parameters-a0f572c65d97
     masses.fill(1);
     masses[0] = 0;
-    masses[1] = 0;
+    // masses[1] = 0;
+    masses[masses.length-1] = 0;
   
     const floatsPerVertex = 2; // b2Vec is a struct of `float x, y`
     const vertices = new Float32Array(ropeLen * floatsPerVertex);
   
+    const initPos = { x: -7, y: -2 };
+
     // Populate the array with the values
     for (let i = 0; i < ropeLen; i++) {
-      vertices[i*2] = 0;
-      vertices[i*2+1] = 5 - 0.25 * i;
+      vertices[i*2] = initPos.x + 0.5 * i;
+      // vertices[i*2+1] = -2 - 0.25 * i;
+      vertices[i*2+1] = -initPos.y + 0;
     }
   
     // Allocate some space in the heap for the data (making sure to use the appropriate memory size of the elements)
@@ -133,15 +150,15 @@ export class WorldFactory {
     //   ropeDef.set_masses(i, 0);
     // for (let i = 2; i < ropeLen; i ++)
     //   ropeDef.set_masses(i, 1);
-    const wrappedMasses = wrapPointer(massesBuffer);
-    const wrappedVertices = wrapPointer(verticesBuffer, b2Vec2);
+    const wrappedMasses: Box2D.WrapperObject = wrapPointer(massesBuffer);
+    const wrappedVertices: Box2D.b2Vec2 = wrapPointer(verticesBuffer, b2Vec2);
     ropeDef.set_masses(wrappedMasses);
     ropeDef.set_vertices(wrappedVertices);
     // ropeDef.set_vertices(wrapPointer(verticesBuffer, b2Vec2));
     ropeDef.set_count(ropeLen);
     ropeDef.set_gravity(new b2Vec2(0, -10));
     ropeDef.set_tuning(tuning);
-    ropeDef.set_position(new b2Vec2(3, 0));
+    ropeDef.set_position(new b2Vec2(0, 0));
   
     rope.Create(ropeDef);
     return {

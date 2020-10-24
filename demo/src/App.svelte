@@ -26,7 +26,7 @@
       y: canvas.height/2
     };
     const debugDraw = new CanvasDebugDraw(box2D, helpers, ctx!).constructJSDraw();
-    const { world, rope, destroy } = new WorldFactory(box2D).create(debugDraw);
+    const { world, rope, destroy } = new WorldFactory(box2D, helpers).create(debugDraw);
 
     const PTM = 32;
 
@@ -94,7 +94,7 @@
       const delta = Math.min(nowMs-prevMs, maxTimeStep);
 
 			world.Step(delta/1000, 3, 2);
-			rope.Step(delta/1000, 3, new b2Vec2(3, 0));
+			rope.Step(delta/1000, 3, new b2Vec2(0, 0));
       draw();
 		}(window.performance.now()));
 
