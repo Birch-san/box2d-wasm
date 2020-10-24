@@ -3,7 +3,7 @@
   import { onMount } from 'svelte';
   import { CanvasDebugDraw } from './debugDraw';
   import { Helpers } from './helpers';
-  import { createWorld } from './world';
+  import { WorldFactory } from './world';
 
   interface Point {
     x: number;
@@ -26,10 +26,7 @@
       y: canvas.height/2
     };
     const debugDraw = new CanvasDebugDraw(box2D, helpers, ctx!).constructJSDraw();
-    const { world, rope, destroy } = createWorld({
-      box2D,
-      debugDraw
-    });
+    const { world, rope, destroy } = new WorldFactory(box2D).create(debugDraw);
 
     const PTM = 32;
 
