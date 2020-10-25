@@ -1,5 +1,5 @@
 import type { Box2DEmscriptenModule } from 'box2d-wasm';
-import { Helpers } from './helpers';
+import type { Helpers } from './helpers';
 
 export interface World {
   world: Box2D.b2World;
@@ -14,7 +14,7 @@ export class WorldFactory {
     ) {
   }
   create(debugDraw: Box2D.JSDraw): World {
-    const { b2_dynamicBody, b2BodyDef, b2CircleShape, b2Draw: { e_jointBit, e_shapeBit }, b2EdgeShape, b2Fixture,
+    const { b2_dynamicBody, b2BodyDef, b2Draw: { e_jointBit, e_shapeBit }, b2Fixture,
     b2Vec2, b2World, destroy, JSQueryCallback, wrapPointer } = this.box2D;
     const myQueryCallback = new JSQueryCallback();
 
@@ -65,7 +65,7 @@ export class WorldFactory {
 
   private createStaticPolygonAndChainShapes = (groundBody: Box2D.b2Body): void => {
     const { createChainShape, createPolygonShape } = this.helpers;
-    const { b2BodyDef, b2Vec2, b2_dynamicBody } = this.box2D;
+    const { b2Vec2 } = this.box2D;
     const verts = [];
     verts.push( new b2Vec2( 7,-1) );
     verts.push( new b2Vec2( 8,-2) );

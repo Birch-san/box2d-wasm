@@ -9,7 +9,7 @@ Project aims (compared to existing [`box2d.js`](https://github.com/kripken/box2d
 - Add source maps back to original C++ source (could be fun!)
 - Demo should demonstrate how to consume library via TypeScript
 - Strive for nice development experience (try to eliminate steps that involve manual copying of build artifacts)
-- Generate TypeScript declarations for WebIDL interface (…somehow)
+- Generate TypeScript declarations for WebIDL interface
 - Avoid pulling Box2D C++ into repository (prefer git submodule)
 - Keep build artifacts out of git (prefer to publish to npm)
 - If multiple versions of Box2D are to be maintained, this should be done via branches (and changing the commit of the box2d submodule)
@@ -26,8 +26,6 @@ Compatibility: Box2D v2.4.0+ @[f0f9d50](https://github.com/erincatto/box2d/tree/
 Status:
 
 - Demo application currently demonstrates basic behaviour. Performs well
-- Rope bindings not yet exposed
-- No TypeScript declarations
 - No package published to npm
 - No release distributed
 
@@ -50,11 +48,7 @@ git clone --recursive git@github.com:Birch-san/box2d-wasm.git
 cd box2d-wasm
 ```
 
-### Compile WASM
-
-See README of [`box2d-wasm`](box2d-wasm) package.
-
-### Build demo
+#### Instantiate packages
 
 [`pnpm`](https://pnpm.js.org/) is used to manage packages in this monorepo. In particular, it creates a symlink that enables `demo` to consume build artifacts from `box2d-wasm`.
 
@@ -62,4 +56,14 @@ See README of [`box2d-wasm`](box2d-wasm) package.
 # from root of repository
 npm i -g pnpm
 pnpm i
+# compile webidl-to-ts from TS to JS, so that box2d-wasm can consume it to generate typings
+pnpm build --filter=webidl-to-ts
 ```
+
+### Compile Box2D to WASM + generate .js and .d.ts bindings
+
+See README of [`box2d-wasm`](box2d-wasm) package.
+
+### Run demo
+
+See README of [`demo`](demo) package.
