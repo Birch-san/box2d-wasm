@@ -11,7 +11,7 @@ if ! [[ "$PWD" -ef "$DIR/build" ]]; then
   exit 1
 fi
 
-LINK_OPTS='--bind -DEMSCRIPTEN_HAS_UNBOUND_TYPE_NAMES=0 -s MODULARIZE=1 -s EXPORT_NAME="Box2D" -s NO_FILESYSTEM=1 -s EXPORT_BINDINGS=1 -s RESERVED_FUNCTION_POINTERS=20 --post-js box2d_glue.js --memory-init-file 0 -s NO_EXIT_RUNTIME=1 -s NO_FILESYSTEM=1 -s EXPORTED_RUNTIME_METHODS=[]'
+LINK_OPTS='--bind -DEMSCRIPTEN_HAS_UNBOUND_TYPE_NAMES=0 -s MODULARIZE=1 -s EXPORT_NAME="Box2D" -s EXPORT_BINDINGS=1 -s RESERVED_FUNCTION_POINTERS=20 --post-js box2d_glue.js --memory-init-file 0 -s NO_EXIT_RUNTIME=1 -s NO_FILESYSTEM=1 -s EXPORTED_RUNTIME_METHODS=[]'
 
 
 # I decided to keep assertions, because in Box2D v2.4.1 an assertion (inertia must be positive)
