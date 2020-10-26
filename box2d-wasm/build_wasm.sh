@@ -16,7 +16,7 @@ LINK_OPTS='-s MODULARIZE=1 -s EXPORT_NAME="Box2D" -s EXPORT_BINDINGS=1 -s RESERV
 
 # I decided to keep assertions, because in Box2D v2.4.1 an assertion (inertia must be positive)
 # actually failed, and it was good that it told me that.
-RELEASE_OPTS_NOMINAL='-O3 -s ASSERTIONS=2 --llvm-lto 1'
+RELEASE_OPTS_NOMINAL='-O3 -s ASSERTIONS=2'
 
 case "$TARGET_TYPE" in
   Debug)
