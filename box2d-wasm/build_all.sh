@@ -1,12 +1,6 @@
 #!/usr/bin/env bash
 set -eo pipefail
-CWD="$(pwd)"
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-
-# return to original directory upon completion of script
-trap \
- '{ exit_code=$?; cd "$CWD"; exit $exit_code }' \
- SIGINT SIGTERM ERR EXIT
 
 # This script just does what the README says, except with some extra validation and interactivity.
 # If you're more interested in going through step-by-step, and avoiding rebuilds of files you've 
@@ -32,7 +26,6 @@ set -x
 set -x
 emmake make
 { set +x; } 2>&-
-exit
 
 # use Box2D.idl to create ./box2d_glue.{js,cpp} for invoking functionality from libbox2d
 set -x
@@ -43,7 +36,6 @@ set -x
 set -x
 ../build_wasm.sh
 { set +x; } 2>&-
-popd > /dev/null
 
 set -x
 ../build_typings.sh

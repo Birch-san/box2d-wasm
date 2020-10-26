@@ -17,11 +17,13 @@ CMAKE_CXX_FLAGS=''
 
 case "$TARGET_TYPE" in
   RelWithDebInfo)
-    >&2 echo -e "TARGET_TYPE is $TARGET_TYPE"
-    CMAKE_CXX_FLAGS='-g'
+    # -flto can succeed here, but causes the emcc after this to fail during wasm-emscripten-finalize (possibly due to source maps)
+    CMAKE_CXX_FLAGS="-g"
     ;;
-  Debug | Release)
-    >&2 echo -e "TARGET_TYPE is $TARGET_TYPE"
+  Release)
+    CMAKE_CXX_FLAGS="-flto"
+    ;;
+  Debug)
     ;;
 
   *)
@@ -31,6 +33,7 @@ case "$TARGET_TYPE" in
     exit 1
     ;;
 esac
+>&2 echo -e "TARGET_TYPE is $TARGET_TYPE"
 
 set -x
 emcmake cmake -DCMAKE_BUILD_TYPE="$TARGET_TYPE" -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" ../../box2d -DBOX2D_BUILD_UNIT_TESTS=OFF -DBOX2D_BUILD_DOCS=OFF -DBOX2D_BUILD_TESTBED=OFF

@@ -24,12 +24,12 @@ case "$TARGET_TYPE" in
     ;;
 
   RelWithDebInfo)
-    # --source-map-base http://localhost:5000
+    # --source-map-base http://localhost:5000/
     FLAVOUR_LINK_OPTS="-g4 $RELEASE_OPTS_NOMINAL"
     ;;
   
   Release)
-    FLAVOUR_LINK_OPTS="--closure 1 -s IGNORE_CLOSURE_COMPILER_ERRORS=1 $RELEASE_OPTS_NOMINAL"
+    FLAVOUR_LINK_OPTS="-flto --closure 1 -s IGNORE_CLOSURE_COMPILER_ERRORS=1 $RELEASE_OPTS_NOMINAL"
     ;;
   
   *)
@@ -39,6 +39,7 @@ case "$TARGET_TYPE" in
     exit 1
     ;;
 esac
+>&2 echo -e "TARGET_TYPE is $TARGET_TYPE"
 
 EMIT_OPTS=-fno-rtti
 TARGET_EMIT_OPTS="-s ALLOW_MEMORY_GROWTH=1 -o Box2D.js"

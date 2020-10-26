@@ -11,7 +11,7 @@ if ! [[ "$PWD" -ef "$DIR/build" ]]; then
   exit 1
 fi
 
-: "${WEBIDL_TO_TS:=node_modules/webidl-to-ts}"
+: "${WEBIDL_TO_TS:=../node_modules/webidl-to-ts}"
 if test -d "${WEBIDL_TO_TS-}"; then
   >&2 echo -e "webidl-to-ts found at: $WEBIDL_TO_TS"
 else
@@ -23,4 +23,4 @@ fi
 
 set -x
 # requires Node 14.0.0 for running ES modules
-exec node --experimental-specifier-resolution=node --harmony ../node_modules/webidl-to-ts/dist/index.js -f ../Box2D.idl -n Box2D -o Box2D.d.ts
+exec node --experimental-specifier-resolution=node --harmony "$WEBIDL_TO_TS/dist/index.js" -f ../Box2D.idl -n Box2D -o Box2D.d.ts
