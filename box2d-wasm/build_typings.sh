@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-set -eo pipefail
+set -euo pipefail
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 Red='\033[0;31m'
 Purple='\033[0;35m'
 NC='\033[0m' # No Color
 
-if ! [[ "$PWD" -ef "$DIR" ]]; then
-  >&2 echo -e "${Red}This script is meant to be run from <repository_root>/box2d-wasm${NC}"
+if ! [[ "$PWD" -ef "$DIR/build" ]]; then
+  >&2 echo -e "${Red}This script is meant to be run from <repository_root>/box2d-wasm/build${NC}"
   exit 1
 fi
 
@@ -21,5 +21,6 @@ else
   exit 1
 fi
 
+set -x
 # requires Node 14.0.0 for running ES modules
-exec node --experimental-specifier-resolution=node --harmony node_modules/webidl-to-ts/dist/index.js -f Box2D.idl -n Box2D -o build/Box2D.d.ts
+exec node --experimental-specifier-resolution=node --harmony ../node_modules/webidl-to-ts/dist/index.js -f ../Box2D.idl -n Box2D -o Box2D.d.ts

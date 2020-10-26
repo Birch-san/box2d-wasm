@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
-set -eo pipefail
+set -euo pipefail
+CWD="$(pwd)"
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+# return to original directory upon completion of script
+trap \
+ '{ exit_code=$?; cd "$CWD"; exit $exit_code }' \
+ SIGINT SIGTERM ERR EXIT
 
 # This script just does what the README says, except with some extra validation and interactivity.
 # If you're more interested in going through step-by-step, and avoiding rebuilds of files you've 
@@ -15,36 +21,30 @@ if ! [[ "$PWD" -ef "$DIR" ]]; then
   exit 1
 fi
 
-case "$TARGET_TYPE" in
-  Debug | RelWithDebInfo)
-    >&2 echo -e "TARGET_TYPE is $TARGET_TYPE"
-    ;;
-  
-  *)
-    >&2 echo -e "${Red}TARGET_TYPE not set.${NC}"
-    >&2 echo -e "Please set TARGET_TYPE to 'Debug' or 'RelWithDebInfo'. For example, with:"
-    >&2 echo -e "${Purple}export TARGET_TYPE='Debug'${NC}"
-    exit 1
-    ;;
-esac
-
 mkdir -p build
 pushd build > /dev/null
 
->&2 echo -e '\nGenerating Makefile with emcmake'
-emcmake cmake -DCMAKE_BUILD_TYPE="$TARGET_TYPE" ../../box2d -DBOX2D_BUILD_UNIT_TESTS=OFF -DBOX2D_BUILD_DOCS=OFF -DBOX2D_BUILD_TESTBED=OFF
+set -x
+../build_makefile.sh
+{ set +x; } 2>&-
 
 >&2 echo -e '\nCompiling C++ to LLVM IR (creates ./src/libbox2d.a archive)'
+set -x
 emmake make
+{ set +x; } 2>&-
+exit
 
 # use Box2D.idl to create ./box2d_glue.{js,cpp} for invoking functionality from libbox2d
->&2 echo -e '\nbuild_idl_bindings.sh:'
+set -x
 ../build_idl_bindings.sh
+{ set +x; } 2>&-
 
 # generate Box2D_*.{wasm,js} from glue code + libbox2d.a
->&2 echo -e '\nbuild_wasm.sh:'
+set -x
 ../build_wasm.sh
+{ set +x; } 2>&-
 popd > /dev/null
 
->&2 echo -e '\nbuild_typings.sh:'
-./build_typings.sh
+set -x
+../build_typings.sh
+{ set +x; } 2>&-

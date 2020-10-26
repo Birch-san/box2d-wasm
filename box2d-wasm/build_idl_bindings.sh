@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -eo pipefail
+set -euo pipefail
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 Red='\033[0;31m'
@@ -33,4 +33,5 @@ if [ ! -f "$EMSCRIPTEN/tools/webidl_binder.py" ]; then
     >&2 echo -e "${Red}WebIDL binder not found at expected location of $EMSCRIPTEN/tools/webidl_binder.py${NC}"
 fi
 
+set -x
 exec "$PYTHON" "$EMSCRIPTEN/tools/webidl_binder.py" "$DIR/Box2D.idl" box2d_glue

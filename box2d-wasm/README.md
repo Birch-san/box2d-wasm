@@ -10,14 +10,16 @@ cd build
 
 # TARGET_TYPE
 #   Debug: fast compilation (for fast iteration when developing locally)
-#   RelWithDebInfo: optimized for high-performance (longer compile time, for release builds)
+#   Release: optimized for high-performance (longer compile time, for release builds)
+#   RelWithDebInfo: Release, but with debug source-maps (and with closure optimizations disabled)
 # used for C++ -> LLVM IR, and for LLVM IR -> WASM. Debug
 # both provided for your copy-paste convenience
 export TARGET_TYPE=RelWithDebInfo
+export TARGET_TYPE=Release
 export TARGET_TYPE=Debug
 
 # generate Makefiles compatible with emscripten
-emcmake cmake -DCMAKE_BUILD_TYPE="$TARGET_TYPE" ../../box2d -DBOX2D_BUILD_UNIT_TESTS=OFF -DBOX2D_BUILD_DOCS=OFF -DBOX2D_BUILD_TESTBED=OFF
+../build_makefile.sh
 
 # compile C++ to LLVM IR (creates ./src/libbox2d.a archive)
 emmake make
@@ -34,7 +36,6 @@ export PYTHON="${EMSCRIPTEN:-"$(which python3)"}"
 # generate Box2D.{wasm,js} from glue code + libbox2d.a
 ../build_wasm.sh
 
-cd ..
 # generate Box2D.d.ts from Box2D.idl
-./build_typings.sh
+../build_typings.sh
 ```
