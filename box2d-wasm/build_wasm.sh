@@ -11,7 +11,7 @@ if ! [[ "$PWD" -ef "$DIR/build" ]]; then
   exit 1
 fi
 
-LINK_OPTS='--bind -DEMSCRIPTEN_HAS_UNBOUND_TYPE_NAMES=0 -s MODULARIZE=1 -s EXPORT_NAME="Box2D" -s EXPORT_BINDINGS=1 -s RESERVED_FUNCTION_POINTERS=20 --post-js box2d_glue.js --memory-init-file 0 -s NO_EXIT_RUNTIME=1 -s NO_FILESYSTEM=1 -s EXPORTED_RUNTIME_METHODS=[]'
+LINK_OPTS='-s MODULARIZE=1 -s EXPORT_NAME="Box2D" -s EXPORT_BINDINGS=1 -s RESERVED_FUNCTION_POINTERS=20 --post-js box2d_glue.js --memory-init-file 0 -s NO_EXIT_RUNTIME=1 -s NO_FILESYSTEM=1 -s EXPORTED_RUNTIME_METHODS=[]'
 
 
 # I decided to keep assertions, because in Box2D v2.4.1 an assertion (inertia must be positive)
@@ -29,9 +29,6 @@ case "$TARGET_TYPE" in
     ;;
   
   Release)
-    # It would've been nice to get source-maps -- I tried out emcmake + emmake targeting RelWithDebInfo,
-    # but that did not create any kind of symbols file. I also tried putting in -g4 here, but all that
-    # gives you is source maps to the glue code and box2d headers (and unfortunately to emscripten headers).
     FLAVOUR_LINK_OPTS="--closure 1 -s IGNORE_CLOSURE_COMPILER_ERRORS=1 $RELEASE_OPTS_NOMINAL"
     ;;
   
