@@ -40,8 +40,8 @@ export class WorldFactory {
 
     this.createStaticPolygonAndChainShapes(groundBody);
 
-    // calculate no more than a 20th of a second during one world.Step() call
-    const maxTimeStepMs = 1/20*1000;
+    // calculate no more than a 60th of a second during one world.Step() call
+    const maxTimeStepMs = 1/60*1000;
 
     return {
       step(deltaMs: number) {
@@ -122,7 +122,7 @@ export class WorldFactory {
   } => {
     const { b2Rope, b2RopeDef, b2RopeTuning, b2Vec2, wrapPointer, _malloc, _free, HEAPF32 } = this.box2D;
     const rope = new b2Rope();
-    const ropeLen = 20;
+    const ropeLen = 37;
     const masses = new Float32Array(ropeLen);
     // https://csharp.hotexamples.com/examples/Box2D.Rope/b2RopeDef/-/php-b2ropedef-class-examples.html
     // https://becominghuman.ai/passing-and-returning-webassembly-array-parameters-a0f572c65d97
@@ -133,7 +133,7 @@ export class WorldFactory {
     const floatsPerVertex = 2; // b2Vec is a struct of `float x, y`
     const vertices = new Float32Array(ropeLen * floatsPerVertex);
   
-    const initPos = { x: -7, y: -2 };
+    const initPos = { x: -9, y: 6 };
 
     // Populate the array with the values
     for (let i = 0; i < ropeLen; i++) {

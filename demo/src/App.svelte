@@ -110,6 +110,6 @@
 
 <canvas
 	bind:this={canvas}
-	width={640}
-	height={480}
+	width={800}
+	height={700}
 ></canvas>
