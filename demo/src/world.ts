@@ -2,8 +2,8 @@ import type { Box2DEmscriptenModule } from 'box2d-wasm';
 import type { Helpers } from './helpers';
 
 export interface World {
-  world: Box2D.b2World;
-  rope: Box2D.b2Rope;
+  step(deltaMs: number): void;
+  draw(): void;
   destroy(): void;
 }
 
@@ -13,8 +13,8 @@ export class WorldFactory {
     private readonly helpers: Helpers
     ) {
   }
-  create(debugDraw: Box2D.JSDraw): World {
-    const { b2_dynamicBody, b2BodyDef, b2Draw: { e_jointBit, e_shapeBit }, b2Fixture,
+  create(renderer: Box2D.JSDraw): World {
+    const { b2_dynamicBody, b2BodyDef, b2Fixture,
     b2Vec2, b2World, destroy, JSQueryCallback, wrapPointer } = this.box2D;
     const myQueryCallback = new JSQueryCallback();
 
@@ -25,9 +25,8 @@ export class WorldFactory {
         console.log(fixture);
         return false;
     };
-    debugDraw.SetFlags(e_shapeBit | e_jointBit);
     const world = new b2World(new b2Vec2(0.0, -10.0));
-    world.SetDebugDraw(debugDraw);
+    world.SetDebugDraw(renderer);
     const bd_ground = new b2BodyDef();
     const groundBody = world.CreateBody(bd_ground);
 
@@ -41,9 +40,19 @@ export class WorldFactory {
 
     this.createStaticPolygonAndChainShapes(groundBody);
 
+    // calculate no more than a 20th of a second during one world.Step() call
+    const maxTimeStepMs = 1/20*1000;
+
     return {
-      world,
-      rope,
+      step(deltaMs: number) {
+        const clampedDeltaMs = Math.min(deltaMs, maxTimeStepMs);
+        world.Step(clampedDeltaMs/1000, 3, 2);
+			  rope.Step(clampedDeltaMs/1000, 3, new b2Vec2(0, 0));
+      },
+      draw() {
+        world.DebugDraw();
+        rope.Draw(renderer);
+      },
       destroy() {
         destroy(world);
         destroyRope();
@@ -119,7 +128,6 @@ export class WorldFactory {
     // https://becominghuman.ai/passing-and-returning-webassembly-array-parameters-a0f572c65d97
     masses.fill(1);
     masses[0] = 0;
-    // masses[1] = 0;
     masses[masses.length-1] = 0;
   
     const floatsPerVertex = 2; // b2Vec is a struct of `float x, y`
@@ -130,7 +138,6 @@ export class WorldFactory {
     // Populate the array with the values
     for (let i = 0; i < ropeLen; i++) {
       vertices[i*2] = initPos.x + 0.5 * i;
-      // vertices[i*2+1] = -2 - 0.25 * i;
       vertices[i*2+1] = -initPos.y + 0;
     }
   
@@ -146,15 +153,10 @@ export class WorldFactory {
     // tuning.set_damping(0.1);
   
     const ropeDef = new b2RopeDef();
-    // for (let i = 0; i < 2; i ++)
-    //   ropeDef.set_masses(i, 0);
-    // for (let i = 2; i < ropeLen; i ++)
-    //   ropeDef.set_masses(i, 1);
     const wrappedMasses: Box2D.WrapperObject = wrapPointer(massesBuffer);
     const wrappedVertices: Box2D.b2Vec2 = wrapPointer(verticesBuffer, b2Vec2);
     ropeDef.set_masses(wrappedMasses);
     ropeDef.set_vertices(wrappedVertices);
-    // ropeDef.set_vertices(wrapPointer(verticesBuffer, b2Vec2));
     ropeDef.set_count(ropeLen);
     ropeDef.set_gravity(new b2Vec2(0, -10));
     ropeDef.set_tuning(tuning);

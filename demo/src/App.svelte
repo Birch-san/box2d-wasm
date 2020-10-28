@@ -14,7 +14,7 @@
 
 	onMount(async () => {
     const box2D = await Box2DFactory();
-    const { b2Vec2 } = box2D;
+    const { b2Vec2, b2Draw: { e_shapeBit } } = box2D;
     const helpers = new Helpers(box2D);
     const ctx = canvas.getContext('2d');
     const canvasOffset: Point = {
@@ -25,10 +25,12 @@
       x: canvas.width/2,
       y: canvas.height/2
     };
-    const debugDraw = new CanvasDebugDraw(box2D, helpers, ctx!).constructJSDraw();
-    const { world, rope, destroy } = new WorldFactory(box2D, helpers).create(debugDraw);
 
-    const PTM = 32;
+    const pixelsPerMeter = 32;
+
+    const renderer = new CanvasDebugDraw(box2D, helpers, ctx!, pixelsPerMeter).constructJSDraw();
+    renderer.SetFlags(e_shapeBit);
+    const { step, draw, destroy } = new WorldFactory(box2D, helpers).create(renderer);
 
     const myRound = (val: number, places: number) => {
         let c = 1;
@@ -38,36 +40,34 @@
     }
 
     const getWorldPointFromPixelPoint = (pixelPoint: Point) => ({
-      x: (pixelPoint.x - canvasOffset.x)/PTM,
-      y: (pixelPoint.y - (canvas.height - canvasOffset.y))/PTM
+      x: (pixelPoint.x - canvasOffset.x)/pixelsPerMeter,
+      y: (pixelPoint.y - (canvas.height - canvasOffset.y))/pixelsPerMeter
     });
 
-    const setViewCenterWorld = (b2vecpos: any, instantaneous: any): void => {
-      var currentViewCenterWorld = getWorldPointFromPixelPoint( viewCenterPixel );
-      var toMoveX = b2vecpos.get_x() - currentViewCenterWorld.x;
-      var toMoveY = b2vecpos.get_y() - currentViewCenterWorld.y;
-      var fraction = instantaneous ? 1 : 0.25;
-      canvasOffset.x -= myRound(fraction * toMoveX * PTM, 0);
-      canvasOffset.y += myRound(fraction * toMoveY * PTM, 0);
+    const setViewCenterWorld = (pos: Box2D.b2Vec2, instantaneous: boolean): void => {
+      const currentViewCenterWorld = getWorldPointFromPixelPoint(viewCenterPixel);
+      const toMoveX = pos.get_x() - currentViewCenterWorld.x;
+      const toMoveY = pos.get_y() - currentViewCenterWorld.y;
+      const fraction = instantaneous ? 1 : 0.25;
+      canvasOffset.x -= myRound(fraction * toMoveX * pixelsPerMeter, 0);
+      canvasOffset.y += myRound(fraction * toMoveY * pixelsPerMeter, 0);
     };
     setViewCenterWorld( new b2Vec2(0,0), true );
 
-    const draw = () => {
+    const drawCanvas = () => {
       //black background
       ctx!.fillStyle = 'rgb(0,0,0)';
       ctx!.fillRect( 0, 0, canvas.width, canvas.height );
 
       ctx!.save();
       ctx!.translate(canvasOffset.x, canvasOffset.y);
-      ctx!.scale(1,-1);                
-      ctx!.scale(PTM, PTM);
-      ctx!.lineWidth /= PTM;
+      ctx!.scale(pixelsPerMeter, -pixelsPerMeter);
+      ctx!.lineWidth /= pixelsPerMeter;
       
-      CanvasDebugDraw.drawAxes(ctx!);
+      // CanvasDebugDraw.drawAxes(ctx!);
       
       ctx!.fillStyle = 'rgb(255,255,0)';
-      world.DebugDraw();
-      rope.Draw(debugDraw);
+      draw();
       
       // if ( mouseJoint != null ) {
       //     //mouse joint is not drawn with regular joints in debug draw
@@ -83,19 +83,14 @@
       ctx!.restore();
     };
 
-    // calculate no more than a 20th of a second during one world.Step() call
-    const maxTimeStep = 1/20*1000;
-
     let handle: number | undefined;
 
     (function loop(prevMs: number) {
       const nowMs = window.performance.now();
       handle = requestAnimationFrame(loop.bind(null, nowMs));
-      const delta = Math.min(nowMs-prevMs, maxTimeStep);
-
-			world.Step(delta/1000, 3, 2);
-			rope.Step(delta/1000, 3, new b2Vec2(0, 0));
-      draw();
+      const deltaMs = nowMs-prevMs;
+			step(deltaMs);
+      drawCanvas();
 		}(window.performance.now()));
 
 		return () => {

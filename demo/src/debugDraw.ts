@@ -13,7 +13,8 @@ export class CanvasDebugDraw {
   constructor(
     private readonly box2D: Box2DEmscriptenModule,
     private readonly helpers: Helpers,
-    private readonly context: CanvasRenderingContext2D
+    private readonly context: CanvasRenderingContext2D,
+    private readonly canvasScaleFactor: number
     ) {
   }
 
@@ -41,11 +42,12 @@ export class CanvasDebugDraw {
     this.context.strokeStyle = `rgb(${colStr})`;
   }
 
-  drawPoint = (vec_p: number, size: number, color_p: number): void => {
+  drawPoint = (vec_p: number, sizeMetres: number, color_p: number): void => {
     const { wrapPointer, b2Vec2 } = this.box2D;
     const vert = wrapPointer(vec_p, b2Vec2);
     this.setColorFromDebugDrawCallback(color_p);
-    this.context.fillRect(vert.get_x(), vert.get_y(), size, size);
+    const sizePixels = sizeMetres/this.canvasScaleFactor;
+    this.context.fillRect(vert.get_x()-sizePixels/2, vert.get_y()-sizePixels/2, sizePixels, sizePixels);
   }
   
   drawSegment = (vert1_p: number, vert2_p: number): void => {
