@@ -8,6 +8,7 @@
     "module": "esnext",
     "target": "esnext",
     "moduleResolution": "node",
+    "sourceMap": true,
     "strict": true,
     "allowSyntheticDefaultImports": true,
     "baseUrl": "."
