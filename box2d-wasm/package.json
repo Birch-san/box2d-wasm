@@ -5,6 +5,7 @@
   "main": "build/Box2D.js",
   "files": [
     "Box2DModule.d.ts",
+    "Box2DModuleAugmentations.d.ts",
     "build/Box2D.js",
     "build/Box2D.wasm",
     "build/Box2D.d.ts"
@@ -15,7 +16,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build_typings": "npm start --prefix node_modules/webidl-to-ts -- -f $(realpath Box2D.idl) -m box2d-wasm -n Box2D -o $(realpath .)/build/Box2D.d.ts",
+    "build_typings": "npm start --prefix node_modules/webidl-to-ts -- -f $(realpath Box2D.idl) -n Box2D -o $(realpath .)/build/Box2D.d.ts",
     "build": "./build_all.sh"
   },
   "devDependencies": {
