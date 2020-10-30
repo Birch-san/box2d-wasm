@@ -1,6 +1,7 @@
 # box2d-wasm
 
-Box2D compiled to WebAssembly. [Demo](https://birchlabs.co.uk/box2d-wasm/).
+Box2D compiled to WebAssembly. [Demo](https://birchlabs.co.uk/box2d-wasm/demo/).  
+_Demo includes sourcemaps to original C++ source._
 
 Compatibility: Box2D v2.4.0+ @[f0f9d50](https://github.com/erincatto/box2d/tree/f0f9d50a328a709cc3a287a61b864e7d0e3ef35f)
 
@@ -8,8 +9,6 @@ Compatibility: Box2D v2.4.0+ @[f0f9d50](https://github.com/erincatto/box2d/tree/
 | --- | --- | --- | --- |
 | `Box2D.js` | Provides helpers for you to invoke functionality from `Box2D.wasm` | 290kB | **40kB** | 
 | `Box2D.wasm` | Box2D physics engine | 212kB | **78kB** | 
-
-[Demo](https://birchlabs.co.uk/box2d-wasm/demo/) — includes sourcemaps to original C++ source.
 
 Detailed TypeScript declarations are included (generated via [`webidl-to-ts`](webidl-to-ts) from [WebIDL bindings](box2d-wasm/Box2D.idl)).
 
@@ -82,7 +81,7 @@ Project aims (compared to existing [`box2d.js`](https://github.com/kripken/box2d
     - The only remaining step would be to implement a renderer (make the worker `postMessage()` the world data to the UI thread for rendering)
     - But it could be fiddly to work out "when should I clear the canvas" between draws
 
-## Developing this package
+## Developing in this monorepo
 
 ### Clone repository
 
