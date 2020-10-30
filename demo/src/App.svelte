@@ -1,5 +1,6 @@
 <script lang="typescript">
   import Box2DFactory from 'box2d-wasm';
+  import type { Box2DEmscriptenModule } from 'box2d-wasm';
   import { onMount } from 'svelte';
   import { CanvasDebugDraw } from './debugDraw';
   import { Helpers } from './helpers';
@@ -13,7 +14,7 @@
   let canvas: HTMLCanvasElement;
 
 	onMount(async () => {
-    const box2D = await Box2DFactory();
+    const box2D: Box2DEmscriptenModule = await Box2DFactory();
     const { b2Vec2, b2Draw: { e_shapeBit } } = box2D;
     const helpers = new Helpers(box2D);
     const ctx = canvas.getContext('2d');
