@@ -22,7 +22,7 @@ set -x
 ../build_makefile.sh
 { set +x; } 2>&-
 
->&2 echo -e '\nCompiling C++ to LLVM IR (creates ./src/libbox2d.a archive)'
+>&2 echo -e '\nCompiling C++ to LLVM IR (creates ./build/bin/libbox2d.a archive)'
 set -x
 emmake make
 { set +x; } 2>&-
