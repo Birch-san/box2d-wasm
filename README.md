@@ -5,10 +5,10 @@ _Demo includes sourcemaps to original C++ source._
 
 There are a few directories in this monorepo:
 
-- [`box2d`](box2d)
+- [`box2d`](https://github.com/erincatto/box2d)
   - This is a git submodule of the [`box2d`](https://github.com/erincatto/box2d) C++ source code.
 - **[`box2d-wasm`](box2d-wasm)**
-  - Compiles [`box2d`](box2d) to WebAssembly
+  - Compiles [`box2d`](https://github.com/erincatto/box2d) to WebAssembly
     - Compiled using [Emscripten](https://emscripten.org/index.html) toolchain
   - Creates `.js` bindings to WebAssembly functionality
     - Exported functionality is described as `.idl` WebIDL bindings
@@ -32,7 +32,7 @@ Compiles Zlib-licensed code from Alon Zakai's [box2d-js](https://github.com/krip
 
 Project aims (compared to existing [`box2d.js`](https://github.com/kripken/box2d.js/)):
 
-- Support Box2D v2.4.0 and its new cmake build system
+- Support Box2D v2.4.0+ and its new cmake build system
 - ~~Add source maps back to original C++ source~~
   - This works (you can play around with it in the [demo](https://birchlabs.co.uk/box2d-wasm/demo/))
   - Isn't super helpful
