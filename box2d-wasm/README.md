@@ -3,12 +3,12 @@
 Box2D compiled to WebAssembly. [Demo](https://birchlabs.co.uk/box2d-wasm/demo/).  
 _Demo includes sourcemaps to original C++ source._
 
-Compatibility: Box2D v2.4.0+ @[f0f9d50](https://github.com/erincatto/box2d/tree/f0f9d50a328a709cc3a287a61b864e7d0e3ef35f)
+Compatibility: Box2D [v2.4.1](https://github.com/erincatto/box2d/releases/tag/v2.4.1)
 
 | Asset | Purpose | Size | Size (.gz) |
 | --- | --- | --- | --- |
 | `Box2D.js` | Provides helpers for you to invoke functionality from `Box2D.wasm` | 290kB | **40kB** | 
-| `Box2D.wasm` | Box2D physics engine | 212kB | **78kB** | 
+| `Box2D.wasm` | Box2D physics engine | 213kB | **78kB** | 
 
 Detailed TypeScript declarations are included (generated via [`webidl-to-ts`](../webidl-to-ts) from [WebIDL bindings](../box2d-wasm/Box2D.idl)).
 
@@ -57,30 +57,6 @@ A lot more is needed for a minimum working example, so refer to the [`demo`](../
 Links against MIT-licensed code from Erin Catto's [box2d](https://github.com/erincatto/box2d).  
 Compiles Zlib-licensed code from Alon Zakai's [box2d-js](https://github.com/kripken/box2d.js).
 
-## Project aims
-
-Project aims (compared to existing [`box2d.js`](https://github.com/kripken/box2d.js/)):
-
-- Support Box2D v2.4.0 and its new cmake build system
-- ~~Add source maps back to original C++ source~~
-  - This works (you can play around with it in the [demo](https://birchlabs.co.uk/box2d-wasm/demo/))
-  - Isn't super helpful
-  - Pretty fiddly to deploy
-  - Smaller build is preferable (build encounteres errors if both link-time optimizations and source maps are enabled)
-- Demo should demonstrate how to consume library via TypeScript
-- Strive for nice development experience (try to eliminate steps that involve manual copying of build artifacts)
-- Generate TypeScript declarations for WebIDL interface
-- Avoid pulling Box2D C++ into repository (prefer git submodule)
-- Keep build artifacts out of git (prefer to publish to npm)
-- If multiple versions of Box2D are to be maintained, this should be done via branches (and changing the commit of the box2d submodule)
-- Documentation not currently planned, but TypeScript declarations and demos would be a start.
-- ~~Offload processing to web worker~~
-  - This is possible, but the development experience (in rollup at least) is horrid (no debugging, no livereload)
-  - Project structure, build system and serving get pretty complicated
-  - Proof-of-concept: https://github.com/Birch-san/box2d-wasm/tree/web-workers
-    - The only remaining step would be to implement a renderer (make the worker `postMessage()` the world data to the UI thread for rendering)
-    - But it could be fiddly to work out "when should I clear the canvas" between draws
-
 ## Developing this package
 
 Confirmed working with emscripten 2.0.5.
@@ -111,7 +87,7 @@ emmake make
 export EMSCRIPTEN="${EMSCRIPTEN:-"$(realpath "$(dirname $(realpath "$(which emcc)"))/../libexec")"}"
 
 # ensure PYTHON environment variable points to a Python 3 binary:
-export PYTHON="${EMSCRIPTEN:-"$(which python3)"}"
+export PYTHON="${PYTHON:-"$(which python3)"}"
 
 # use Box2D.idl to create ./box2d_glue.{js,cpp} for invoking functionality from libbox2d
 ../build_idl_bindings.sh
