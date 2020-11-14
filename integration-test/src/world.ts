@@ -47,7 +47,7 @@ export class WorldFactory {
       step(deltaMs: number) {
         const clampedDeltaMs = Math.min(deltaMs, maxTimeStepMs);
         world.Step(clampedDeltaMs/1000, 3, 2);
-			  rope.Step(clampedDeltaMs/1000, 3, new b2Vec2(0, 0));
+        rope.Step(clampedDeltaMs/1000, 3, new b2Vec2(0, 0));
       },
       draw() {
         world.DebugDraw();
