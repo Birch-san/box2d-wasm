@@ -4,7 +4,7 @@ If you're developing changes to [`box2d-wasm`](../box2d-wasm) in this monorepo, 
 
 It's a [Svelte](https://svelte.dev/) web application, bundled with [Rollup](https://rollupjs.org/guide/en/).
 
-This package demonstrates a realistic integration of `box2d-wasm` into a modern web application (TypeScript, ES imports, bundler, UI framework).
+This package demonstrates a realistic integration of `box2d-wasm` into a modern web application (npm, TypeScript, ES imports, bundler, UI framework).
 
 ## Setup
 
@@ -23,7 +23,7 @@ node_modules/box2d-wasm/build/Box2D.d.ts
 Serve the Svelte application:
 
 ```bash
-npm run dev
+npm start
 ```
 
 Navigate to [localhost:5000](http://localhost:5000).
