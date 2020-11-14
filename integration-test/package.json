@@ -1,5 +1,5 @@
 {
-  "name": "box2d-wasm-demo-rollup-svelte",
+  "name": "integration-test",
   "version": "1.0.0",
   "scripts": {
     "build": "rollup -c",

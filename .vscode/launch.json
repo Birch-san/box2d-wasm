@@ -36,11 +36,11 @@
     {
       "type": "pwa-node",
       "request": "launch",
-      "name": "Serve demo (rollup-svelte)",
+      "name": "Serve integration-test",
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "cwd": "${workspaceFolder}/demo",
+      "cwd": "${workspaceFolder}/integration-test",
       "program": "node_modules/rollup/dist/bin/rollup",
       "args": ["-c", "-w"]
     }

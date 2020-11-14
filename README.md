@@ -19,7 +19,8 @@ There are a few directories in this monorepo:
   - Generates TypeScript `.d.ts` declarations from `.idl` [WebIDL bindings](https://emscripten.org/docs/porting/connecting_cpp_and_javascript/WebIDL-Binder.html) files.
     - `.idl` file parsed using W3C's [WebIDL parser](https://github.com/w3c/webidl2.js/)
     - TypeScript declarations created with TypeScript Compiler API
-- [`demo`](demo)
+- [`integration-test`](integration-test)
+  - For testing changes you've developed to [`box2d-wasm`](box2d-wasm)
   - Svelte application that demonstrates how to consume [`box2d-wasm`](box2d-wasm) via TypeScript
 
 ## License
@@ -67,7 +68,7 @@ cd box2d-wasm
 
 #### Instantiate packages
 
-[`pnpm`](https://pnpm.js.org/) is used to manage packages in this monorepo. In particular, it creates a symlink that enables `demo` to consume build artifacts from `box2d-wasm`.
+[`pnpm`](https://pnpm.js.org/) is used to manage packages in this monorepo. In particular, it creates a symlink that enables `integration-test` to consume build artifacts from `box2d-wasm`.
 
 ```bash
 # from root of repository
@@ -81,6 +82,6 @@ pnpm build --filter=webidl-to-ts
 
 See README of [`box2d-wasm`](box2d-wasm) package.
 
-### Run demo
+### Test `box2d-wasm` functionality inside an application
 
-See README of [`demo`](demo) package.
+See README of [`integration-test`](integration-test) package.
