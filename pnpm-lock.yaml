@@ -12,8 +12,8 @@ importers:
       box2d-wasm: 'link:../box2d-wasm'
       sirv-cli: 1.0.6
     devDependencies:
-      '@rollup/plugin-commonjs': 14.0.0_rollup@2.28.2
-      '@rollup/plugin-node-resolve': 8.4.0_rollup@2.28.2
+      '@rollup/plugin-commonjs': 16.0.0_rollup@2.28.2
+      '@rollup/plugin-node-resolve': 10.0.0_rollup@2.28.2
       '@rollup/plugin-typescript': 6.0.0_6ebf205059c50f6ae99787c685ed3f4e
       '@tsconfig/svelte': 1.0.10
       '@typescript-eslint/eslint-plugin': 4.4.0_a71b0516f86a95383173f79e74386c73
@@ -32,8 +32,8 @@ importers:
       tslib: 2.0.2
       typescript: 4.0.3
     specifiers:
-      '@rollup/plugin-commonjs': ^14.0.0
-      '@rollup/plugin-node-resolve': ^8.0.0
+      '@rollup/plugin-commonjs': ^16.0.0
+      '@rollup/plugin-node-resolve': ^10.0.0
       '@rollup/plugin-typescript': ^6.0.0
       '@tsconfig/svelte': ^1.0.0
       '@typescript-eslint/eslint-plugin': ^4.4.0
@@ -78,7 +78,7 @@ importers:
       typescript: ^4.0.3
       webidl2: ^23.13.0
       yargs: ^16.0.3
-lockfileVersion: 5.1
+lockfileVersion: 5.2
 packages:
   /@babel/code-frame/7.10.4:
     dependencies:
@@ -147,11 +147,11 @@ packages:
     dev: false
     resolution:
       integrity: sha512-3NsZsJIA/22P3QUyrEDNA2D133H4j224twJrdipXN38dpnIOzAbUDtOwkcJ5pXmn75w7LSQDjA4tO9dm1XlqlA==
-  /@rollup/plugin-commonjs/14.0.0_rollup@2.28.2:
+  /@rollup/plugin-commonjs/16.0.0_rollup@2.28.2:
     dependencies:
       '@rollup/pluginutils': 3.1.0_rollup@2.28.2
       commondir: 1.0.1
-      estree-walker: 1.0.1
+      estree-walker: 2.0.1
       glob: 7.1.6
       is-reference: 1.2.1
       magic-string: 0.25.7
@@ -161,26 +161,25 @@ packages:
     engines:
       node: '>= 8.0.0'
     peerDependencies:
-      rollup: ^2.3.4
+      rollup: ^2.30.0
     resolution:
-      integrity: sha512-+PSmD9ePwTAeU106i9FRdc+Zb3XUWyW26mo5Atr2mk82hor8+nPwkztEjFo8/B1fJKfaQDg9aM2bzQkjhi7zOw==
-  /@rollup/plugin-node-resolve/8.4.0_rollup@2.28.2:
+      integrity: sha512-LuNyypCP3msCGVQJ7ki8PqYdpjfEkE/xtFa5DqlF+7IBD0JsfMZ87C58heSwIMint58sAUZbt3ITqOmdQv/dXw==
+  /@rollup/plugin-node-resolve/10.0.0_rollup@2.28.2:
     dependencies:
       '@rollup/pluginutils': 3.1.0_rollup@2.28.2
       '@types/resolve': 1.17.1
       builtin-modules: 3.1.0
-      deep-freeze: 0.0.1
       deepmerge: 4.2.2
       is-module: 1.0.0
       resolve: 1.17.0
       rollup: 2.28.2
     dev: true
     engines:
-      node: '>= 8.0.0'
+      node: '>= 10.0.0'
     peerDependencies:
       rollup: ^1.20.0||^2.0.0
     resolution:
-      integrity: sha512-LFqKdRLn0ShtQyf6SBYO69bGE1upV6wUhBX0vFOUnLAyzx5cwp8svA0eHUnu8+YU57XOkrMtfG63QOpQx25pHQ==
+      integrity: sha512-sNijGta8fqzwA1VwUEtTvWCx2E7qC70NMsDh4ZG13byAXYigBNZMxALhKUSycBks5gupJdq0lFrKumFrRZ8H3A==
   /@rollup/plugin-typescript/6.0.0_6ebf205059c50f6ae99787c685ed3f4e:
     dependencies:
       '@rollup/pluginutils': 3.1.0_rollup@2.28.2
@@ -248,7 +247,7 @@ packages:
       integrity: sha1-h3L80EGOPNLMFxVV1zAHQVBR9LI=
   /@types/resolve/1.17.1:
     dependencies:
-      '@types/node': 14.11.5
+      '@types/node': 14.11.8
     dev: true
     resolution:
       integrity: sha512-yy7HuzQhj0dhGpD8RLXSZWEkLsV9ibvxvi6EiJ3bkqLAO1RGo0WbkWQiwpRlSFymTJRz0d3k5LM3kkx8ArDbLw==
@@ -915,10 +914,6 @@ packages:
     dev: true
     resolution:
       integrity: sha1-vuX7fJ5yfYXf+iRZDRDsGrElUwU=
-  /deep-freeze/0.0.1:
-    dev: true
-    resolution:
-      integrity: sha1-OgsABd4YZygZ39OM0x+RF5yJPoQ=
   /deep-is/0.1.3:
     dev: true
     resolution:

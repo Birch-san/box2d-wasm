@@ -32,6 +32,17 @@
       "outFiles": [
         "${workspaceFolder}/**/*.js"
       ]
+    },
+    {
+      "type": "pwa-node",
+      "request": "launch",
+      "name": "Serve demo (rollup-svelte)",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "cwd": "${workspaceFolder}/demo",
+      "program": "node_modules/rollup/dist/bin/rollup",
+      "args": ["-c", "-w"]
     }
   ]
 }
