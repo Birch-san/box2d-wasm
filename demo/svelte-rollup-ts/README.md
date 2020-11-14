@@ -26,7 +26,7 @@ Navigate to [localhost:4000](http://localhost:4000).
 
 ## Bundle for production
 
-Build a production bundle into `public/build`, copy `Box2D.wasm` there too.
+Build a production bundle into `public/build`, copy `Box2D.wasm` there too:
 
 ```bash
 npm run build
