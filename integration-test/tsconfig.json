@@ -2,13 +2,10 @@
   "extends": "@tsconfig/svelte/tsconfig.json",
 
   "include": ["src/**/*"],
-  "exclude": ["node_modules/*", "__sapper__/*", "public/*"],
 
   "compilerOptions": {
     "module": "esnext",
     "target": "esnext",
-    "moduleResolution": "node",
-    "sourceMap": true,
     "strict": true,
     "allowSyntheticDefaultImports": true,
     "baseUrl": "."
