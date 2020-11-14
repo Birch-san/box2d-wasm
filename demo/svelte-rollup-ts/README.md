@@ -6,20 +6,10 @@ Unlike [`integration-test`](../../integration-test), it consumes an already-buil
 
 ## Setup
 
-### Download
-
-Make yourself a copy of this folder:
+Grab yourself a copy of this repository, then install the demo's dependencies with npm:
 
 ```bash
-git clone --depth 1 --no-checkout https://github.com/Birch-san/box2d-wasm
-cd box2d-wasm
-git checkout demo -- demo/svelte-rollup-ts
-rm -rf .git
-```
-
-### Install
-
-```bash
+git clone https://github.com/Birch-san/box2d-wasm.git
 cd demo/svelte-rollup-ts
 npm i
 ```

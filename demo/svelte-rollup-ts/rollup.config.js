@@ -30,7 +30,9 @@ export default {
 			},
 			preprocess: sveltePreprocess(),
     }),
-    nodePolyfills(),
+    nodePolyfills({
+      exclude: 'node_modules/box2d-wasm/**/*.js'
+    }),
 
 		// If you have external dependencies installed from
 		// npm, you'll most likely need these plugins. In
