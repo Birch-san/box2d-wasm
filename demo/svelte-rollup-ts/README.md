@@ -11,7 +11,7 @@ Grab yourself a copy of this repository, then install the demo's dependencies wi
 ```bash
 git clone https://github.com/Birch-san/box2d-wasm.git
 cd demo/svelte-rollup-ts
-npm i
+npm ci
 ```
 
 ## Run
