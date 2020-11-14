@@ -45,7 +45,7 @@ export default {
 		}),
 		commonjs(),
 		typescript({
-			sourceMap: !production,
+			sourceMap: true,
 			inlineSources: !production
 		}),
 
@@ -53,7 +53,7 @@ export default {
 		// the bundle has been generated
 		!production && serve({
       contentBase: ['public', 'node_modules/box2d-wasm'],
-      port: 5000
+      port: 4000
     }),
 
 		// Watch the `public` directory and refresh the

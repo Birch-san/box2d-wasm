@@ -26,7 +26,28 @@ Serve the Svelte application:
 npm start
 ```
 
+Navigate to [localhost:4000](http://localhost:4000).
+
+## Bundle for production
+
+Build a production bundle into `public/build`, copy `Box2D.wasm` there too.
+
+```bash
+npm run build
+cp node_modules/box2d-wasm/build/Box2D.wasm public/build
+```
+
+## Verify the production bundle
+
+Serve the `public` folder:
+
+```bash
+npm run serve
+```
+
 Navigate to [localhost:5000](http://localhost:5000).
+
+You probably have your own solution for serving in production. Refer to the Emscripten docs for advice on [how to serve `.wasm` files with the correct MIME type (`application/wasm`)](https://emscripten.org/docs/compiling/WebAssembly.html#web-server-setup).
 
 ## Changing the application
 
