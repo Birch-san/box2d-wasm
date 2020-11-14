@@ -1,4 +1,7 @@
 /* eslint-env node */
+const eslintSveltePreprocess = require('eslint-svelte3-preprocess');
+const svelteConfig = require('./svelte.config');
+
 module.exports = {
   root: true,
   parserOptions: {
@@ -14,9 +17,14 @@ module.exports = {
     'eslint:recommended'
   ],
   plugins: [
+    'svelte3',
     '@typescript-eslint',
   ],
   overrides: [
+    {
+      files: ['*.svelte'],
+      processor: 'svelte3/svelte3',
+    },
 		{
 			files: ["*.ts"],
 			extends: [
@@ -24,4 +32,7 @@ module.exports = {
 			],
 		},
   ],
+  settings: {
+    'svelte3/preprocess': eslintSveltePreprocess(svelteConfig.preprocess),
+	},
 };

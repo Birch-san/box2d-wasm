@@ -36,13 +36,25 @@
     {
       "type": "pwa-node",
       "request": "launch",
-      "name": "Serve integration-test",
+      "name": "integration-test: serve",
       "skipFiles": [
         "<node_internals>/**"
       ],
       "cwd": "${workspaceFolder}/integration-test",
       "program": "node_modules/rollup/dist/bin/rollup",
       "args": ["-c", "-w"]
-    }
+    },
+    {
+      "type": "pwa-node",
+      "request": "launch",
+      "name": "integration-test: eslint",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "cwd": "${workspaceFolder}/integration-test",
+      "program": "node_modules/eslint/bin/eslint.js",
+      "args": ["--debug"],
+      "console": "integratedTerminal"
+    },
   ]
 }

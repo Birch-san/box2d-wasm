@@ -5,7 +5,7 @@
     "typescript"
   ],
   "eslint.workingDirectories": [
-    "./demo",
+    "./integration-test",
     "./webidl2-to-ts"
   ],
   "eslint.packageManager": "pnpm"
