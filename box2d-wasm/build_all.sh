@@ -26,16 +26,19 @@ set -x
 set -x
 emmake make
 { set +x; } 2>&-
+>&2 echo
 
 # use Box2D.idl to create ./box2d_glue.{js,cpp} for invoking functionality from libbox2d
 set -x
 ../build_idl_bindings.sh
 { set +x; } 2>&-
+>&2 echo
 
 # generate Box2D_*.{wasm,js} from glue code + libbox2d.a
 set -x
 ../build_wasm.sh
 { set +x; } 2>&-
+>&2 echo
 
 set -x
 ../build_typings.sh

@@ -2,7 +2,6 @@
 import svelte from 'rollup-plugin-svelte';
 import nodePolyfills from 'rollup-plugin-node-polyfills';
 import resolve from '@rollup/plugin-node-resolve';
-import commonjs from '@rollup/plugin-commonjs';
 import livereload from 'rollup-plugin-livereload';
 import serve from 'rollup-plugin-serve'
 import { terser } from 'rollup-plugin-terser';
@@ -41,7 +40,6 @@ export default {
 			browser: true,
 			dedupe: ['svelte']
 		}),
-		commonjs(),
 		typescript({
 			sourceMap: true,
 			inlineSources: !production
@@ -50,7 +48,7 @@ export default {
 		// In dev mode, call `npm run start` once
 		// the bundle has been generated
 		!production && serve({
-      contentBase: ['public', 'node_modules/box2d-wasm'],
+      contentBase: ['public', 'node_modules/box2d-wasm/build/es'],
       port: 4000
     }),
 

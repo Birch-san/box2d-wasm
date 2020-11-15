@@ -3,6 +3,8 @@ set -eo pipefail
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 Red='\033[0;31m'
+Green='\033[0;32m'
+Blue='\033[0;34m'
 Purple='\033[0;35m'
 NC='\033[0m' # No Color
 
@@ -11,26 +13,25 @@ if ! [[ "$PWD" -ef "$DIR/build" ]]; then
   exit 1
 fi
 
-LINK_OPTS="-s MODULARIZE=1 -s EXPORT_NAME=Box2D -s EXPORT_BINDINGS=1 -s RESERVED_FUNCTION_POINTERS=20 --post-js box2d_glue.js --memory-init-file 0 -s NO_EXIT_RUNTIME=1 -s NO_FILESYSTEM=1 -s EXPORTED_RUNTIME_METHODS=[] -s EXPORTED_FUNCTIONS=['_malloc','_free']"
-
+EMCC_OPTS=(-s MODULARIZE=1 -s EXPORT_NAME=Box2D -s EXPORT_BINDINGS=1 -s RESERVED_FUNCTION_POINTERS=20 --post-js box2d_glue.js --memory-init-file 0 -s NO_EXIT_RUNTIME=1 -s NO_FILESYSTEM=1 -s EXPORTED_RUNTIME_METHODS=[] -s EXPORTED_FUNCTIONS="['_malloc','_free']" -fno-rtti -s ALLOW_MEMORY_GROWTH=1 -s ENVIRONMENT=web)
 
 # I decided to keep assertions, because an assertion
 # once revealed that I'd compiled box2d incorrectly.
-RELEASE_OPTS_NOMINAL='-O3 -s ASSERTIONS=2'
+RELEASE_OPTS_NOMINAL=(-O3 -s ASSERTIONS=2)
 
 case "$TARGET_TYPE" in
   Debug)
-    FLAVOUR_LINK_OPTS='-g4 -s ASSERTIONS=2 -s DEMANGLE_SUPPORT=1'
+    FLAVOUR_EMCC_OPTS=(-g4 -s ASSERTIONS=2 -s DEMANGLE_SUPPORT=1)
     ;;
 
   RelWithDebInfo)
     # consider setting --source-map-base if you know where
     # Box2D will be served from.
-    FLAVOUR_LINK_OPTS="-g4 $RELEASE_OPTS_NOMINAL"
+    FLAVOUR_EMCC_OPTS=(-g4 ${RELEASE_OPTS_NOMINAL[@]})
     ;;
   
   Release)
-    FLAVOUR_LINK_OPTS="-flto --closure 1 -s IGNORE_CLOSURE_COMPILER_ERRORS=1 $RELEASE_OPTS_NOMINAL"
+    FLAVOUR_EMCC_OPTS=(-flto --closure 1 -s IGNORE_CLOSURE_COMPILER_ERRORS=1 ${RELEASE_OPTS_NOMINAL[@]})
     ;;
   
   *)
@@ -42,8 +43,24 @@ case "$TARGET_TYPE" in
 esac
 >&2 echo -e "TARGET_TYPE is $TARGET_TYPE"
 
-EMIT_OPTS=-fno-rtti
-TARGET_EMIT_OPTS="-s ALLOW_MEMORY_GROWTH=1 -o Box2D.js"
+BASENAME='Box2D'
 
+UMD_DIR='umd'
+ES_DIR='es'
+mkdir -p "$UMD_DIR" "$ES_DIR"
+
+UMD_FILE="$UMD_DIR/$BASENAME.js"
+>&2 echo -e "${Blue}Building UMD module, $UMD_FILE${NC}"
+EMCC_COMMAND_NOMINAL=("${EMCC_OPTS[@]}" "${FLAVOUR_EMCC_OPTS[@]}" -I "$DIR/../box2d/include" --post-js "$DIR/glue_stub.js" "$DIR/glue_stub.cpp" bin/libbox2d.a)
 set -x
-exec emcc $LINK_OPTS $FLAVOUR_LINK_OPTS -I "$DIR/../box2d/include" '--post-js' "$DIR/glue_stub.js" "$DIR/glue_stub.cpp" bin/libbox2d.a $EMIT_OPTS $TARGET_EMIT_OPTS
+emcc "${EMCC_COMMAND_NOMINAL[@]}" -o "$UMD_FILE"
+{ set +x; } 2>&-
+>&2 echo -e "${Green}Successfully built $UMD_FILE${NC}"
+>&2 echo
+
+ES_FILE="$ES_DIR/$BASENAME.js"
+>&2 echo -e "${Blue}Building ES module, $ES_FILE${NC}"
+set -x
+emcc "${EMCC_COMMAND_NOMINAL[@]}" -s EXPORT_ES6=1 -o "$ES_FILE"
+{ set +x; } 2>&-
+>&2 echo -e "${Green}Successfully built $ES_FILE${NC}"

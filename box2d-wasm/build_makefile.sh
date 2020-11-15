@@ -13,18 +13,18 @@ fi
 
 >&2 echo -e '\nGenerating Makefile with emcmake'
 
-CMAKE_CXX_FLAGS=''
+CMAKE_CXX_FLAGS=()
 
 case "$TARGET_TYPE" in
   RelWithDebInfo)
     # -flto can succeed here, but causes the emcc after this to fail during wasm-emscripten-finalize (possibly due to source maps)
-    CMAKE_CXX_FLAGS="-O3 -g"
+    CMAKE_CXX_FLAGS=(-O3 -g)
     ;;
   Release)
-    CMAKE_CXX_FLAGS="-O3 -flto"
+    CMAKE_CXX_FLAGS=(-O3 -flto)
     ;;
   Debug)
-    CMAKE_CXX_FLAGS="-g"
+    CMAKE_CXX_FLAGS=(-g)
     ;;
 
   *)

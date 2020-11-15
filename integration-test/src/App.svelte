@@ -14,7 +14,14 @@
   let canvas: HTMLCanvasElement;
 
 	onMount(async () => {
-    const box2D: Box2DEmscriptenModule = await Box2DFactory();
+    const box2D: Box2DEmscriptenModule = await Box2DFactory({
+      /**
+       * By default, this looks for Box2D.wasm relative to public/build/bundle.js:
+       * @example (url, scriptDirectory) => `${scriptDirectory}${url}`
+       * But we want to look for Box2D.wasm relative to public/index.html instead.
+       */
+      locateFile: url => url
+    });
     const { b2Vec2, b2Draw: { e_shapeBit } } = box2D;
     const helpers = new Helpers(box2D);
     const ctx = canvas.getContext('2d');
