@@ -15,9 +15,9 @@ fi
 
 EMCC_OPTS=(-s MODULARIZE=1 -s EXPORT_NAME=Box2D -s EXPORT_BINDINGS=1 -s RESERVED_FUNCTION_POINTERS=20 --post-js box2d_glue.js --memory-init-file 0 -s NO_EXIT_RUNTIME=1 -s NO_FILESYSTEM=1 -s EXPORTED_RUNTIME_METHODS=[] -s EXPORTED_FUNCTIONS="['_malloc','_free']" -fno-rtti -s ALLOW_MEMORY_GROWTH=1 -s ENVIRONMENT=web)
 
-# I decided to keep assertions, because an assertion
-# once revealed that I'd compiled box2d incorrectly.
-RELEASE_OPTS_NOMINAL=(-O3 -s ASSERTIONS=2)
+# if we remove assertions, we get runtime error "a.asm is undefined", which indicates
+# a data race in loading the Module (the asm property does get initialised eventually)
+RELEASE_OPTS_NOMINAL=(-O3 -s ASSERTIONS=1)
 
 case "$TARGET_TYPE" in
   Debug)
@@ -49,14 +49,18 @@ UMD_DIR='umd'
 ES_DIR='es'
 mkdir -p "$UMD_DIR" "$ES_DIR"
 
-UMD_FILE="$UMD_DIR/$BASENAME.js"
->&2 echo -e "${Blue}Building UMD module, $UMD_FILE${NC}"
-EMCC_COMMAND_NOMINAL=("${EMCC_OPTS[@]}" "${FLAVOUR_EMCC_OPTS[@]}" -I "$DIR/../box2d/include" --post-js "$DIR/glue_stub.js" "$DIR/glue_stub.cpp" bin/libbox2d.a)
-set -x
-emcc "${EMCC_COMMAND_NOMINAL[@]}" -o "$UMD_FILE"
-{ set +x; } 2>&-
->&2 echo -e "${Green}Successfully built $UMD_FILE${NC}"
->&2 echo
+if [ "$SKIP_UMD_BUILD" = "1" ]; then
+  echo "${Green}Skipped UMD build because we gotta go fast${NC}"
+else
+  UMD_FILE="$UMD_DIR/$BASENAME.js"
+  >&2 echo -e "${Blue}Building UMD module, $UMD_FILE${NC}"
+  EMCC_COMMAND_NOMINAL=("${EMCC_OPTS[@]}" "${FLAVOUR_EMCC_OPTS[@]}" -I "$DIR/../box2d/include" --post-js "$DIR/glue_stub.js" "$DIR/glue_stub.cpp" bin/libbox2d.a)
+  set -x
+  emcc "${EMCC_COMMAND_NOMINAL[@]}" -o "$UMD_FILE"
+  { set +x; } 2>&-
+  >&2 echo -e "${Green}Successfully built $UMD_FILE${NC}"
+  >&2 echo
+fi
 
 ES_FILE="$ES_DIR/$BASENAME.js"
 >&2 echo -e "${Blue}Building ES module, $ES_FILE${NC}"
