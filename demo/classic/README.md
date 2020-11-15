@@ -2,6 +2,8 @@
 
 This package shows how you could install `box2d-wasm` into a webpage, using old-school techniques (`<script />` tag, UMD module).
 
+![](https://birchlabs.co.uk/box2d-wasm/webpage-demo.gif)
+
 ## Setup
 
 Grab yourself a copy of this repository, install the demo's dependencies with npm, and copy `Box2D.js` & `Box2D.wasm` into `public`, where the demo will be served from:

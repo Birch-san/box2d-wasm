@@ -2,6 +2,8 @@
 
 Box2D compiled to WebAssembly. [Demo](https://birchlabs.co.uk/box2d-wasm/demo/).
 
+![](https://birchlabs.co.uk/box2d-wasm/webpage-demo.gif)
+
 ## Usage
 
 Install the [`box2d-wasm` npm package](https://www.npmjs.com/package/box2d-wasm)

@@ -2,6 +2,8 @@
 
 This package shows how you could install `box2d-wasm` into a modern web application (npm, TypeScript, ES imports, bundler, UI framework).
 
+![](https://birchlabs.co.uk/box2d-wasm/svelte-demo.gif)
+
 Unlike [`integration-test`](../../integration-test), it consumes an already-built [`box2d-wasm` package from npm](https://www.npmjs.com/package/box2d-wasm).
 
 ## Setup
