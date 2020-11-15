@@ -31,7 +31,8 @@ import type { Box2DEmscriptenModule } from 'box2d-wasm';
 // I'm relying on top-level await here; lookup alternatives if this is unavailable on your platform
 const box2D: Box2DEmscriptenModule = await Box2DFactory();
 const { b2BodyDef, b2Vec2, b2World } = box2D;
-const world = new b2World(new b2Vec2(0.0, 0.0));
+const gravity = new b2Vec2(0, 10);
+const world = new b2World(gravity);
 const ground = new b2BodyDef();
 const groundBody = world.CreateBody(ground);
 // see "demo" package in this repository for more
@@ -49,7 +50,7 @@ Box2DFactory({
 })
 ```
 
-A lot more is needed for a minimum working example, so refer to the [`demo`](../demo) package to see how to make [something like this](https://birchlabs.co.uk/box2d-wasm/demo/).
+A lot more is needed for a minimum working example, so refer to the [demos](../demo) for more inspiration.
 
 ## License
 
