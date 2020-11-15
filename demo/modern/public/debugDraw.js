@@ -30,17 +30,6 @@ export const makeDebugDraw = (ctx, pixelsPerMeter, {
     new b2Vec2(vec.get_x(), vec.get_y());
 
   /**
-   * to replace original C++ operator * (float) 
-   * @param {Box2D.b2Vec2} vec
-   * @param {number} scale
-   * @returns {void}
-   */
-  const scaleVec2 = (vec, scale) => {
-    vec.set_x(scale * vec.get_x());
-    vec.set_y(scale * vec.get_y());
-  };
-
-  /**
    * to replace original C++ operator *= (float) 
    * @param {Box2D.b2Vec2} vec
    * @param {number} scale
