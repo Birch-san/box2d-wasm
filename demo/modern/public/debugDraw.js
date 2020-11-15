@@ -1,4 +1,13 @@
 /**
+ * Forked from Box2D.js
+ * @see https://github.com/kripken/box2d.js/blob/f75077b/helpers/embox2d-helpers.js
+ * @author dmagunov + Huy Nguyen + fork contributions from Alex Birch
+ * @see https://github.com/kripken/box2d.js/blob/49dddd6/helpers/embox2d-html5canvas-debugDraw.js
+ * @author dmagunov + fork contributions from Alex Birch
+ * @license Zlib https://opensource.org/licenses/Zlib
+ * License evidence: https://github.com/kripken/box2d.js/blob/master/README.markdown#box2djs
+ *   "box2d.js is zlib licensed, just like Box2D."
+ * 
  * @param {CanvasRenderingContext2D} ctx
  * @param {number} pixelsPerMeter
  * @param {import('box2d-wasm').Box2DEmscriptenModule} box2D
@@ -6,10 +15,40 @@
 export const makeDebugDraw = (ctx, pixelsPerMeter, {
     b2Color,
     b2Draw: { e_shapeBit },
+    b2Transform,
     b2Vec2,
     JSDraw,
     wrapPointer
   }) => {
+
+  /**
+   * to replace original C++ operator =
+   * @param {Box2D.b2Vec2} vec
+   * @returns {Box2D.b2Vec2}
+   */
+  const copyVec2 = vec =>
+    new b2Vec2(vec.get_x(), vec.get_y());
+
+  /**
+   * to replace original C++ operator * (float) 
+   * @param {Box2D.b2Vec2} vec
+   * @param {number} scale
+   * @returns {void}
+   */
+  const scaleVec2 = (vec, scale) => {
+    vec.set_x(scale * vec.get_x());
+    vec.set_y(scale * vec.get_y());
+  };
+
+  /**
+   * to replace original C++ operator *= (float) 
+   * @param {Box2D.b2Vec2} vec
+   * @param {number} scale
+   * @returns {Box2D.b2Vec2}
+   */
+  const scaledVec2 = (vec, scale) =>
+    new b2Vec2(scale * vec.get_x(), scale * vec.get_y());
+    
   /**
    * @param {Box2D.b2Color} color
    * @returns {string}
@@ -54,6 +93,32 @@ export const makeDebugDraw = (ctx, pixelsPerMeter, {
   };
 
   /**
+   * @param {Box2D.b2Vec2} center
+   * @param {number} radius
+   * @param {Box2D.b2Vec2} axis
+   * @param {boolean} fill
+   * @returns {void}
+   */
+  const drawCircle = (center, radius, axis, fill) => {
+    ctx.beginPath();
+    ctx.arc(center.get_x(), center.get_y(), radius, 0, 2 * Math.PI, false);
+    if (fill) {
+      ctx.fill();
+    }
+    ctx.stroke();
+    
+    if (fill) {
+      //render axis marker
+      const vertex = copyVec2(center);
+      vertex.op_add(scaledVec2(axis, radius));
+      ctx.beginPath();
+      ctx.moveTo(center.get_x(), center.get_y());
+      ctx.lineTo(vertex.get_x(), vertex.get_y());
+      ctx.stroke();
+    }
+  };
+
+  /**
    * @param {Box2D.b2Vec2} vert1
    * @param {Box2D.b2Vec2} vert2
    * @returns {void}
@@ -79,6 +144,23 @@ export const makeDebugDraw = (ctx, pixelsPerMeter, {
       sizePixels
       );
   };
+
+  /**
+   * @param {Box2D.b2Transform} transform
+   * @param {number} sizeMetres
+   * @returns {void}
+   */
+  const drawTransform = transform => {
+    const pos = transform.get_p();
+    const rot = transform.get_q();
+    
+    ctx.save();
+    ctx.translate(pos.get_x(), pos.get_y());
+    ctx.scale(0.5, 0.5);
+    ctx.rotate(rot.GetAngle());
+    ctx.lineWidth *= 2;
+    ctx.restore();
+  }
 
   /** {@link Box2D.b2Vec2} is a struct of `float x, y` */
   const sizeOfB2Vec = Float32Array.BYTES_PER_ELEMENT * 2;
@@ -136,34 +218,39 @@ export const makeDebugDraw = (ctx, pixelsPerMeter, {
       drawPolygon(vertices, vertexCount, true);
     },
     /**
-     * @param {Box2D.b2Vec2 | number} center_p
+     * @param {number} center_p pointer to {@link Box2D.b2Vec2}
      * @param {number} radius
-     * @param {Box2D.b2Color | number} color_p
+     * @param {number} color_p pointer to {@link Box2D.b2Color}
      * @returns {void}
      */
     DrawCircle(center_p, radius, color_p) {
-      // this.setColorFromDebugDrawCallback(color_p);
-      // const dummyAxis = new b2Vec2(0,0);
-      // const dummyAxis_p = getPointer(dummyAxis);
-      // this.drawCircle(center_p, radius, dummyAxis_p, false);
+      const color = wrapPointer(color_p, b2Color);
+      setCtxColor(getRgbStr(color));
+      const center = wrapPointer(center_p, b2Vec2);
+      const dummyAxis = new b2Vec2(0,0);
+      drawCircle(center, radius, dummyAxis, false);
     },
     /**
-     * @param {Box2D.b2Vec2 | number} center_p
+     * @param {number} center_p pointer to {@link Box2D.b2Vec2}
      * @param {number} radius
-     * @param {Box2D.b2Vec2 | number} axis_p
-     * @param {Box2D.b2Color | number} color_p
+     * @param {number} axis_p pointer to {@link Box2D.b2Vec2}
+     * @param {number} color_p pointer to {@link Box2D.b2Color}
      * @returns {void}
      */
     DrawSolidCircle(center_p, radius, axis_p, color_p) {
-      // this.setColorFromDebugDrawCallback(color_p);
-      // this.drawCircle(center_p, radius, axis_p, true);
+      const color = wrapPointer(color_p, b2Color);
+      setCtxColor(getRgbStr(color));
+      const center = wrapPointer(center_p, b2Vec2);
+      const axis = wrapPointer(axis_p, b2Vec2);
+      drawCircle(center, radius, axis, true);
     },
     /**
-     * @param {Box2D.b2Transform | number} transform_p
+     * @param {number} transform_p pointer to {@link Box2D.b2Transform}
      * @returns {void}
      */
     DrawTransform(transform_p) {
-      // this.drawTransform(transform_p);
+      const transform = wrapPointer(transform_p, b2Transform);
+      drawTransform(transform);
     },
     /**
      * @param {number} vertex_p pointer to {@link Box2D.b2Vec2}

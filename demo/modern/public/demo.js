@@ -8,6 +8,7 @@ Box2DFactory_().then(box2D => {
   const {
     b2_dynamicBody,
     b2BodyDef,
+    b2CircleShape,
     b2EdgeShape,
     b2Vec2,
     b2PolygonShape,
@@ -44,8 +45,10 @@ Box2DFactory_().then(box2D => {
   }
 
   const sideLengthMetres = 1;
-  const shape = new b2PolygonShape();
-  shape.SetAsBox(sideLengthMetres/2, sideLengthMetres/2);
+  const square = new b2PolygonShape();
+  square.SetAsBox(sideLengthMetres/2, sideLengthMetres/2);
+  const circle = new b2CircleShape();
+  circle.set_m_radius(sideLengthMetres/2);
 
   const ZERO = new b2Vec2(0, 0);
   const temp = new b2Vec2(0, 0);
@@ -69,7 +72,7 @@ Box2DFactory_().then(box2D => {
     bd.set_type(b2_dynamicBody);
     bd.set_position(ZERO);
     const body = world.CreateBody(bd);
-    body.CreateFixture(shape, 1);
+    body.CreateFixture(i % 2 ? square : circle, 1);
     initPosition(body, i);
   }
 
