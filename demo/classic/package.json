@@ -1,0 +1,14 @@
+{
+  "name": "box2d-wasm-demo-classic",
+  "version": "1.0.0",
+  "license": "Zlib",
+  "scripts": {
+    "start": "sirv public --dev"
+  },
+  "devDependencies": {
+    "sirv-cli": "^1.0.0"
+  },
+  "dependencies": {
+    "box2d-wasm": "1.0.2"
+  }
+}

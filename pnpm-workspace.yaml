@@ -1,4 +1,5 @@
 packages:
   - demo
+  - integration-test
   - box2d-wasm
   - webidl-to-ts
