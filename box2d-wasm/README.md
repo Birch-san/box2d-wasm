@@ -60,4 +60,4 @@ Compiles Zlib-licensed code from Alon Zakai's [box2d-js](https://github.com/krip
 
 ## Developing this package
 
-See [README.dev.md](README.dev.md).
+See [`README.dev.md`](README.dev.md).
