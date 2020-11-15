@@ -10,7 +10,7 @@ Grab yourself a copy of this repository, install the demo's dependencies with np
 
 ```bash
 git clone https://github.com/Birch-san/box2d-wasm.git
-cd demo/modern
+cd box2d-wasm/demo/modern
 npm ci
 cp node_modules/box2d-wasm/build/es/Box2D.{js,wasm} public
 ```
