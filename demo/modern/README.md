@@ -1,6 +1,6 @@
-# Demo (classic)
+# Demo (modern)
 
-This package shows how you could install `box2d-wasm` into a webpage, using old-school techniques (`<script />` tag, UMD module).
+This package shows how you could install `box2d-wasm` into a modern webpage. This uses `<script type="module" />` to consume the ES module distribution of Box2D.
 
 ## Setup
 
@@ -8,9 +8,9 @@ Grab yourself a copy of this repository, install the demo's dependencies with np
 
 ```bash
 git clone https://github.com/Birch-san/box2d-wasm.git
-cd demo/classic
+cd demo/modern
 npm ci
-cp node_modules/box2d-wasm/build/umd/Box2D.{js,wasm} public
+cp node_modules/box2d-wasm/build/es/Box2D.{js,wasm} public
 ```
 
 ## Run
