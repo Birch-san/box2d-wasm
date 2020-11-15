@@ -14,8 +14,8 @@ fi
 LINK_OPTS="-s MODULARIZE=1 -s EXPORT_NAME=Box2D -s EXPORT_BINDINGS=1 -s RESERVED_FUNCTION_POINTERS=20 --post-js box2d_glue.js --memory-init-file 0 -s NO_EXIT_RUNTIME=1 -s NO_FILESYSTEM=1 -s EXPORTED_RUNTIME_METHODS=[] -s EXPORTED_FUNCTIONS=['_malloc','_free']"
 
 
-# I decided to keep assertions, because in Box2D v2.4.1 an assertion (inertia must be positive)
-# actually failed, and it was good that it told me that.
+# I decided to keep assertions, because an assertion
+# once revealed that I'd compiled box2d incorrectly.
 RELEASE_OPTS_NOMINAL='-O3 -s ASSERTIONS=2'
 
 case "$TARGET_TYPE" in
@@ -24,7 +24,8 @@ case "$TARGET_TYPE" in
     ;;
 
   RelWithDebInfo)
-    # --source-map-base http://localhost:5000/
+    # consider setting --source-map-base if you know where
+    # Box2D will be served from.
     FLAVOUR_LINK_OPTS="-g4 $RELEASE_OPTS_NOMINAL"
     ;;
   

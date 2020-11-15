@@ -1,6 +1,8 @@
 ## Developing this package
 
-Confirmed working with emscripten 2.0.5.
+Ensure that you have a recent [emscripten](https://emscripten.org/) installed.
+
+This build process is known to work with emscripten 2.0.5.
 
 ### Overview
 
