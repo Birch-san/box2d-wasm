@@ -18,24 +18,32 @@ Box2DFactory().then(box2D => {
   const canvas = document.getElementById("demo-canvas");
   const ctx = canvas.getContext('2d');
 
-  const gravity = new b2Vec2(0, 100);
+  const pixelsPerMeter = 32;
+  const cameraOffsetMetres = {
+    x: 0,
+    y: 0
+  };
+
+  const gravity = new b2Vec2(0, 10);
   const world = new b2World(gravity);
 
   const bd_ground = new b2BodyDef();
   const ground = world.CreateBody(bd_ground);
 
+  // ramp which boxes fall onto initially
   {
     const shape = new b2EdgeShape();
-    shape.SetTwoSided(new b2Vec2(50, 50), new b2Vec2(100, 100));
+    shape.SetTwoSided(new b2Vec2(3, 4), new b2Vec2(6, 7));
     ground.CreateFixture(shape, 0);
   }
+  // floor which boxes rest on
   {
     const shape = new b2EdgeShape();
-    shape.SetTwoSided(new b2Vec2(50, 600), new b2Vec2(500, 600));
+    shape.SetTwoSided(new b2Vec2(3, 18), new b2Vec2(22, 18));
     ground.CreateFixture(shape, 0);
   }
 
-  const sideLengthMetres = 50;
+  const sideLengthMetres = 1;
   const shape = new b2PolygonShape();
   shape.SetAsBox(sideLengthMetres/2, sideLengthMetres/2);
 
@@ -47,12 +55,14 @@ Box2DFactory().then(box2D => {
    * @returns {void}
    */
   const initPosition = (body, index) => {
-    temp.Set(100 + sideLengthMetres*(Math.random()-0.5), -sideLengthMetres*index);
+    temp.Set(4 + sideLengthMetres*(Math.random()-0.5), -sideLengthMetres*index);
     body.SetTransform(temp, 0);
     body.SetLinearVelocity(ZERO);
     body.SetAwake(1);
     body.SetEnabled(1);
   }
+
+  // make falling boxes
   const boxCount = 10;
   for (let i = 0; i < boxCount; i++) {
     const bd = new b2BodyDef();
@@ -124,11 +134,12 @@ Box2DFactory().then(box2D => {
    * @returns {void}
    */
   const drawPoint = (vertex, sizeMetres) => {
+    const sizePixels = sizeMetres/pixelsPerMeter;
     ctx.fillRect(
-      vertex.get_x()-sizeMetres/2,
-      vertex.get_y()-sizeMetres/2,
-      sizeMetres,
-      sizeMetres
+      vertex.get_x()-sizePixels/2,
+      vertex.get_y()-sizePixels/2,
+      sizePixels,
+      sizePixels
       );
   };
 
@@ -246,9 +257,17 @@ Box2DFactory().then(box2D => {
   const drawCanvas = () => {
     ctx.fillStyle = 'rgb(0,0,0)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.save();
+    ctx.scale(pixelsPerMeter, pixelsPerMeter);
+    const { x, y } = cameraOffsetMetres;
+    ctx.translate(x, y);
+    ctx.lineWidth /= pixelsPerMeter;
     
     ctx.fillStyle = 'rgb(255,255,0)';
     world.DebugDraw();
+
+    ctx.restore();
   };
 
   /** @type {?number} */
