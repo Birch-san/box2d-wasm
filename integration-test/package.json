@@ -4,7 +4,7 @@
   "scripts": {
     "build": "rollup -c",
     "start": "rollup -c -w",
-    "serve": "sirv public"
+    "serve": "sirv public --dev"
   },
   "license": "Zlib",
   "devDependencies": {
