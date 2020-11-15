@@ -12,6 +12,8 @@ npm i --save box2d-wasm
 
 See the [demos](demo) for examples of how to integrate `box2d-wasm` into your application.
 
+See [`box2d-wasm`](box2d-wasm) for further usage instructions.
+
 ## License
 
 [Zlib-licensed](LICENSE.zlib.txt).  
