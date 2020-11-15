@@ -8,7 +8,6 @@
   },
   "license": "Zlib",
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^15.0.0",
     "@rollup/plugin-node-resolve": "^10.0.0",
     "@rollup/plugin-typescript": "^6.0.0",
     "@tsconfig/svelte": "^1.0.0",
@@ -28,6 +27,6 @@
     "typescript": "^4.0.0"
   },
   "dependencies": {
-    "box2d-wasm": "1.0.2"
+    "box2d-wasm": "1.1.0"
   }
 }

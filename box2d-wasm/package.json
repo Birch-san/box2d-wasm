@@ -1,14 +1,17 @@
 {
   "name": "box2d-wasm",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Box2D compiled to WebAssembly",
-  "main": "build/Box2D.js",
+  "module": "build/es/Box2D.js",
+  "main": "build/umd/Box2D.js",
   "files": [
     "Box2DModule.d.ts",
     "Box2DModuleAugmentations.d.ts",
-    "build/Box2D.js",
-    "build/Box2D.wasm",
-    "build/Box2D.d.ts"
+    "build/Box2D.d.ts",
+    "build/es/Box2D.js",
+    "build/es/Box2D.wasm",
+    "build/umd/Box2D.js",
+    "build/umd/Box2D.wasm"
   ],
   "types": "Box2DModule.d.ts",
   "repository": {

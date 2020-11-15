@@ -10,7 +10,8 @@ Grab yourself a copy of this repository, install the demo's dependencies with np
 git clone https://github.com/Birch-san/box2d-wasm.git
 cd demo/classic
 npm ci
-cp node_modules/box2d-wasm/build/Box2D.{js,wasm} public
+cp node_modules/box2d-wasm/build/umd/Box2D.js public
+cp node_modules/box2d-wasm/build/umd/Box2D.wasm public
 ```
 
 ## Run

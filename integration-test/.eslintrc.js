@@ -24,5 +24,6 @@ module.exports = {
 				"plugin:@typescript-eslint/recommended"
 			],
 		},
-  ]
+  ],
+  ignorePatterns: ['public/build/**/*.js']
 };

@@ -13,18 +13,25 @@ fi
 
 >&2 echo -e '\nGenerating Makefile with emcmake'
 
-CMAKE_CXX_FLAGS=''
+# emcmake already enforces the following overrides (see build/CMakeCache.txt after running emcmake)
+#   CMAKE_CXX_FLAGS_DEBUG:STRING=-g
+#   CMAKE_CXX_FLAGS_MINSIZEREL:STRING=-DNDEBUG -Os
+#   CMAKE_CXX_FLAGS_RELEASE:STRING=-DNDEBUG -O2
+#   CMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING=-DNDEBUG -O2
+# these flags are applied *after* ours, which means they have precedence.
+# see how the flags get resolved in build/src/CMakeFiles/box2d.dir/flags.make
+CMAKE_CXX_FLAGS=()
 
 case "$TARGET_TYPE" in
   RelWithDebInfo)
     # -flto can succeed here, but causes the emcc after this to fail during wasm-emscripten-finalize (possibly due to source maps)
-    CMAKE_CXX_FLAGS="-O3 -g"
+    CMAKE_CXX_FLAGS=(-g)
     ;;
   Release)
-    CMAKE_CXX_FLAGS="-O3 -flto"
+    CMAKE_CXX_FLAGS=(-flto)
     ;;
   Debug)
-    CMAKE_CXX_FLAGS="-g"
+    # emcmake already gives us -g
     ;;
 
   *)
