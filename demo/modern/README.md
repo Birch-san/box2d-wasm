@@ -2,7 +2,7 @@
 
 This package shows how you could install `box2d-wasm` into a modern webpage. This uses `<script type="module" />` to consume the ES module distribution of Box2D.
 
-![](https://birchlabs.co.uk/box2d-wasm/webpage-demo.gif)
+![](https://birchlabs.co.uk/box2d-wasm/webpage-50fps.gif)
 
 ## Setup
 

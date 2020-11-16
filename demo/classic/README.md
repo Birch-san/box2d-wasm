@@ -2,7 +2,7 @@
 
 This package shows how you could install `box2d-wasm` into a webpage, using old-school techniques (`<script />` tag, UMD module).
 
-![](https://birchlabs.co.uk/box2d-wasm/webpage-demo.gif)
+![](https://birchlabs.co.uk/box2d-wasm/webpage-50fps.gif)
 
 ## Setup
 

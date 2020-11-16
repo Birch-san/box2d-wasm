@@ -2,6 +2,8 @@
 
 If you're developing changes to [`box2d-wasm`](../box2d-wasm) in this monorepo, you can use this `integration-test` package to validate your changes.
 
+![](https://birchlabs.co.uk/box2d-wasm/svelte-50fps.gif)
+
 It's a [Svelte](https://svelte.dev/) web application, bundled with [Rollup](https://rollupjs.org/guide/en/).
 
 This package demonstrates a realistic integration of `box2d-wasm` into a modern web application (npm, TypeScript, ES imports, bundler, UI framework).

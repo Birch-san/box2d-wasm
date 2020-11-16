@@ -2,7 +2,7 @@
 
 Box2D compiled to WebAssembly. [Demo](https://birchlabs.co.uk/box2d-wasm/demo/).
 
-![](https://birchlabs.co.uk/box2d-wasm/webpage-demo.gif)
+![](https://birchlabs.co.uk/box2d-wasm/webpage-50fps.gif)
 
 ## Usage
 
