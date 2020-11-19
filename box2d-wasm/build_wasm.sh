@@ -43,6 +43,8 @@ case "$TARGET_TYPE" in
 esac
 >&2 echo -e "TARGET_TYPE is $TARGET_TYPE"
 
+EMCC_COMMAND_NOMINAL=("${EMCC_OPTS[@]}" "${FLAVOUR_EMCC_OPTS[@]}" -I "$DIR/../box2d/include" --post-js "$DIR/glue_stub.js" "$DIR/glue_stub.cpp" bin/libbox2d.a)
+
 BASENAME='Box2D'
 
 UMD_DIR='umd'
@@ -50,16 +52,14 @@ ES_DIR='es'
 mkdir -p "$UMD_DIR" "$ES_DIR"
 
 if [ "$SKIP_UMD_BUILD" = "1" ]; then
-  echo "${Green}Skipped UMD build because we gotta go fast${NC}"
+  >&2 echo -e "${Green}Skipped UMD build because we gotta go fast${NC}"
 else
   UMD_FILE="$UMD_DIR/$BASENAME.js"
   >&2 echo -e "${Blue}Building UMD module, $UMD_FILE${NC}"
-  EMCC_COMMAND_NOMINAL=("${EMCC_OPTS[@]}" "${FLAVOUR_EMCC_OPTS[@]}" -I "$DIR/../box2d/include" --post-js "$DIR/glue_stub.js" "$DIR/glue_stub.cpp" bin/libbox2d.a)
   set -x
   emcc "${EMCC_COMMAND_NOMINAL[@]}" -o "$UMD_FILE"
   { set +x; } 2>&-
-  >&2 echo -e "${Green}Successfully built $UMD_FILE${NC}"
-  >&2 echo
+  >&2 echo -e "${Green}Successfully built $UMD_FILE${NC}\n"
 fi
 
 ES_FILE="$ES_DIR/$BASENAME.js"
