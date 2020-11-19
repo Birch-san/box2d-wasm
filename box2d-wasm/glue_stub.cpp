@@ -35,13 +35,30 @@ public:
 
 #include "build/box2d_glue.cpp"
 
-// member functions that we weren't quite able to describe in WebIDL
 extern "C" {
+// member functions that we weren't able to describe in WebIDL (e.g. pointer-to-float params)
 float* EMSCRIPTEN_KEEPALIVE emscripten_bind_b2RopeDef_get_masses_0(b2RopeDef* self) {
   return self->masses;
 }
 
 void EMSCRIPTEN_KEEPALIVE emscripten_bind_b2RopeDef_set_masses_1(b2RopeDef* self, float* arg0) {
   self->masses = arg0;
+}
+
+// global functions that we weren't able to describe in WebIDL (think it only supports classes/methods)
+bool EMSCRIPTEN_KEEPALIVE emscripten_bind_b2TestOverlap_6(
+  b2Shape* shapeA, int indexA,
+  b2Shape* shapeB, int indexB,
+  b2Transform* xfA, b2Transform* xfB
+  ) {
+  return b2TestOverlap(
+    shapeA, static_cast<int32>(indexA),
+    shapeB, static_cast<int32>(indexB),
+    *xfA, *xfB
+    );
+}
+
+bool EMSCRIPTEN_KEEPALIVE emscripten_bind_b2TestOverlap_2(b2AABB* a, b2AABB* b) {
+  return b2TestOverlap(*a, *b);
 }
 }
