@@ -23,4 +23,44 @@ declare namespace Box2D {
       xfA: Box2D.b2Transform | number, xfB: Box2D.b2Transform | number,
     ): boolean;
   };
+
+  /**
+   * If Box2D sends you a number, but you know it's (for example) a pointer to
+   * an array of {@link b2Vec2}: use this to convert the pointer to JS objects.
+   * @param array_p pointer to (subclass of {@link WrapperObject})
+   * @param numElements length of array
+   * @param elementSize size of an instance of the array element (in bytes)
+   * @param ctor constructor for the array element
+   */
+  export const reifyArray: <TargetClass extends {
+    new (...args: any[]): InstanceType<TargetClass>;
+    readonly __cache__: {
+        [ptr: number]: InstanceType<TargetClass>;
+    };
+  } = typeof WrapperObject>(
+      array_p: number,
+      numElements: number,
+      elementSize: number,
+      ctor: TargetClass
+    ) => InstanceType<TargetClass>[];
+
+  export interface Point {
+    x: number;
+    y: number;
+  }
+  /**
+   * If you need to give to Box2D an array of Box2D.b2Vec2: use this to turn JS objects
+   * into a Box2D.b2Vec2 object (which can be used to locate an array of b2Vec2s).
+   * @param points
+   * @return Tuple containing 0: A Box2D.b2Vec2 object, whose pointer can be taken to locate an array of b2Vec2s. 1: A destructor.
+   */
+  export const toVec2Array: (points: Point[]) => [Box2D.b2Vec2, () => void];
+
+  /**
+   * If you need to give to Box2D an array of floats: use this to turn JS numbers
+   * into a Box2D.WrapperObject (which can be used to locate an array of floats).
+   * @param floats
+   * @return Tuple containing 0: A Box2D.WrapperObject object, whose pointer can be taken to locate an array of floats. 1: A destructor.
+   */
+  export const toFloatArray: (floats: number[]) => [Box2D.WrapperObject, () => void];
 }
