@@ -93,12 +93,36 @@ Module['reifyArray'] = (array_p, numElements, elementSize, ctor) =>
  * @param {{x:number,y:number}[]} points
  * @return {[{ptr:number}, ()=>void]} Tuple containing 0: A Box2D.b2Vec2 object, whose pointer can be taken to locate an array of b2Vec2s. 1: A destructor.
  */
-Module['toVec2Array'] = (points) => {
+Module['pointsToVec2Array'] = (points) => {
   const floatsPerB2Vec2 = 2; // b2Vec2 is a struct of `float x, y`
   const floatArray = new Float32Array(points.length * floatsPerB2Vec2);
 
   for (let i = 0; i < points.length; i++) {
     const { x, y } = points[i];
+    floatArray[i*2] = x;
+    floatArray[i*2+1] = y;
+  }
+
+  /** @type number */
+  const b2Vec2Arr_p = Module['_malloc'](floatArray.length * floatsPerB2Vec2 * floatArray.BYTES_PER_ELEMENT);
+  HEAPF32.set(floatArray, b2Vec2Arr_p >> 2);
+
+  const wrappedVertices = wrapPointer(b2Vec2Arr_p, b2Vec2);
+  return [wrappedVertices, () => Module['_free'](b2Vec2Arr_p)];
+};
+
+/**
+ * If you need to give to Box2D an array of Box2D.b2Vec2: use this to turn JS objects
+ * into a Box2D.b2Vec2 object (which can be used to locate an array of b2Vec2s).
+ * @param {[x:number,y:number][]} points
+ * @return {[{ptr:number}, ()=>void]} Tuple containing 0: A Box2D.b2Vec2 object, whose pointer can be taken to locate an array of b2Vec2s. 1: A destructor.
+ */
+Module['tuplesToVec2Array'] = (points) => {
+  const floatsPerB2Vec2 = 2; // b2Vec2 is a struct of `float x, y`
+  const floatArray = new Float32Array(points.length * floatsPerB2Vec2);
+
+  for (let i = 0; i < points.length; i++) {
+    const [x, y] = points[i];
     floatArray[i*2] = x;
     floatArray[i*2+1] = y;
   }
@@ -124,6 +148,41 @@ Module['toFloatArray'] = (floats) => {
   const floatArr_p = Module['_malloc'](floatArray.length * floatsPerB2Vec2 * floatArray.BYTES_PER_ELEMENT);
   HEAPF32.set(floatArray, floatArr_p >> 2);
 
-  const wrappedVertices = wrapPointer(floatArr_p, b2Vec2);
+  const wrappedVertices = wrapPointer(floatArr_p);
   return [wrappedVertices, () => Module['_free'](floatArr_p)];
+};
+
+/**
+ * Reveals the size (in bytes) of the instance constructed by any Box2D.WrapperObject subclass.
+ * Works by creating two instances, and calculating the difference between their pointers.
+ * This is not a *good* way to do this. For exploration only!
+ * @param {Function} ctor constructor for a subclass of Box2D.WrapperObject
+ * @return {number} Size of the element which ctor constructs
+ */
+Module['sizeof'] = (ctor) => {
+  const { ptr, __destroy__ } = new ctor();
+  const { ptr: ptr2, __destroy__: __destroy__2 } = new ctor();
+  const size = ptr2-ptr;
+  __destroy__2();
+  __destroy__();
+  return size;
+};
+
+/**
+ * If you need to give to Box2D an output param: use this to allocate the memory. We wrap it in a
+ * Box2D.WrapperObject subclass instance, so that you can read its members once Box2D fills them in.
+ * @param {Function} ctor constructor for the array element
+ * @param {number} elementSizeBytes
+ * @param {number} [elements=1]
+ * @return {[{ptr:number}, ()=>void]} Tuple containing 0: Instance of Box2D.WrapperObject subclass (i.e. your ctor), whose pointer can be taken to locate your memory. 1: A destructor.
+ */
+Module['allocateArray'] = (ctor, elementSizeBytes, elements=1) => {
+  const array = new ArrayBuffer(elementSizeBytes * elements);
+
+  /** @type number */
+  const arr_p = Module['_malloc'](array.byteLength);
+  HEAPU8.set(array, arr_p);
+
+  const wrappedVertices = wrapPointer(arr_p, ctor);
+  return [wrappedVertices, () => Module['_free'](arr_p)];
 };

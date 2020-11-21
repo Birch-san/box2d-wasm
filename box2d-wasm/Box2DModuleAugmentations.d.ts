@@ -54,7 +54,14 @@ declare namespace Box2D {
    * @param points
    * @return Tuple containing 0: A Box2D.b2Vec2 object, whose pointer can be taken to locate an array of b2Vec2s. 1: A destructor.
    */
-  export const toVec2Array: (points: Point[]) => [Box2D.b2Vec2, () => void];
+  export const pointsToVec2Array: (points: Point[]) => [Box2D.b2Vec2, () => void];
+  /**
+   * If you need to give to Box2D an array of Box2D.b2Vec2: use this to turn JS objects
+   * into a Box2D.b2Vec2 object (which can be used to locate an array of b2Vec2s).
+   * @param tuples
+   * @return Tuple containing 0: A Box2D.b2Vec2 object, whose pointer can be taken to locate an array of b2Vec2s. 1: A destructor.
+   */
+  export const tuplesToVec2Array: (tuples: [x: number, y: number][]) => [Box2D.b2Vec2, () => void];
 
   /**
    * If you need to give to Box2D an array of floats: use this to turn JS numbers
@@ -63,4 +70,37 @@ declare namespace Box2D {
    * @return Tuple containing 0: A Box2D.WrapperObject object, whose pointer can be taken to locate an array of floats. 1: A destructor.
    */
   export const toFloatArray: (floats: number[]) => [Box2D.WrapperObject, () => void];
+
+  /**
+   * Reveals the size (in bytes) of the instance constructed by any Box2D.WrapperObject subclass.
+   * Works by creating two instances, and calculating the difference between their pointers.
+   * This is not a *good* way to do this. For exploration only!
+   * @param ctor constructor for a subclass of Box2D.WrapperObject
+   * @return Size of the element which ctor constructs
+   */
+  export const sizeof: <TargetClass extends {
+    new (...args: any[]): InstanceType<TargetClass>;
+    readonly __cache__: {
+        [ptr: number]: InstanceType<TargetClass>;
+    };
+  }>(ctor: TargetClass) => number;
+
+  /**
+   * If you need to give to Box2D an output param: use this to allocate the memory. We wrap it in a
+   * Box2D.WrapperObject subclass instance, so that you can read its members once Box2D fills them in.
+   * @param ctor constructor for the array element
+   * @param elementSizeBytes Size of array element in bytes
+   * @param {number} [elements=1] Number of array elements to allocate
+   * @return Tuple containing 0: Instance of Box2D.WrapperObject subclass (i.e. your ctor), whose pointer can be taken to locate your memory. 1: A destructor.
+   */
+  export const allocateArray: <TargetClass extends {
+    new (...args: any[]): InstanceType<TargetClass>;
+    readonly __cache__: {
+        [ptr: number]: InstanceType<TargetClass>;
+    };
+  }>(
+    ctor: TargetClass,
+    elementSizeBytes: number,
+    elements?: number
+    ) => [InstanceType<TargetClass>, () => void];
 }
