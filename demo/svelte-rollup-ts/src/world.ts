@@ -120,41 +120,27 @@ export class WorldFactory {
     rope: Box2D.b2Rope;
     destroy(): void;
   } => {
-    const { b2Rope, b2RopeDef, b2RopeTuning, b2Vec2, wrapPointer, _malloc, _free, HEAPF32 } = this.box2D;
+    const { b2Rope, b2RopeDef, b2RopeTuning, b2Vec2, pointsToVec2Array, toFloatArray } = this.box2D;
     const rope = new b2Rope();
     const ropeLen = 37;
-    const masses = new Float32Array(ropeLen);
     // https://csharp.hotexamples.com/examples/Box2D.Rope/b2RopeDef/-/php-b2ropedef-class-examples.html
-    // https://becominghuman.ai/passing-and-returning-webassembly-array-parameters-a0f572c65d97
-    masses.fill(1);
+    const masses: number[] = Array(ropeLen).fill(1);
     masses[0] = 0;
     masses[masses.length-1] = 0;
-  
-    const floatsPerVertex = 2; // b2Vec is a struct of `float x, y`
-    const vertices = new Float32Array(ropeLen * floatsPerVertex);
-  
-    const initPos = { x: -9, y: 6 };
 
-    // Populate the array with the values
-    for (let i = 0; i < ropeLen; i++) {
-      vertices[i*2] = initPos.x + 0.5 * i;
-      vertices[i*2+1] = -initPos.y + 0;
-    }
-  
-    // Allocate some space in the heap for the data (making sure to use the appropriate memory size of the elements)
-    const massesBuffer: number = _malloc(masses.length * masses.BYTES_PER_ELEMENT);
-    const verticesBuffer: number = _malloc(vertices.length * floatsPerVertex * vertices.BYTES_PER_ELEMENT);
-  
-    // Assign the data to the heap - Keep in mind bytes per element
-    HEAPF32.set(masses, massesBuffer >> 2);
-    HEAPF32.set(vertices, verticesBuffer >> 2);
+    const vertices: Box2D.Point[] = Array(ropeLen)
+      .fill(undefined)
+      .map((_: undefined, index: number): Box2D.Point => ({
+        x: -9 + 0.5 * index,
+        y: -6
+      }));
   
     const tuning = new b2RopeTuning();
     // tuning.set_damping(0.1);
   
     const ropeDef = new b2RopeDef();
-    const wrappedMasses: Box2D.WrapperObject = wrapPointer(massesBuffer);
-    const wrappedVertices: Box2D.b2Vec2 = wrapPointer(verticesBuffer, b2Vec2);
+    const [wrappedMasses, destroyMasses]: [Box2D.WrapperObject, () => void] = toFloatArray(masses);
+    const [wrappedVertices, destroyVertices]: [Box2D.b2Vec2, () => void] = pointsToVec2Array(vertices);
     ropeDef.set_masses(wrappedMasses);
     ropeDef.set_vertices(wrappedVertices);
     ropeDef.set_count(ropeLen);
@@ -166,8 +152,8 @@ export class WorldFactory {
     return {
       rope,
       destroy() {
-        _free(massesBuffer);
-        _free(verticesBuffer); 
+        destroyMasses();
+        destroyVertices();
       }
     }
   };
