@@ -474,9 +474,10 @@ interface b2ContactID {
 };
 
 interface b2ContactImpulse {
-  // TODO: expose when WebIDL binder supports fixed-length arrays
-  // [Value] attribute float[2] normalImpulses;
-  // [Value] attribute float[2] tangentImpulses;
+  // length 2
+  [BoundsChecked] attribute float[] normalImpulses;
+  // length 2
+  [BoundsChecked] attribute float[] tangentImpulses;
   attribute long count;
 };
 
@@ -610,8 +611,8 @@ enum b2ManifoldType {
 
 interface b2Manifold {
   void b2Manifold();
-  // TODO: expose when WebIDL binder supports fixed-length arrays
-  // [Value] attribute b2ManifoldPoint[2] points;
+  // length 2
+  [Value,BoundsChecked] attribute b2ManifoldPoint[] points;
   [Value] attribute b2Vec2 localNormal;
   [Value] attribute b2Vec2 localPoint;
   attribute b2ManifoldType type;
@@ -622,9 +623,10 @@ interface b2WorldManifold {
   void b2WorldManifold();
   void Initialize([Const] b2Manifold manifold, [Const, Ref] b2Transform xfA, float radiusA, [Const, Ref] b2Transform xfB, float radiusB);
   [Value] attribute b2Vec2 normal;
-  // TODO: expose when WebIDL binder supports fixed-length arrays
-  // [Value] attribute b2Vec2[2] points;
-  // [Value] attribute float[2] separations;
+  // length 2
+  [Value,BoundsChecked] attribute b2Vec2[] points;
+  // length 2
+  [BoundsChecked] attribute float[] separations;
 };
 
 interface b2ManifoldPoint {
@@ -692,9 +694,10 @@ interface b2PolygonShape {
   void SetAsBox(float hx, float hy);
   void SetAsBox(float hx, float hy, [Ref] b2Vec2 center, float angle);
   [Value] attribute b2Vec2 m_centroid;
-  // TODO: expose when WebIDL binder supports fixed-length arrays
-  // [Value] attribute b2Vec2[8] m_vertices;
-  // [Value] attribute b2Vec2[8] m_normals;
+  // length 8
+  [Value,BoundsChecked] attribute b2Vec2[] m_vertices;
+  // length 8
+  [Value,BoundsChecked] attribute b2Vec2[] m_normals;
 
   attribute long m_count;
 };
@@ -956,7 +959,8 @@ interface b2RopeDef {
   [Value] attribute b2Vec2 position;
 	attribute b2Vec2 vertices;
 	attribute long count;
-  // this is a float*, but seems variable-length array works.
+  // WebIDL binder doesn't seem to provide a way to model "float*",
+  // so I've bound this manually in glue_stub.{cpp,js}
 	// attribute float[] masses;
 	[Value] attribute b2Vec2 gravity;
 	[Value] attribute b2RopeTuning tuning;
@@ -1004,6 +1008,7 @@ interface b2Rope {
 };
 
 interface b2ClipVertex {
+  void b2ClipVertex();
   [Value] attribute b2Vec2 v;
 	[Value] attribute b2ContactID id;
 };
