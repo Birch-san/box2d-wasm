@@ -46,6 +46,92 @@ void EMSCRIPTEN_KEEPALIVE emscripten_bind_b2RopeDef_set_masses_1(b2RopeDef* self
 }
 
 // global functions that we weren't able to describe in WebIDL (think it only supports classes/methods)
+void EMSCRIPTEN_KEEPALIVE emscripten_bind_b2GetPointStates_4(
+  b2PointState* state1, b2PointState* state2,
+  b2Manifold* manifold1, b2Manifold* manifold2
+  ) {
+  b2GetPointStates(
+    reinterpret_cast<b2PointState(&)[b2_maxManifoldPoints]>(state1),
+    reinterpret_cast<b2PointState(&)[b2_maxManifoldPoints]>(state2),
+    manifold1, manifold2
+    );
+}
+
+void EMSCRIPTEN_KEEPALIVE emscripten_bind_b2CollideCircles_5(
+  b2Manifold* manifold,
+  b2CircleShape* circleA, b2Transform* xfA,
+  b2CircleShape* circleB, b2Transform* xfB
+  ) {
+  b2CollideCircles(
+    manifold,
+    circleA, *xfA,
+    circleB, *xfB
+    );
+}
+
+void EMSCRIPTEN_KEEPALIVE emscripten_bind_b2CollidePolygonAndCircle_5(
+  b2Manifold* manifold,
+  b2PolygonShape* polygonA, b2Transform* xfA,
+  b2CircleShape* circleB, b2Transform* xfB
+  ) {
+  b2CollidePolygonAndCircle(
+    manifold,
+    polygonA, *xfA,
+    circleB, *xfB
+    );
+}
+
+void EMSCRIPTEN_KEEPALIVE emscripten_bind_b2CollidePolygons_5(
+  b2Manifold* manifold,
+  b2PolygonShape* polygonA, b2Transform* xfA,
+  b2PolygonShape* polygonB, b2Transform* xfB
+  ) {
+  b2CollidePolygons(
+    manifold,
+    polygonA, *xfA,
+    polygonB, *xfB
+    );
+}
+
+void EMSCRIPTEN_KEEPALIVE emscripten_bind_b2CollideEdgeAndCircle_5(
+  b2Manifold* manifold,
+  b2EdgeShape* edgeA, b2Transform* xfA,
+  b2CircleShape* circleB, b2Transform* xfB
+  ) {
+  b2CollideEdgeAndCircle(
+    manifold,
+    edgeA, *xfA,
+    circleB, *xfB
+    );
+}
+
+void EMSCRIPTEN_KEEPALIVE emscripten_bind_b2CollideEdgeAndPolygon_5(
+  b2Manifold* manifold,
+  b2EdgeShape* edgeA, b2Transform* xfA,
+  b2PolygonShape* polygonB, b2Transform* xfB
+  ) {
+  b2CollideEdgeAndPolygon(
+    manifold,
+    edgeA, *xfA,
+    polygonB, *xfB
+    );
+}
+
+int EMSCRIPTEN_KEEPALIVE emscripten_bind_b2ClipSegmentToLine_5(
+  b2ClipVertex* vOut, b2ClipVertex* vIn,
+  b2Vec2* normal, float offset,
+  int vertexIndexA
+  ) {
+  return static_cast<int>(
+    b2ClipSegmentToLine(
+      reinterpret_cast<b2ClipVertex(&)[2]>(vOut),
+      reinterpret_cast<b2ClipVertex(&)[2]>(vIn),
+      *normal, offset,
+      static_cast<int32>(vertexIndexA)
+      )
+    );
+}
+
 bool EMSCRIPTEN_KEEPALIVE emscripten_bind_b2TestOverlap_6(
   b2Shape* shapeA, int indexA,
   b2Shape* shapeB, int indexB,

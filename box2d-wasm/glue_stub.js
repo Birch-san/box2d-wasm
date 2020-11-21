@@ -10,7 +10,6 @@ b2RopeDef.prototype['set_masses'] = b2RopeDef.prototype.set_masses = /** @suppre
 };
 
 /**
- * @function
  * @param {{ptr:number}|number} objOrNum
  * @returns {number}
  */
@@ -22,9 +21,133 @@ const getPointerFromUnion = (objOrNum) => {
 };
 
 /**
- * @function
+ * Compute the point states given two manifolds. The states pertain to the transition from manifold1
+ * to manifold2. So state1 is either persist or remove while state2 is either add or persist.
+ * @param {{ptr:number}|number} state1
+ * @param {{ptr:number}|number} state2
+ * @param {{ptr:number}|number} manifold1
+ * @param {{ptr:number}|number} manifold2
+ * @return {void}
+ */
+Module['b2GetPointStates'] = (state1, state2, manifold1, manifold2) => {
+  const state1_p = getPointerFromUnion(state1);
+  const state2_p = getPointerFromUnion(state2);
+  const manifold1_p = getPointerFromUnion(manifold1);
+  const manifold2_p = getPointerFromUnion(manifold2);
+  _emscripten_bind_b2GetPointStates_4(state1_p, state2_p, manifold1_p, manifold2_p);
+};
+
+/**
+ * Compute the collision manifold between two circles.
+ * @param {{ptr:number}|number} manifold
+ * @param {{ptr:number}|number} circleA
+ * @param {{ptr:number}|number} xfA
+ * @param {{ptr:number}|number} circleB
+ * @param {{ptr:number}|number} xfB
+ * @return {void}
+ */
+Module['b2CollideCircles'] = (manifold, circleA, xfA, circleB, xfB) => {
+  const manifold_p = getPointerFromUnion(manifold);
+  const circleA_p = getPointerFromUnion(circleA);
+  const xfA_p = getPointerFromUnion(xfA);
+  const circleB_p = getPointerFromUnion(circleB);
+  const xfB_p = getPointerFromUnion(xfB);
+  _emscripten_bind_b2CollideCircles_5(manifold_p, circleA_p, xfA_p, circleB_p, xfB_p);
+};
+
+/**
+ * Compute the collision manifold between a polygon and a circle.
+ * @param {{ptr:number}|number} manifold
+ * @param {{ptr:number}|number} polygonA
+ * @param {{ptr:number}|number} xfA
+ * @param {{ptr:number}|number} circleB
+ * @param {{ptr:number}|number} xfB
+ * @return {void}
+ */
+Module['b2CollidePolygonAndCircle'] = (manifold, polygonA, xfA, circleB, xfB) => {
+  const manifold_p = getPointerFromUnion(manifold);
+  const polygonA_p = getPointerFromUnion(polygonA);
+  const xfA_p = getPointerFromUnion(xfA);
+  const circleB_p = getPointerFromUnion(circleB);
+  const xfB_p = getPointerFromUnion(xfB);
+  _emscripten_bind_b2CollidePolygonAndCircle_5(manifold_p, polygonA_p, xfA_p, circleB_p, xfB_p);
+};
+
+/**
+ * Compute the collision manifold between two polygons.
+ * @param {{ptr:number}|number} manifold
+ * @param {{ptr:number}|number} polygonA
+ * @param {{ptr:number}|number} xfA
+ * @param {{ptr:number}|number} polygonB
+ * @param {{ptr:number}|number} xfB
+ * @return {void}
+ */
+Module['b2CollidePolygons'] = (manifold, polygonA, xfA, polygonB, xfB) => {
+  const manifold_p = getPointerFromUnion(manifold);
+  const polygonA_p = getPointerFromUnion(polygonA);
+  const xfA_p = getPointerFromUnion(xfA);
+  const polygonB_p = getPointerFromUnion(polygonB);
+  const xfB_p = getPointerFromUnion(xfB);
+  _emscripten_bind_b2CollidePolygons_5(manifold_p, polygonA_p, xfA_p, polygonB_p, xfB_p);
+};
+
+/**
+ * Compute the collision manifold between an edge and a circle.
+ * @param {{ptr:number}|number} manifold
+ * @param {{ptr:number}|number} edgeA
+ * @param {{ptr:number}|number} xfA
+ * @param {{ptr:number}|number} circleB
+ * @param {{ptr:number}|number} xfB
+ * @return {void}
+ */
+Module['b2CollideEdgeAndCircle'] = (manifold, edgeA, xfA, circleB, xfB) => {
+  const manifold_p = getPointerFromUnion(manifold);
+  const edgeA_p = getPointerFromUnion(edgeA);
+  const xfA_p = getPointerFromUnion(xfA);
+  const circleB_p = getPointerFromUnion(circleB);
+  const xfB_p = getPointerFromUnion(xfB);
+  _emscripten_bind_b2CollideEdgeAndCircle_5(manifold_p, edgeA_p, xfA_p, circleB_p, xfB_p);
+};
+
+/**
+ * Compute the collision manifold between an edge and a polygon.
+ * @param {{ptr:number}|number} manifold
+ * @param {{ptr:number}|number} edgeA
+ * @param {{ptr:number}|number} xfA
+ * @param {{ptr:number}|number} polygonB
+ * @param {{ptr:number}|number} xfB
+ * @return {void}
+ */
+Module['b2CollideEdgeAndPolygon'] = (manifold, edgeA, xfA, polygonB, xfB) => {
+  const manifold_p = getPointerFromUnion(manifold);
+  const edgeA_p = getPointerFromUnion(edgeA);
+  const xfA_p = getPointerFromUnion(xfA);
+  const polygonB_p = getPointerFromUnion(polygonB);
+  const xfB_p = getPointerFromUnion(xfB);
+  _emscripten_bind_b2CollideEdgeAndPolygon_5(manifold_p, edgeA_p, xfA_p, polygonB_p, xfB_p);
+};
+
+/**
+ * Clipping for contact manifolds.
+ * @param {{ptr:number}|number} vOut
+ * @param {{ptr:number}|number} vIn
+ * @param {{ptr:number}|number} normal
+ * @param {number} offset
+ * @param {number} vertexIndexA
+ * @return {number}
+ */
+Module['b2ClipSegmentToLine'] = (vOut, vIn, normal, offset, vertexIndexA) => {
+  const vOut_p = getPointerFromUnion(vOut);
+  const vIn_p = getPointerFromUnion(vIn);
+  const normal_p = getPointerFromUnion(normal);
+  return _emscripten_bind_b2ClipSegmentToLine_5(vOut_p, vIn_p, normal_p, offset, vertexIndexA);
+};
+
+/**
+ * Determine if two AABBs overlap.
  * @param {{ptr:number}|number} a
  * @param {{ptr:number}|number} b
+ * @return {boolean}
  */
 const b2TestOverlap_2 = (a, b) => {
   const a_p = getPointerFromUnion(a);
@@ -33,7 +156,7 @@ const b2TestOverlap_2 = (a, b) => {
 };
 
 /**
- * @function
+ * Determine if two generic shapes overlap.
  * @param {{ptr:number}|number} shapeA
  * @param {number} indexA
  * @param {{ptr:number}|number} shapeB
@@ -53,10 +176,12 @@ const b2TestOverlap_6 = (shapeA, indexA, shapeB, indexB, xfA, xfB) => {
 
 /**
  * @function
+ * Determine if two AABBs overlap.
  * @param {{ptr:number}|number} a_or_shapeA
  * @param {{ptr:number}|number} b_or_indexA
  * 
  * @function
+ * Determine if two generic shapes overlap.
  * @param {{ptr:number}|number} a_or_shapeA
  * @param {number} b_or_indexA
  * @param {{ptr:number}|number} shapeB

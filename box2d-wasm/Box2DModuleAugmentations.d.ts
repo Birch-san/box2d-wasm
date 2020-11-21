@@ -13,6 +13,58 @@ declare namespace Box2D {
     set_masses(masses: Box2D.WrapperObject | number): void;
   }
 
+  /**
+   * Compute the point states given two manifolds. The states pertain to the transition from manifold1
+   * to manifold2. So state1 is either persist or remove while state2 is either add or persist.
+   */
+  export const b2GetPointStates: (
+    state1: Box2D.b2PointState | number, state2: Box2D.b2PointState | number, 
+    manifold1: Box2D.b2Manifold | number, manifold2: Box2D.b2Manifold | number
+    ) => void;
+
+  /** Compute the collision manifold between two circles. */
+  export const b2CollideCircles: (
+    manifold: Box2D.b2Manifold | number,
+    circleA: Box2D.b2CircleShape | number, xfA: Box2D.b2Transform | number,
+    circleB: Box2D.b2CircleShape | number, xfB: Box2D.b2Transform | number
+    ) => void;
+
+  /** Compute the collision manifold between a polygon and a circle. */
+  export const b2CollidePolygonAndCircle: (
+    manifold: Box2D.b2Manifold | number,
+    polygonA: Box2D.b2PolygonShape | number, xfA: Box2D.b2Transform | number,
+    circleB: Box2D.b2CircleShape | number, xfB: Box2D.b2Transform | number
+    ) => void;
+
+  /** Compute the collision manifold between two polygons. */
+  export const b2CollidePolygons: (
+    manifold: Box2D.b2Manifold | number,
+    polygonA: Box2D.b2PolygonShape | number, xfA: Box2D.b2Transform | number,
+    polygonB: Box2D.b2PolygonShape | number, xfB: Box2D.b2Transform | number
+    ) => void;
+
+  /** Compute the collision manifold between an edge and a circle. */
+  export const b2CollideEdgeAndCircle: (
+    manifold: Box2D.b2Manifold | number,
+    edgeA: Box2D.b2EdgeShape | number, xfA: Box2D.b2Transform | number,
+    circleB: Box2D.b2CircleShape | number, xfB: Box2D.b2Transform | number
+    ) => void;
+
+  /** Compute the collision manifold between an edge and a polygon. */
+  export const b2CollideEdgeAndPolygon: (
+    manifold: Box2D.b2Manifold | number,
+    edgeA: Box2D.b2EdgeShape | number, xfA: Box2D.b2Transform | number,
+    polygonB: Box2D.b2PolygonShape | number, xfB: Box2D.b2Transform | number
+    ) => void;
+
+  /** Clipping for contact manifolds. */
+  export const b2ClipSegmentToLine: (
+    vOut: Box2D.b2ClipVertex | number, vIn: Box2D.b2ClipVertex | number,
+    normal: Box2D.b2Vec2 | number,
+    offset: number,
+    vertexIndexA: number
+    ) => number;
+
   export const b2TestOverlap: {
     /** determine if two AABBs overlap */
     (a: Box2D.b2AABB | number, b: Box2D.b2AABB | number): boolean;
