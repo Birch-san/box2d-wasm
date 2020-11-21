@@ -15,9 +15,7 @@ fi
 
 EMCC_OPTS=(-s MODULARIZE=1 -s EXPORT_NAME=Box2D -s EXPORT_BINDINGS=1 -s RESERVED_FUNCTION_POINTERS=20 --post-js box2d_glue.js --memory-init-file 0 -s NO_EXIT_RUNTIME=1 -s NO_FILESYSTEM=1 -s EXPORTED_RUNTIME_METHODS=[] -s EXPORTED_FUNCTIONS="['_malloc','_free']" -fno-rtti -s ALLOW_MEMORY_GROWTH=1 -s ENVIRONMENT=web)
 
-# if we remove assertions, we get runtime error "a.asm is undefined", which indicates
-# a data race in loading the Module (the asm property does get initialised eventually)
-RELEASE_OPTS_NOMINAL=(-O3 -s ASSERTIONS=1)
+RELEASE_OPTS_NOMINAL=(-O3)
 
 case "$TARGET_TYPE" in
   Debug)
