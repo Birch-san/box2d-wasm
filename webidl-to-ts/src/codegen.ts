@@ -25,11 +25,12 @@ export class CodeGen {
 
   private getSingleType = (type: WebIDL2.SingleTypeDescription): ts.TypeNode => {
     const { factory } = this.context;
-    if (type.idlType in this.primitives) {
-      return this.primitives[type.idlType]();
+    const [typeName] = CodeGen.classifyIdlType(type.idlType);
+    if (typeName in this.primitives) {
+      return this.primitives[typeName]();
     }
     return factory.createTypeReferenceNode(
-      factory.createIdentifier(type.idlType),
+      factory.createIdentifier(typeName),
       /*typeArguments*/undefined
     );
   };
@@ -785,6 +786,25 @@ export class CodeGen {
     );
   };
 
+  private static classifyIdlType = (idlType: string): [typeName: string, isArr: boolean] => {
+    const arrayAttributeMatcher = /(.*)__arr$/;
+    const match: RegExpExecArray | null = arrayAttributeMatcher.exec(idlType);
+    if (match) {
+      const [,attrName] = match;
+      return [attrName, true];
+    }
+    return [idlType, false];
+  }
+
+  private static classifyIdlTypeDescription = (type: WebIDL2.IDLTypeDescription): [typeName: string, isArr: boolean] => {
+    if (type.generic === '') {
+      if (type.union === false) {
+        return CodeGen.classifyIdlType(type.idlType);
+      }
+    }
+    throw new Error('erk');
+  };
+
   private getAttribute = (member: WebIDL2.AttributeMemberType): [ts.PropertyDeclaration, ts.MethodDeclaration, ts.MethodDeclaration] => {
     const { factory } = this.context;
     /**
@@ -792,50 +812,70 @@ export class CodeGen {
      * but if we did need to support them, then we'd likely want to add a readonly modifier
      * to the property declaration, and refrain from emitting a setter method.
      */
-    return [factory.createPropertyDeclaration(
-      undefined,
-      undefined,
-      factory.createIdentifier(member.name),
-      undefined,
-      this.getAttributeType(member.idlType),
-      undefined
-    ),
-    factory.createMethodDeclaration(
-      undefined,
-      undefined,
-      undefined,
-      factory.createIdentifier(`get_${member.name}`),
-      undefined,
-      undefined,
-      [],
-      this.getAttributeType(member.idlType),
-      undefined
-    ),
-    /**
-     * TODO: Box2D.idl doesn't currently use variable-length array attributes (e.g. float[])
-     * but if we did need to support them, be aware that such setters would take a 
-     * second parameter, index — something like:
-     *   set_mycoolattr(float value, size_t index);
-     */
-    factory.createMethodDeclaration(
-      undefined,
-      undefined,
-      undefined,
-      factory.createIdentifier(`set_${member.name}`),
-      undefined,
-      undefined,
-      [factory.createParameterDeclaration(
-        undefined,
+    const [, isArr] = CodeGen.classifyIdlTypeDescription(member.idlType);
+    return [
+      factory.createPropertyDeclaration(
         undefined,
         undefined,
         factory.createIdentifier(member.name),
         undefined,
         this.getAttributeType(member.idlType),
         undefined
-      )],
-      factory.createToken(ts.SyntaxKind.VoidKeyword),
-      undefined
-    )];
+      ),
+      factory.createMethodDeclaration(
+        undefined,
+        undefined,
+        undefined,
+        factory.createIdentifier(`get_${member.name}`),
+        undefined,
+        undefined,
+        isArr ? [
+          factory.createParameterDeclaration(
+            undefined,
+            undefined,
+            undefined,
+            factory.createIdentifier('index'),
+            factory.createToken(ts.SyntaxKind.QuestionToken),
+            factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+            undefined
+          )
+        ] : [],
+        this.getAttributeType(member.idlType),
+        undefined
+      ),
+      factory.createMethodDeclaration(
+        undefined,
+        undefined,
+        undefined,
+        factory.createIdentifier(`set_${member.name}`),
+        undefined,
+        undefined,
+        [
+          ...isArr ? [
+            factory.createParameterDeclaration(
+              undefined,
+              undefined,
+              undefined,
+              factory.createIdentifier('index'),
+              undefined,
+              factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+              undefined
+            )
+          ] : [],
+          factory.createParameterDeclaration(
+            undefined,
+            undefined,
+            undefined,
+            factory.createIdentifier(`${member.name}${isArr ? '_elem' : ''}`),
+            undefined,
+            this.getAttributeType(member.idlType),
+            undefined
+          )
+        ],
+        factory.createToken(ts.SyntaxKind.VoidKeyword),
+        undefined
+      )
+    ];
   };
 
   private getCommonClassBoilerplateMembers = (classIdentifierFactory: () => ts.EntityName): ts.ClassElement[] => {

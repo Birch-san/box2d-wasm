@@ -58,7 +58,10 @@ const makeW3CCompliant = (emscriptenIdl: string): string => {
   const needsToBeInheritedFromInterfaceMatcher = new RegExp(`^interface${whitespace.source}(${needsToBeInheritedFrom.join('|')})${whitespace.source}{$`, 'mg');
   const inheritedInterfacesAsMixins = implementsStatementsAsIncludesStatements.replace(needsToBeInheritedFromInterfaceMatcher, 'interface mixin $1 {');
 
-  return inheritedInterfacesAsMixins;
+  // turn array attributes such as float[] into float__arr
+  const arrayStuffedIntoAttrName = inheritedInterfacesAsMixins.replace(new RegExp(`(?<=${whitespace.source})((${identifier.source})\\[\\])(?=${whitespace.source})`, 'mg'), '$2__arr')
+
+  return arrayStuffedIntoAttrName;
 };
 
 const compliantSource = makeW3CCompliant(content);
