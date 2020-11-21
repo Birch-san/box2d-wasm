@@ -229,7 +229,7 @@ Module['pointsToVec2Array'] = (points) => {
   }
 
   /** @type number */
-  const b2Vec2Arr_p = Module['_malloc'](floatArray.length * floatsPerB2Vec2 * floatArray.BYTES_PER_ELEMENT);
+  const b2Vec2Arr_p = Module['_malloc'](floatArray.byteLength);
   HEAPF32.set(floatArray, b2Vec2Arr_p >> 2);
 
   const wrappedVertices = wrapPointer(b2Vec2Arr_p, b2Vec2);
@@ -243,6 +243,7 @@ Module['pointsToVec2Array'] = (points) => {
  * @return {[{ptr:number}, ()=>void]} Tuple containing 0: A Box2D.b2Vec2 object, whose pointer can be taken to locate an array of b2Vec2s. 1: A destructor.
  */
 Module['tuplesToVec2Array'] = (points) => {
+  // see https://becominghuman.ai/passing-and-returning-webassembly-array-parameters-a0f572c65d97
   const floatsPerB2Vec2 = 2; // b2Vec2 is a struct of `float x, y`
   const floatArray = new Float32Array(points.length * floatsPerB2Vec2);
 
@@ -253,7 +254,7 @@ Module['tuplesToVec2Array'] = (points) => {
   }
 
   /** @type number */
-  const b2Vec2Arr_p = Module['_malloc'](floatArray.length * floatsPerB2Vec2 * floatArray.BYTES_PER_ELEMENT);
+  const b2Vec2Arr_p = Module['_malloc'](floatArray.byteLength);
   HEAPF32.set(floatArray, b2Vec2Arr_p >> 2);
 
   const wrappedVertices = wrapPointer(b2Vec2Arr_p, b2Vec2);
@@ -270,7 +271,7 @@ Module['toFloatArray'] = (floats) => {
   const floatArray = new Float32Array(floats);
 
   /** @type number */
-  const floatArr_p = Module['_malloc'](floatArray.length * floatsPerB2Vec2 * floatArray.BYTES_PER_ELEMENT);
+  const floatArr_p = Module['_malloc'](floatArray.byteLength);
   HEAPF32.set(floatArray, floatArr_p >> 2);
 
   const wrappedVertices = wrapPointer(floatArr_p);

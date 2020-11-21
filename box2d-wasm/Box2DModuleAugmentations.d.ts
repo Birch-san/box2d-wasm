@@ -106,14 +106,14 @@ declare namespace Box2D {
    * @param points
    * @return Tuple containing 0: A Box2D.b2Vec2 object, whose pointer can be taken to locate an array of b2Vec2s. 1: A destructor.
    */
-  export const pointsToVec2Array: (points: Point[]) => [Box2D.b2Vec2, () => void];
+  export const pointsToVec2Array: (points: Point[]) => [vectors: Box2D.b2Vec2, destroy: () => void];
   /**
    * If you need to give to Box2D an array of Box2D.b2Vec2: use this to turn JS objects
    * into a Box2D.b2Vec2 object (which can be used to locate an array of b2Vec2s).
    * @param tuples
    * @return Tuple containing 0: A Box2D.b2Vec2 object, whose pointer can be taken to locate an array of b2Vec2s. 1: A destructor.
    */
-  export const tuplesToVec2Array: (tuples: [x: number, y: number][]) => [Box2D.b2Vec2, () => void];
+  export const tuplesToVec2Array: (tuples: [x: number, y: number][]) => [vectors: Box2D.b2Vec2, destroy: () => void];
 
   /**
    * If you need to give to Box2D an array of floats: use this to turn JS numbers
@@ -121,7 +121,7 @@ declare namespace Box2D {
    * @param floats
    * @return Tuple containing 0: A Box2D.WrapperObject object, whose pointer can be taken to locate an array of floats. 1: A destructor.
    */
-  export const toFloatArray: (floats: number[]) => [Box2D.WrapperObject, () => void];
+  export const toFloatArray: (floats: number[]) => [wrapper: Box2D.WrapperObject, destroy: () => void];
 
   /**
    * Reveals the size (in bytes) of the instance constructed by any Box2D.WrapperObject subclass.
@@ -154,5 +154,5 @@ declare namespace Box2D {
     ctor: TargetClass,
     elementSizeBytes: number,
     elements?: number
-    ) => [InstanceType<TargetClass>, () => void];
+    ) => [wrapper: InstanceType<TargetClass>, destroy: () => void];
 }
