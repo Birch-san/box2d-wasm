@@ -1,5 +1,6 @@
 packages:
   - demo
   - integration-test
+  - integration-test-backend
   - box2d-wasm
   - webidl-to-ts
