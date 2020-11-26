@@ -28,9 +28,6 @@
         "Box2D",
         "-o",
         "../box2d-wasm/build/Box2D.d.ts"
-      ],
-      "outFiles": [
-        "${workspaceFolder}/**/*.js"
       ]
     },
     {
@@ -55,6 +52,24 @@
       "program": "node_modules/eslint/bin/eslint.js",
       "args": ["--debug"],
       "console": "integratedTerminal"
+    },
+    {
+      "type": "pwa-node",
+      "request": "launch",
+      "name": "integration-test-backend: start",
+      "runtimeArgs": [
+        "--loader",
+        "ts-node/esm",
+        "--experimental-specifier-resolution=node",
+        "--harmony",
+        "-r",
+        "source-map-support/register"
+      ],
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "cwd": "${workspaceFolder}/integration-test-backend",
+      "program": "src/index.ts"
     },
   ]
 }
