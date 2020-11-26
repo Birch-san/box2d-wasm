@@ -16,9 +16,11 @@ declare namespace Box2D {
   /**
    * Compute the point states given two manifolds. The states pertain to the transition from manifold1
    * to manifold2. So state1 is either persist or remove while state2 is either add or persist.
+   * @param state1 a b2PointState enum value
+   * @param state2 a b2PointState enum value
    */
   export const b2GetPointStates: (
-    state1: Box2D.b2PointState | number, state2: Box2D.b2PointState | number, 
+    state1: number, state2: number,
     manifold1: Box2D.b2Manifold | number, manifold2: Box2D.b2Manifold | number
     ) => void;
 
