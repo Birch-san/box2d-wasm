@@ -1,5 +1,5 @@
 {
-  "name": "integration-test-backend",
+  "name": "box2d-wasm-demo-backend-modern-ts",
   "version": "1.0.0",
   "description": "",
   "type": "module",
