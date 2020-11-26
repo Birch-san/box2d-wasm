@@ -27,6 +27,6 @@
     "typescript": "^4.0.0"
   },
   "dependencies": {
-    "box2d-wasm": "1.2.0"
+    "box2d-wasm": "1.3.0"
   }
 }
