@@ -23,8 +23,8 @@ const getPointerFromUnion = (objOrNum) => {
 /**
  * Compute the point states given two manifolds. The states pertain to the transition from manifold1
  * to manifold2. So state1 is either persist or remove while state2 is either add or persist.
- * @param {{ptr:number}|number} state1
- * @param {{ptr:number}|number} state2
+ * @param {number} state1 a b2PointState enum value
+ * @param {number} state2 a b2PointState enum value
  * @param {{ptr:number}|number} manifold1
  * @param {{ptr:number}|number} manifold2
  * @return {void}
