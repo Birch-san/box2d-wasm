@@ -29,7 +29,13 @@ export default {
 			},
 			preprocess: sveltePreprocess(),
     }),
-    nodePolyfills(),
+    nodePolyfills({
+      /**
+       * box2d-wasm has Node.js support, so Rollup will want to provide polyfills for process and filesystem APIs.
+       * We don't need those polyfills, because those API calls are all behind conditions that are false when running on the Web.
+       */
+      exclude: 'node_modules/box2d-wasm/**/*.js'
+    }),
 
 		// If you have external dependencies installed from
 		// npm, you'll most likely need these plugins. In
