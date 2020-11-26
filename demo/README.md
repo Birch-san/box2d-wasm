@@ -2,6 +2,10 @@
 
 There are a variety of demos in this directory, which aim to show you how to integrate `box2d-wasm` into your application.
 
+## [Backend](backend)
+
+A directory of Node.js examples — for more highly-specialized use-cases (such as calculating physics server-side).
+
 ## [Classic](classic)
 
 Demonstrates how to install `box2d-wasm` into a plain old webpage.
