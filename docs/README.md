@@ -16,6 +16,10 @@ npm i --save box2d-wasm
   - Prints coordinates to the console
 - [Draw the falling box](02-draw-the-falling-box.md)
 
+Refer also to [box2d.js](https://github.com/kripken/box2d.js/)'s documentation and demos; the code examples are broadly compatible, because we bind Box2D functionality the same way.
+
+Refer to [Box2D's documentation](https://box2d.org/documentation/) for explanations of concepts.
+
 # Reference
 
 - [Helpers for working with Emscripten types](emscripten-helpers.md)
