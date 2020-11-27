@@ -12,9 +12,7 @@ Install the [`box2d-wasm` npm package](https://www.npmjs.com/package/box2d-wasm)
 npm i --save box2d-wasm
 ```
 
-See the [demos](demo) for examples of how to integrate `box2d-wasm` into your application.
-
-See [`box2d-wasm`](box2d-wasm) for further usage instructions.
+Then check out the [documentation](docs).
 
 ## License
 
