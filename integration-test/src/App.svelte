@@ -1,6 +1,5 @@
 <script lang="typescript">
   import Box2DFactory from 'box2d-wasm';
-  import type { Box2DEmscriptenModule } from 'box2d-wasm';
   import { onMount } from 'svelte';
   import { CanvasDebugDraw } from './debugDraw';
   import { Helpers } from './helpers';
@@ -14,7 +13,7 @@
   let canvas: HTMLCanvasElement;
 
 	onMount(async () => {
-    const box2D: Box2DEmscriptenModule = await Box2DFactory({
+    const box2D: typeof Box2D & EmscriptenModule = await Box2DFactory({
       /**
        * By default, this looks for Box2D.wasm relative to public/build/bundle.js:
        * @example (url, scriptDirectory) => `${scriptDirectory}${url}`
