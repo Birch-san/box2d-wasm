@@ -1,8 +1,7 @@
 import Box2DFactory from 'box2d-wasm';
-import type { Box2DEmscriptenModule } from 'box2d-wasm';
 import { assertFloatEqual } from './assertFloatEqual';
 
-const { b2BodyDef, b2_dynamicBody, b2PolygonShape, b2Vec2, b2World }: Box2DEmscriptenModule = await Box2DFactory();
+const { b2BodyDef, b2_dynamicBody, b2PolygonShape, b2Vec2, b2World }: typeof Box2D & EmscriptenModule = await Box2DFactory();
 
 const gravity = new b2Vec2(0, 10);
 const world = new b2World(gravity);
@@ -29,7 +28,8 @@ const velocityIterations = 1;
 const positionIterations = 1;
 const floatCompareTolerance = 0.01;
 
-for (let i=0; i<6; i++) {
+const iterations = 6;
+for (let i=0; i<iterations; i++) {
   const timeElapsedMillis = timeStepMillis*i;
   {
     const {y} = body.GetLinearVelocity();
@@ -41,3 +41,5 @@ for (let i=0; i<6; i++) {
   }
   world.Step(timeStepMillis, velocityIterations, positionIterations);
 }
+
+console.log(`👍 Ran ${iterations} iterations of a falling body. Body had the expected position on each iteration.`);

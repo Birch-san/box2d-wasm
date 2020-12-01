@@ -6,6 +6,7 @@
     "module": "esnext",
     "moduleResolution": "node",
     "sourceMap": true,
-    "target": "ES2020"
+    "target": "ES2020",
+    "strict": true
   }
 }

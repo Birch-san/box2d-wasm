@@ -1,5 +1,3 @@
-import type { Box2DEmscriptenModule } from 'box2d-wasm';
-
 /**
  * Forked from Box2D.js
  * @see https://github.com/kripken/box2d.js/blob/f75077b/helpers/embox2d-helpers.js
@@ -9,7 +7,7 @@ import type { Box2DEmscriptenModule } from 'box2d-wasm';
  *   "box2d.js is zlib licensed, just like Box2D."
  */
 export class Helpers {
-  constructor(private readonly box2D: Box2DEmscriptenModule) {
+  constructor(private readonly box2D: typeof Box2D & EmscriptenModule) {
   }
 
   /** to replace original C++ operator = */

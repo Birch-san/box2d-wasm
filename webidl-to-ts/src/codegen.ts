@@ -1,5 +1,6 @@
 import ts from 'typescript';
 import WebIDL2 from 'webidl2';
+import assert from 'assert';
 
 export class CodeGen {
   constructor(
@@ -9,6 +10,8 @@ export class CodeGen {
       const { factory } = this.context;
       this.primitives = {
         'boolean': () => factory.createKeywordTypeNode(ts.SyntaxKind.BooleanKeyword),
+        'octet': () => factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+        'short': () => factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
         'float': () => factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
         'double': () => factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
         'long': () => factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
@@ -1083,7 +1086,7 @@ export class CodeGen {
   codegen = (roots: WebIDL2.IDLRootType[], namespaceName: string): ts.Statement => {
     const { factory } = this.context;
     const { statements, knownEnumNames, includes } = this.roots(roots);
-    const elideElideVisitor: ts.Visitor = node => {
+    const elideEnumVisitor: ts.Visitor = node => {
       if (ts.isTypeReferenceNode(node)) {
         if (node.typeName.kind === ts.SyntaxKind.Identifier) {
           if (knownEnumNames.includes(node.typeName.text)) {
@@ -1091,9 +1094,9 @@ export class CodeGen {
           }
         }
       }
-      return ts.visitEachChild(node, elideElideVisitor, this.context);
+      return ts.visitEachChild(node, elideEnumVisitor, this.context);
     };
-    const statementsWithEnumsElided = ts.visitNodes(factory.createNodeArray(statements), elideElideVisitor);
+    const statementsWithEnumsElided = ts.visitNodes(factory.createNodeArray(statements), elideEnumVisitor);
     const applyIncludeVisitor: ts.Visitor = node => {
       if (ts.isClassDeclaration(node)) {
         if (node.name.text in includes) {
@@ -1119,12 +1122,62 @@ export class CodeGen {
       return ts.visitEachChild(node, applyIncludeVisitor, this.context);
     };
     const statementsWithIncludesApplied = ts.visitNodes(statementsWithEnumsElided, applyIncludeVisitor);
+
+    const fix__class__Visitor: ts.Visitor = node => {
+      if (ts.isPropertyDeclaration(node) &&
+        ts.isIdentifier(node.name) && node.name.text === '__class__') {
+        assert(ts.isTypeQueryNode(node.type));
+        assert(ts.isIdentifier(node.type.exprName));
+          
+        return factory.updatePropertyDeclaration(
+          node,
+          node.decorators,
+          node.modifiers,
+          node.name,
+          node.questionToken,
+          factory.createIntersectionTypeNode([
+            factory.createTypeQueryNode(factory.createIdentifier(node.type.exprName.text)),
+            factory.createTypeQueryNode(factory.createIdentifier('WrapperObject'))
+          ]),
+          node.initializer
+        );
+      }
+      return node;
+    };
+    const fix__class__OnClassesWithCustomConstructor: ts.Visitor = node => {
+      if (ts.isClassDeclaration(node)) {
+        if (node.heritageClauses?.some((heritageClause: ts.HeritageClause): boolean => 
+            heritageClause.types.some(({ expression }: ts.ExpressionWithTypeArguments): boolean =>
+              ts.isIdentifier(expression) && expression.text === 'WrapperObject'
+            )
+          ) && node.members.some((classElement: ts.ClassElement) => ts.isConstructorDeclaration(classElement))
+          ) {
+          // class inherits from WrapperObject and has an explicit constructor
+          const __class__: ts.PropertyDeclaration | undefined = node.members.find((classElement: ts.ClassElement): classElement is ts.PropertyDeclaration =>
+            ts.isPropertyDeclaration(classElement) &&
+            ts.isIdentifier(classElement.name) && classElement.name.text === '__class__'
+          );
+          assert(__class__);
+          return factory.updateClassDeclaration(
+            node,
+            node.decorators,
+            node.modifiers,
+            node.name,
+            node.typeParameters,
+            node.heritageClauses,
+            ts.visitNodes(node.members, fix__class__Visitor)
+          );
+        }
+      }
+      return ts.visitEachChild(node, fix__class__OnClassesWithCustomConstructor, this.context);
+    };
+    const statementsWith__class__Fixed = ts.visitNodes(statementsWithIncludesApplied, fix__class__OnClassesWithCustomConstructor);
     return factory.createModuleDeclaration(
       /*decorators*/undefined,
       /*modifiers*/[factory.createModifier(ts.SyntaxKind.DeclareKeyword)],
       /*name*/factory.createIdentifier(namespaceName),
       factory.createModuleBlock(
-        statementsWithIncludesApplied.concat(
+        statementsWith__class__Fixed.concat(
           this.helpers()
         ),
       ),
