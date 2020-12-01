@@ -524,7 +524,7 @@ export class CodeGen {
                 [factory.createModifier(ts.SyntaxKind.ReadonlyKeyword)],
                 factory.createIdentifier("__cache__"),
                 undefined,
-                undefined
+                factory.createKeywordTypeNode(ts.SyntaxKind.UnknownKeyword)
               )]),
               factory.createTypeQueryNode(factory.createIdentifier("WrapperObject"))
             )],
