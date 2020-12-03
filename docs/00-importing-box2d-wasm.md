@@ -89,9 +89,8 @@ We can get type-safety more simply:
  * in your tsconfig.json
  */
 import Box2DFactory from 'box2d-wasm';
-import type { Box2DEmscriptenModule } from 'box2d-wasm';
 
-Box2DFactory().then((box2D: Box2DEmscriptenModule) => {
+Box2DFactory().then((box2D: typeof Box2D & EmscriptenModule) => {
   console.log(box2D);
 });
 ```

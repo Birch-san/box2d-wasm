@@ -1,8 +1,7 @@
 import Box2DFactory from 'box2d-wasm';
-import type { Box2DEmscriptenModule } from 'box2d-wasm';
 import { assertFloatEqual } from './assertFloatEqual';
 
-const { b2BodyDef, b2_dynamicBody, b2PolygonShape, b2Vec2, b2World }: Box2DEmscriptenModule = await Box2DFactory();
+const { b2BodyDef, b2_dynamicBody, b2PolygonShape, b2Vec2, b2World }: typeof Box2D & EmscriptenModule = await Box2DFactory();
 
 const gravity = new b2Vec2(0, 10);
 const world = new b2World(gravity);

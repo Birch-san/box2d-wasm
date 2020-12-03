@@ -9,5 +9,5 @@ See [`box2d-wasm/Box2DModuleAugmentations.d.ts`](../box2d-wasm/Box2DModuleAugmen
 - `sizeof(ctor)`
 - `allocateArray(ctor, elementSizeBytes, elements?)`
 
-Note also that the `Box2D` instance returned is a subtype of `EmscriptenModule`.  
+Note also that the Box2D instance returned is a subtype of `EmscriptenModule`.  
 You can lookup the helpers that Emscripten provides (such as `_malloc()` and `_free()`) at [`@types/emscripten`](https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/emscripten/index.d.ts#L43).

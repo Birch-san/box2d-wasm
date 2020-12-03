@@ -1,4 +1,3 @@
-import type { Box2DEmscriptenModule } from 'box2d-wasm';
 import type { Helpers } from './helpers';
 
 export interface World {
@@ -9,7 +8,7 @@ export interface World {
 
 export class WorldFactory {
   constructor(
-    private readonly box2D: Box2DEmscriptenModule,
+    private readonly box2D: typeof Box2D & EmscriptenModule,
     private readonly helpers: Helpers
     ) {
   }

@@ -1,4 +1,3 @@
-import type { Box2DEmscriptenModule } from 'box2d-wasm';
 import type { Helpers } from './helpers';
 
 /**
@@ -11,7 +10,7 @@ import type { Helpers } from './helpers';
  */
 export class CanvasDebugDraw {
   constructor(
-    private readonly box2D: Box2DEmscriptenModule,
+    private readonly box2D: typeof Box2D & EmscriptenModule,
     private readonly helpers: Helpers,
     private readonly context: CanvasRenderingContext2D,
     private readonly canvasScaleFactor: number
