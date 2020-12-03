@@ -1,3 +1,5 @@
+See https://github.com/Birch-san/box2d-wasm/releases
+
 # v2.0.1
 
 Fixes final compile error in TypeScript type declarations.
