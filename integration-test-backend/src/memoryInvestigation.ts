@@ -45,50 +45,72 @@ tracker.track('allocated body def')
 bd.set_type(b2_dynamicBody)
 bd.set_position(zero)
 
-const body = world.CreateBody(bd)
-tracker.track('world.CreateBody')
-body.CreateFixture(square, 1)
-tracker.track('body.CreateFixture')
-body.SetTransform(zero, 0)
-body.SetLinearVelocity(zero)
-body.SetAwake(true)
-body.SetEnabled(true)
-destroy(zero)
-tracker.track('freed zero vec')
-
 const timeStepMillis = 1 / 60
 const velocityIterations = 1
 const positionIterations = 1
 const floatCompareTolerance = 0.01
 
-const iterations = 2
-for (let i = 0; i < iterations; i++) {
-  // console.log('iteration', i)
-  const timeElapsedMillis = timeStepMillis * i
-  {
-    const { y } = body.GetLinearVelocity()
-    assertFloatEqual(y, gravPoint.y * timeElapsedMillis, floatCompareTolerance)
-  }
-  {
-    const { y } = body.GetPosition()
-    assertFloatEqual(y, 0.5 * gravPoint.y * timeElapsedMillis ** 2, floatCompareTolerance)
-  }
-  world.Step(timeStepMillis, velocityIterations, positionIterations)
-  tracker.track(`world.Step iteration ${0}`)
-}
+{
+  const body = world.CreateBody(bd)
+  tracker.track('world.CreateBody')
+  body.CreateFixture(square, 1)
+  tracker.track('body.CreateFixture')
+  body.SetTransform(zero, 0)
+  body.SetLinearVelocity(zero)
+  body.SetAwake(true)
+  body.SetEnabled(true)
 
-world.DestroyBody(body)
-tracker.track('world.DestroyBody')
-const fixture0: Box2D.b2Fixture = body.GetFixtureList()
-assert(hasPointer(fixture0))
-const fixturePointer = getPointer(fixture0)
-console.log(fixture0)
-console.log(fixturePointer)
-destroy(fixture0)
-tracker.track('freed body fixture list')
+  const iterations = 2
+  for (let i = 0; i < iterations; i++) {
+    const timeElapsedMillis = timeStepMillis * i
+    {
+      const { y } = body.GetLinearVelocity()
+      assertFloatEqual(y, gravPoint.y * timeElapsedMillis, floatCompareTolerance)
+    }
+    {
+      const { y } = body.GetPosition()
+      assertFloatEqual(y, 0.5 * gravPoint.y * timeElapsedMillis ** 2, floatCompareTolerance)
+    }
+    world.Step(timeStepMillis, velocityIterations, positionIterations)
+    tracker.track(`world.Step iteration ${i}`)
+  }
+  // console.log(`👍 Ran ${iterations} iterations of a falling body. Body had the expected position on each iteration.`)
+
+  world.DestroyBody(body)
+  tracker.track('world.DestroyBody')
+}
+{
+  const body = world.CreateBody(bd)
+  tracker.track('world.CreateBody')
+  body.CreateFixture(square, 1)
+  tracker.track('body.CreateFixture')
+  body.SetTransform(zero, 0)
+  body.SetLinearVelocity(zero)
+  body.SetAwake(true)
+  body.SetEnabled(true)
+
+  const iterations = 2
+  for (let i = 0; i < iterations; i++) {
+    const timeElapsedMillis = timeStepMillis * i
+    {
+      const { y } = body.GetLinearVelocity()
+      assertFloatEqual(y, gravPoint.y * timeElapsedMillis, floatCompareTolerance)
+    }
+    {
+      const { y } = body.GetPosition()
+      assertFloatEqual(y, 0.5 * gravPoint.y * timeElapsedMillis ** 2, floatCompareTolerance)
+    }
+    world.Step(timeStepMillis, velocityIterations, positionIterations)
+    tracker.track(`world.Step iteration ${i}`)
+  }
+  // console.log(`👍 Ran ${iterations} iterations of a falling body. Body had the expected position on each iteration.`)
+
+  world.DestroyBody(body)
+  tracker.track('world.DestroyBody')
+}
+destroy(zero)
+tracker.track('freed zero vec')
 destroy(bd)
 tracker.track('freed bodyDef')
 destroy(square)
 tracker.track('freed polygonShape')
-
-console.log(`👍 Ran ${iterations} iterations of a falling body. Body had the expected position on each iteration.`)
