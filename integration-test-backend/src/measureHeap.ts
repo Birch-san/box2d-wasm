@@ -47,6 +47,6 @@ export class HeapTracker {
     const current: number = this.heapRemaining()
     const delta: number = current - this.current
     this.current = current
-    console.log(`${Math.sign(delta) === 1 ? '+' : ''}${delta}: ${event}`)
+    console.log(`${Math.sign(delta) === 1 ? '+' : '-'}${Math.abs(delta).toString().padStart(6)}; ${this.current}: ${event}`)
   }
 }
