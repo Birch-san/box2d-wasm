@@ -5,7 +5,8 @@
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
-    "start": "node --loader ts-node/esm --experimental-specifier-resolution=node --harmony -r source-map-support/register src/index.ts",
+    "start": "node --loader ts-node/esm --experimental-specifier-resolution=node --harmony -r source-map-support/register src/basicInvocation.ts",
+    "start:memory": "node --loader ts-node/esm --experimental-specifier-resolution=node --harmony -r source-map-support/register src/memoryInvestigation.ts",
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint src/**/*.ts"
@@ -20,9 +21,14 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^14.11.8",
-    "@typescript-eslint/eslint-plugin": "^4.4.1",
+    "@typescript-eslint/eslint-plugin": "4",
     "@typescript-eslint/parser": "^4.4.1",
     "eslint": "^7.11.0",
+    "eslint-config-standard-with-typescript": "^19.0.1",
+    "eslint-plugin-import": "2",
+    "eslint-plugin-node": "11",
+    "eslint-plugin-promise": "4",
+    "eslint-plugin-standard": "4",
     "source-map-support": "^0.5.19",
     "ts-node": "^9.0.0",
     "typescript": "^4.0.3"

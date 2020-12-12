@@ -69,7 +69,25 @@
         "<node_internals>/**"
       ],
       "cwd": "${workspaceFolder}/integration-test-backend",
-      "program": "src/index.ts"
+      "program": "src/basicInvocation.ts"
+    },
+    {
+      "type": "pwa-node",
+      "request": "launch",
+      "name": "integration-test-backend: memory investigation",
+      "runtimeArgs": [
+        "--loader",
+        "ts-node/esm",
+        "--experimental-specifier-resolution=node",
+        "--harmony",
+        "-r",
+        "source-map-support/register"
+      ],
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "cwd": "${workspaceFolder}/integration-test-backend",
+      "program": "src/memoryInvestigation.ts"
     },
   ]
 }

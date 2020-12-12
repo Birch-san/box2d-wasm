@@ -1,4 +1,4 @@
-import { AssertionError } from "assert";
+import { AssertionError } from 'assert'
 
 /**
  * Adapted from https://github.com/sindresorhus/float-equal
@@ -7,23 +7,24 @@ import { AssertionError } from "assert";
  * @license MIT
  */
 export const assertFloatEqual = (a: number, b: number, tolerance: number = Number.EPSILON): void => {
-	if (a === b) {
-		return;
+  if (a === b) {
+    return
   }
 
-	const diff: number = Math.abs(a - b);
+  const diff: number = Math.abs(a - b)
 
-	if (diff < tolerance) {
-		return;
-	}
-
-	if (diff <= tolerance * Math.min(Math.abs(a), Math.abs(b))) {
-    return;
+  if (diff < tolerance) {
+    return
   }
-  
+
+  if (diff <= tolerance * Math.min(Math.abs(a), Math.abs(b))) {
+    return
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-throw-literal
   throw new AssertionError({
     operator: `within ${tolerance} of`,
     expected: `${b} (difference: ${diff})`,
     actual: a
-  });
-};
+  })
+}

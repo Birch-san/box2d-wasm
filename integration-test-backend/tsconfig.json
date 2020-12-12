@@ -2,7 +2,6 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "lib": ["ES2020"],
-    // NodeJS 14 doesn't have full esnext coverage (it's more like ES2020), but supports enough of esnext that we can use top-level await
     "module": "esnext",
     "moduleResolution": "node",
     "sourceMap": true,
