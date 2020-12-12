@@ -59,18 +59,23 @@ const floatCompareTolerance = 0.01
 
 const iterations = 2
 for (let i = 0; i < iterations; i++) {
-  console.log('iteration', i)
+  // console.log('iteration', i)
   const timeElapsedMillis = timeStepMillis * i
   {
     const { y } = body.GetLinearVelocity()
     assertFloatEqual(y, gravPoint.y * timeElapsedMillis, floatCompareTolerance)
-    {
-      const { y } = body.GetPosition()
-      assertFloatEqual(y, 0.5 * gravPoint.y * timeElapsedMillis ** 2, floatCompareTolerance)
-    }
+  }
+  {
+    const { y } = body.GetPosition()
+    assertFloatEqual(y, 0.5 * gravPoint.y * timeElapsedMillis ** 2, floatCompareTolerance)
   }
   world.Step(timeStepMillis, velocityIterations, positionIterations)
   tracker.track(`world.Step iteration ${0}`)
 }
+
+world.DestroyBody(body)
+tracker.track('world.DestroyBody')
+destroy(bd)
+tracker.track('freed bodyDef')
 
 console.log(`👍 Ran ${iterations} iterations of a falling body. Body had the expected position on each iteration.`)
