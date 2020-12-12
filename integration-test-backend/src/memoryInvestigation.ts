@@ -2,6 +2,7 @@
 import Box2DFactory from 'box2d-wasm'
 import { heapMeasurer, HeapTracker, HeapRemaining } from './measureHeap'
 import { assertFloatEqual } from './assertFloatEqual'
+import assert from 'assert'
 
 const box2d: typeof Box2D & EmscriptenModule = await Box2DFactory({
   printErr: (str: string) => {
@@ -11,6 +12,9 @@ const box2d: typeof Box2D & EmscriptenModule = await Box2DFactory({
   }
 })
 const { b2BodyDef, b2_dynamicBody, b2PolygonShape, b2Vec2, b2World, _malloc, _free, destroy } = box2d
+const hasPointer = (obj: unknown): obj is Box2D.HasPointer =>
+  typeof (obj as { Su?: number }).Su === 'number'
+const getPointer = (box2d as typeof Box2D & EmscriptenModule & { getPointer: (ptr: Box2D.HasPointer) => number }).getPointer
 
 const measureHeap: HeapRemaining = heapMeasurer(_malloc, _free)
 const tracker = new HeapTracker(measureHeap)
@@ -75,6 +79,13 @@ for (let i = 0; i < iterations; i++) {
 
 world.DestroyBody(body)
 tracker.track('world.DestroyBody')
+const fixture0: Box2D.b2Fixture = body.GetFixtureList()
+assert(hasPointer(fixture0))
+const fixturePointer = getPointer(fixture0)
+console.log(fixture0)
+console.log(fixturePointer)
+destroy(fixture0)
+tracker.track('freed body fixture list')
 destroy(bd)
 tracker.track('freed bodyDef')
 destroy(square)

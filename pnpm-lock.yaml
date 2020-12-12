@@ -51,6 +51,7 @@ importers:
     dependencies:
       box2d-wasm: 'link:../box2d-wasm'
     devDependencies:
+      '@types/assert': 1.5.2
       '@types/node': 14.11.8
       '@typescript-eslint/eslint-plugin': 4.9.1_08be5cdc80d109b060448e8ad59a1c67
       '@typescript-eslint/parser': 4.4.1_eslint@7.11.0+typescript@4.0.3
@@ -64,6 +65,7 @@ importers:
       ts-node: 9.0.0_typescript@4.0.3
       typescript: 4.0.3
     specifiers:
+      '@types/assert': ^1.5.2
       '@types/node': ^14.11.8
       '@typescript-eslint/eslint-plugin': ^4.9.1
       '@typescript-eslint/parser': ^4.4.1
