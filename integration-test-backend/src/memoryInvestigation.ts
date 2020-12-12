@@ -16,7 +16,11 @@ const measureHeap: HeapRemaining = heapMeasurer(_malloc, _free)
 const tracker = new HeapTracker(measureHeap)
 
 tracker.track('initialised')
-const gravity = new b2Vec2(0, 10)
+const gravPoint: Box2D.Point = {
+  x: 0,
+  y: 10
+}
+const gravity = new b2Vec2(gravPoint.x, gravPoint.y)
 tracker.track('allocated gravity')
 const world = new b2World(gravity)
 tracker.track('allocated world')
@@ -55,13 +59,14 @@ const floatCompareTolerance = 0.01
 
 const iterations = 2
 for (let i = 0; i < iterations; i++) {
+  console.log('iteration', i)
   const timeElapsedMillis = timeStepMillis * i
   {
     const { y } = body.GetLinearVelocity()
-    assertFloatEqual(y, gravity.y * timeElapsedMillis, floatCompareTolerance)
+    assertFloatEqual(y, gravPoint.y * timeElapsedMillis, floatCompareTolerance)
     {
       const { y } = body.GetPosition()
-      assertFloatEqual(y, 0.5 * gravity.y * timeElapsedMillis ** 2, floatCompareTolerance)
+      assertFloatEqual(y, 0.5 * gravPoint.y * timeElapsedMillis ** 2, floatCompareTolerance)
     }
   }
   world.Step(timeStepMillis, velocityIterations, positionIterations)
