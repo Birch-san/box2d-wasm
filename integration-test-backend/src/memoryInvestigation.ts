@@ -77,5 +77,7 @@ world.DestroyBody(body)
 tracker.track('world.DestroyBody')
 destroy(bd)
 tracker.track('freed bodyDef')
+destroy(square)
+tracker.track('freed polygonShape')
 
 console.log(`👍 Ran ${iterations} iterations of a falling body. Body had the expected position on each iteration.`)
