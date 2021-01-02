@@ -2,7 +2,9 @@
 
 If you've used Box2D before, you may recall that it has a concept of userData (see `b2Body#GetUserData()` and `b2BodyUserData`). We cannot make use of this system easily in `box2d-wasm`; it would require modifying the WASM heap (e.g. with API calls into the C++ program). We've not exposed any helpers to modify the Box2D userData because it's difficult and not very useful (you'd be very limited in what kinds of information you could store on it).
 
-You'll also find that you cannot safely assign properties to the JS objects that you receive from `box2d-wasm`. The following is dangerous:
+Let's explore other ways to store your metadata.
+
+You'll find that you **cannot** safely assign properties to the JS objects that you receive from `box2d-wasm`. The following is dangerous:
 
 ```js
 const body = world.CreateBody(bd);
@@ -23,7 +25,7 @@ console.log(body === body2) // true
 console.log(body2.favouriteDessert) // 'pie'
 ```
 
-To be safe Emscripten's JS object re-use: you should store metadata _outside_ of your JS object:
+To be safe from Emscripten's JS object re-use: you should store metadata _outside_ of your JS object:
 
 ```js
 /** @type {Object.<number, unknown}} */
