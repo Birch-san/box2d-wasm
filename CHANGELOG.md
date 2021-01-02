@@ -1,5 +1,17 @@
 See https://github.com/Birch-san/box2d-wasm/releases
 
+# v4.0.0
+
+The `Box2DModule` type alias has been removed (again), because (in VSCode) neither `.js` files using CommonJS imports (`const Box2DFactory = require('box2d-wasm')`) nor `.js` files using JSDoc hints (`@type {import('box2d-wasm')}` or `@type {import('box2d-wasm').default}`) were able to detect the type exported as `export default Box2DFactory` in `Box2DModule.d.ts`.
+
+`Box2DModule.d.ts` now exports `Box2DFactory` via export assignment, like it did in v2.0.0:
+
+```ts
+export = Box2DFactory;
+```
+
+This is a CommonJS style which seems to be more compatible when imported via legacy mechanisms (CommonJS import or from global namespace).
+
 # v3.0.0
 
 Making the TypeScript typings more correct.
@@ -47,9 +59,15 @@ Classes such as `Box2D.b2Vec2` have (in addition to their 2-arg constructor) a n
 
 These no-args constructor are now declared, in order to make such classes structurally compatible with their superclass, `Box2D.WrapperObject`. It has been annotated with `@deprecated` to discourage accidental usage.
 
+## [BREAKING] Removed `HasPointer` interface
+
+The `HasPointer` interface has been removed, since it was used to indicate the presence of a property `ptr` (whose name would be mangled at runtime).
+
 ## [BREAKING] Typings of helper functions simplified
 
-Helper functions such as `wrapPointer`, `getPointer`, `castObject`, `compare` `getCache`, `destroy`, `getClass` and the helper constant `NULL` are now simplified to not rely on teh presence of now-private properties such as `__cache__`, `__class__` and `ptr`.
+Helper functions such as `wrapPointer`, `getPointer`, `castObject`, `compare` `getCache`, `destroy`, `getClass` and the helper constant `NULL` are now simplified to not rely on the presence of now-private properties such as `__cache__`, `__class__` and `ptr`, or removed interfaces such as `HasPointer`.
+
+`getPointer` is now more permissive; you do not need to assert truthiness of an instance's `ptr` to use it. Optional `ptr` was only ever used to model edge-cases (casting of a manually-created `WrapperObject` to a more specific class) — in usual use we can expect `ptr` to be set.
 
 Inference of specific subclasses is less powerful as a result (e.g. on `getClass`).
 
