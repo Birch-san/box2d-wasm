@@ -213,25 +213,28 @@ export class CodeGen {
           factory.createFunctionTypeNode(
             [factory.createTypeParameterDeclaration(
               factory.createIdentifier("TargetClass"),
-              factory.createTypeLiteralNode([factory.createConstructSignature(
-                undefined,
-                [factory.createParameterDeclaration(
+              factory.createIntersectionTypeNode([
+                factory.createTypeQueryNode(factory.createIdentifier("WrapperObject")),
+                factory.createTypeLiteralNode([factory.createConstructSignature(
                   undefined,
-                  undefined,
-                  factory.createToken(ts.SyntaxKind.DotDotDotToken),
-                  factory.createIdentifier("args"),
-                  undefined,
-                  factory.createArrayTypeNode(factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)),
-                  undefined
-                )],
-                factory.createTypeReferenceNode(
-                  factory.createIdentifier("InstanceType"),
-                  [factory.createTypeReferenceNode(
-                    factory.createIdentifier("TargetClass"),
+                  [factory.createParameterDeclaration(
+                    undefined,
+                    undefined,
+                    factory.createToken(ts.SyntaxKind.DotDotDotToken),
+                    factory.createIdentifier("args"),
+                    undefined,
+                    factory.createArrayTypeNode(factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)),
                     undefined
-                  )]
-                )
-              )]),
+                  )],
+                  factory.createTypeReferenceNode(
+                    factory.createIdentifier("InstanceType"),
+                    [factory.createTypeReferenceNode(
+                      factory.createIdentifier("TargetClass"),
+                      undefined
+                    )]
+                  )
+                )])
+              ]),
               factory.createTypeQueryNode(factory.createIdentifier("WrapperObject"))
             )],
             [
@@ -269,8 +272,7 @@ export class CodeGen {
         )],
         ts.NodeFlags.Const
       )
-    )
-    
+    );    
   };
 
   /**
@@ -321,25 +323,28 @@ export class CodeGen {
           factory.createFunctionTypeNode(
             [factory.createTypeParameterDeclaration(
               factory.createIdentifier("TargetClass"),
-              factory.createTypeLiteralNode([factory.createConstructSignature(
-                undefined,
-                [factory.createParameterDeclaration(
+              factory.createIntersectionTypeNode([
+                factory.createTypeQueryNode(factory.createIdentifier("WrapperObject")),
+                factory.createTypeLiteralNode([factory.createConstructSignature(
                   undefined,
-                  undefined,
-                  factory.createToken(ts.SyntaxKind.DotDotDotToken),
-                  factory.createIdentifier("args"),
-                  undefined,
-                  factory.createArrayTypeNode(factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)),
-                  undefined
-                )],
-                factory.createTypeReferenceNode(
-                  factory.createIdentifier("InstanceType"),
-                  [factory.createTypeReferenceNode(
-                    factory.createIdentifier("TargetClass"),
+                  [factory.createParameterDeclaration(
+                    undefined,
+                    undefined,
+                    factory.createToken(ts.SyntaxKind.DotDotDotToken),
+                    factory.createIdentifier("args"),
+                    undefined,
+                    factory.createArrayTypeNode(factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)),
                     undefined
-                  )]
-                )
-              )]),
+                  )],
+                  factory.createTypeReferenceNode(
+                    factory.createIdentifier("InstanceType"),
+                    [factory.createTypeReferenceNode(
+                      factory.createIdentifier("TargetClass"),
+                      undefined
+                    )]
+                  )
+                )])
+              ]),
               factory.createTypeQueryNode(factory.createIdentifier("WrapperObject"))
             )],
             [
@@ -380,7 +385,7 @@ export class CodeGen {
         )],
         ts.NodeFlags.Const
       )
-    )
+    );    
   };
 
   /**
