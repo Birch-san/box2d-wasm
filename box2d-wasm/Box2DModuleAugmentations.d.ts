@@ -86,11 +86,8 @@ declare namespace Box2D {
    * @param elementSize size of an instance of the array element (in bytes)
    * @param ctor constructor for the array element
    */
-  export const reifyArray: <TargetClass extends {
+  export const reifyArray: <TargetClass extends typeof WrapperObject & {
     new (...args: any[]): InstanceType<TargetClass>;
-    readonly __cache__: {
-        [ptr: number]: InstanceType<TargetClass>;
-    };
   } = typeof WrapperObject>(
       array_p: number,
       numElements: number,
@@ -132,11 +129,8 @@ declare namespace Box2D {
    * @param ctor constructor for a subclass of Box2D.WrapperObject
    * @return Size of the element which ctor constructs
    */
-  export const sizeof: <TargetClass extends {
+  export const sizeof: <TargetClass extends typeof WrapperObject & {
     new (...args: any[]): InstanceType<TargetClass>;
-    readonly __cache__: {
-        [ptr: number]: InstanceType<TargetClass>;
-    };
   }>(ctor: TargetClass) => number;
 
   /**
@@ -147,11 +141,8 @@ declare namespace Box2D {
    * @param {number} [elements=1] Number of array elements to allocate
    * @return Tuple containing 0: Instance of Box2D.WrapperObject subclass (i.e. your ctor), whose pointer can be taken to locate your memory. 1: A destructor.
    */
-  export const allocateArray: <TargetClass extends {
+  export const allocateArray: <TargetClass extends typeof WrapperObject & {
     new (...args: any[]): InstanceType<TargetClass>;
-    readonly __cache__: {
-        [ptr: number]: InstanceType<TargetClass>;
-    };
   }>(
     ctor: TargetClass,
     elementSizeBytes: number,
