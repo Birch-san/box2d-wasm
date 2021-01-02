@@ -13,7 +13,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "box2d-wasm": "2.0.1"
+    "box2d-wasm": "4.0.0"
   },
   "engines": {
     "node": ">= 14.8.0"
