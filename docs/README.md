@@ -22,6 +22,7 @@ Refer to [Box2D's documentation](https://box2d.org/documentation/) for explanati
 
 # Reference
 
+- [Iterating over lists](iteration.md)
 - [Helpers for working with Emscripten types](emscripten-helpers.md)
 - [Collision helpers](collision-helpers.md)
 - [Raycasting](raycasting.md)
