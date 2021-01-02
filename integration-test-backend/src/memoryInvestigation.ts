@@ -3,6 +3,7 @@ import Box2DFactory from 'box2d-wasm'
 import { heapMeasurer, HeapTracker, HeapRemaining } from './measureHeap'
 import { assertFloatEqual } from './assertFloatEqual'
 import assert from 'assert'
+import { getHeapStatistics } from 'v8'
 
 const box2d: typeof Box2D & EmscriptenModule = await Box2DFactory({
   printErr: (str: string) => {
@@ -16,8 +17,13 @@ const hasPointer = (obj: unknown): obj is Box2D.HasPointer =>
   typeof (obj as { Su?: number }).Su === 'number'
 const getPointer = (box2d as typeof Box2D & EmscriptenModule & { getPointer: (ptr: Box2D.HasPointer) => number }).getPointer
 
-const measureHeap: HeapRemaining = heapMeasurer(_malloc, _free)
-const tracker = new HeapTracker(measureHeap)
+const measureModuleHeap: HeapRemaining = heapMeasurer(_malloc, _free)
+// const measureV8Heap: HeapRemaining = (): number => {
+//   global.gc()
+//   return getHeapStatistics().used_heap_size
+// }
+const tracker = new HeapTracker(measureModuleHeap)
+// const tracker = new HeapTracker(measureV8Heap)
 
 tracker.track('initialised')
 const gravPoint: Box2D.Point = {
@@ -84,26 +90,28 @@ const floatCompareTolerance = 0.01
   tracker.track('world.CreateBody')
   body.CreateFixture(square, 1)
   tracker.track('body.CreateFixture')
-  body.SetTransform(zero, 0)
-  body.SetLinearVelocity(zero)
-  body.SetAwake(true)
-  body.SetEnabled(true)
+  const { y } = body.GetPosition()
+  console.log(y)
+  // body.SetTransform(zero, 0)
+  // body.SetLinearVelocity(zero)
+  // body.SetAwake(true)
+  // body.SetEnabled(true)
 
-  const iterations = 2
-  for (let i = 0; i < iterations; i++) {
-    const timeElapsedMillis = timeStepMillis * i
-    {
-      const { y } = body.GetLinearVelocity()
-      assertFloatEqual(y, gravPoint.y * timeElapsedMillis, floatCompareTolerance)
-    }
-    {
-      const { y } = body.GetPosition()
-      assertFloatEqual(y, 0.5 * gravPoint.y * timeElapsedMillis ** 2, floatCompareTolerance)
-    }
-    world.Step(timeStepMillis, velocityIterations, positionIterations)
-    tracker.track(`world.Step iteration ${i}`)
-  }
-  // console.log(`👍 Ran ${iterations} iterations of a falling body. Body had the expected position on each iteration.`)
+  // const iterations = 2
+  // for (let i = 0; i < iterations; i++) {
+  //   const timeElapsedMillis = timeStepMillis * i
+  //   {
+  //     const { y } = body.GetLinearVelocity()
+  //     assertFloatEqual(y, gravPoint.y * timeElapsedMillis, floatCompareTolerance)
+  //   }
+  //   {
+  //     const { y } = body.GetPosition()
+  //     assertFloatEqual(y, 0.5 * gravPoint.y * timeElapsedMillis ** 2, floatCompareTolerance)
+  //   }
+  //   world.Step(timeStepMillis, velocityIterations, positionIterations)
+  //   tracker.track(`world.Step iteration ${i}`)
+  // }
+  // // console.log(`👍 Ran ${iterations} iterations of a falling body. Body had the expected position on each iteration.`)
 
   world.DestroyBody(body)
   tracker.track('world.DestroyBody')

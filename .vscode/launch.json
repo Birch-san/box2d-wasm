@@ -81,7 +81,8 @@
         "--experimental-specifier-resolution=node",
         "--harmony",
         "-r",
-        "source-map-support/register"
+        "source-map-support/register",
+        "--expose-gc"
       ],
       "skipFiles": [
         "<node_internals>/**"

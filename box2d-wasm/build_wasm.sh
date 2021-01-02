@@ -14,7 +14,7 @@ if ! [[ "$PWD" -ef "$DIR/build" ]]; then
 fi
 
 # we used to use -s ENVIRONMENT=web for a slightly smaller build, until Node.js compatibility was requested in https://github.com/Birch-san/box2d-wasm/issues/8
-EMCC_OPTS=(-s MODULARIZE=1 -s EXPORT_NAME=Box2D -s EXPORT_BINDINGS=1 -s RESERVED_FUNCTION_POINTERS=20 --post-js box2d_glue.js --memory-init-file 0 -s NO_EXIT_RUNTIME=1 -s NO_FILESYSTEM=1 -s EXPORTED_RUNTIME_METHODS=[] -s EXPORTED_FUNCTIONS="['_malloc','_free']" -fno-rtti -s ALLOW_MEMORY_GROWTH=1)
+EMCC_OPTS=(-s MODULARIZE=1 -s EXPORT_NAME=Box2D -s EXPORT_BINDINGS=1 -s RESERVED_FUNCTION_POINTERS=20 --post-js box2d_glue.js --memory-init-file 0 -s NO_EXIT_RUNTIME=1 -s NO_FILESYSTEM=1 -s EXPORTED_RUNTIME_METHODS=[] -s EXPORTED_FUNCTIONS="['_malloc','_free']" -fno-rtti -s ALLOW_MEMORY_GROWTH=0)
 
 RELEASE_OPTS_NOMINAL=(-O3)
 
