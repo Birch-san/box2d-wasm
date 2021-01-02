@@ -1,6 +1,6 @@
 import ts from 'typescript';
 import WebIDL2 from 'webidl2';
-// import assert from 'assert';
+import assert from 'assert';
 
 export class CodeGen {
   constructor(
@@ -73,9 +73,6 @@ export class CodeGen {
     return this.getType(type);
   };
 
-  /**
-   * export class WrapperObject
-   */
   private constructWrapperObjectHelper = (): ts.ClassDeclaration => {
     const { factory } = this.context;
     return factory.createClassDeclaration(
@@ -84,13 +81,58 @@ export class CodeGen {
       factory.createIdentifier("WrapperObject"),
       undefined,
       undefined,
-      []
+      [
+        factory.createPropertyDeclaration(
+          undefined,
+          [
+            factory.createModifier(ts.SyntaxKind.ProtectedKeyword),
+            factory.createModifier(ts.SyntaxKind.StaticKeyword),
+            factory.createModifier(ts.SyntaxKind.ReadonlyKeyword)
+          ],
+          factory.createIdentifier("__cache__"),
+          undefined,
+          factory.createTypeLiteralNode([factory.createIndexSignature(
+            undefined,
+            undefined,
+            [factory.createParameterDeclaration(
+              undefined,
+              undefined,
+              undefined,
+              factory.createIdentifier("ptr"),
+              undefined,
+              factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+              undefined
+            )],
+            factory.createTypeReferenceNode(
+              factory.createIdentifier("WrapperObject"),
+              undefined
+            )
+          )]),
+          undefined
+        ),
+        factory.createPropertyDeclaration(
+          undefined,
+          [
+            factory.createModifier(ts.SyntaxKind.ProtectedKeyword),
+            factory.createModifier(ts.SyntaxKind.ReadonlyKeyword)
+          ],
+          factory.createIdentifier("__class__"),
+          undefined,
+          factory.createTypeQueryNode(factory.createIdentifier("WrapperObject")),
+          undefined
+        ),
+        factory.createPropertyDeclaration(
+          undefined,
+          [factory.createModifier(ts.SyntaxKind.ProtectedKeyword)],
+          factory.createIdentifier("ptr"),
+          factory.createToken(ts.SyntaxKind.QuestionToken),
+          factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+          undefined
+        )
+      ]
     );    
   };
 
-  /**
-   * export class VoidPtr
-   */
   private constructVoidPtrHelper = (): ts.ClassDeclaration => {
     const { factory } = this.context;
     return factory.createClassDeclaration(
@@ -105,7 +147,55 @@ export class CodeGen {
           undefined
         )]
       )],
-      []
+      [
+        factory.createPropertyDeclaration(
+          undefined,
+          [
+            factory.createModifier(ts.SyntaxKind.ProtectedKeyword),
+            factory.createModifier(ts.SyntaxKind.StaticKeyword),
+            factory.createModifier(ts.SyntaxKind.ReadonlyKeyword)
+          ],
+          factory.createIdentifier("__cache__"),
+          undefined,
+          factory.createTypeLiteralNode([factory.createIndexSignature(
+            undefined,
+            undefined,
+            [factory.createParameterDeclaration(
+              undefined,
+              undefined,
+              undefined,
+              factory.createIdentifier("ptr"),
+              undefined,
+              factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+              undefined
+            )],
+            factory.createTypeReferenceNode(
+              factory.createIdentifier("VoidPtr"),
+              undefined
+            )
+          )]),
+          undefined
+        ),
+        factory.createPropertyDeclaration(
+          undefined,
+          [
+            factory.createModifier(ts.SyntaxKind.ProtectedKeyword),
+            factory.createModifier(ts.SyntaxKind.ReadonlyKeyword)
+          ],
+          factory.createIdentifier("__class__"),
+          undefined,
+          factory.createTypeQueryNode(factory.createIdentifier("VoidPtr")),
+          undefined
+        ),
+        factory.createPropertyDeclaration(
+          undefined,
+          [factory.createModifier(ts.SyntaxKind.ProtectedKeyword)],
+          factory.createIdentifier("ptr"),
+          factory.createToken(ts.SyntaxKind.QuestionToken),
+          factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+          undefined
+        )
+      ]
     );    
   }
 
@@ -118,41 +208,38 @@ export class CodeGen {
       [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
       factory.createVariableDeclarationList(
         [factory.createVariableDeclaration(
-          factory.createIdentifier('wrapPointer'),
+          factory.createIdentifier("wrapPointer"),
           undefined,
           factory.createFunctionTypeNode(
             [factory.createTypeParameterDeclaration(
-              factory.createIdentifier('TargetClass'),
-              factory.createIntersectionTypeNode([
-                factory.createTypeQueryNode(factory.createIdentifier('WrapperObject')),
-                factory.createTypeLiteralNode([factory.createConstructSignature(
+              factory.createIdentifier("TargetClass"),
+              factory.createTypeLiteralNode([factory.createConstructSignature(
+                undefined,
+                [factory.createParameterDeclaration(
                   undefined,
-                  [factory.createParameterDeclaration(
-                    undefined,
-                    undefined,
-                    factory.createToken(ts.SyntaxKind.DotDotDotToken),
-                    factory.createIdentifier('args'),
-                    undefined,
-                    factory.createArrayTypeNode(factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)),
+                  undefined,
+                  factory.createToken(ts.SyntaxKind.DotDotDotToken),
+                  factory.createIdentifier("args"),
+                  undefined,
+                  factory.createArrayTypeNode(factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)),
+                  undefined
+                )],
+                factory.createTypeReferenceNode(
+                  factory.createIdentifier("InstanceType"),
+                  [factory.createTypeReferenceNode(
+                    factory.createIdentifier("TargetClass"),
                     undefined
-                  )],
-                  factory.createTypeReferenceNode(
-                    factory.createIdentifier('InstanceType'),
-                    [factory.createTypeReferenceNode(
-                      factory.createIdentifier('TargetClass'),
-                      undefined
-                    )]
-                  )
-                )])
-              ]),
-              factory.createTypeQueryNode(factory.createIdentifier('WrapperObject'))
+                  )]
+                )
+              )]),
+              factory.createTypeQueryNode(factory.createIdentifier("WrapperObject"))
             )],
             [
               factory.createParameterDeclaration(
                 undefined,
                 undefined,
                 undefined,
-                factory.createIdentifier('pointer'),
+                factory.createIdentifier("pointer"),
                 undefined,
                 factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
                 undefined
@@ -161,28 +248,29 @@ export class CodeGen {
                 undefined,
                 undefined,
                 undefined,
-                factory.createIdentifier('targetType'),
+                factory.createIdentifier("targetType"),
                 factory.createToken(ts.SyntaxKind.QuestionToken),
                 factory.createTypeReferenceNode(
-                  factory.createIdentifier('TargetClass'),
+                  factory.createIdentifier("TargetClass"),
                   undefined
                 ),
                 undefined
               )
             ],
             factory.createTypeReferenceNode(
-              factory.createIdentifier('InstanceType'),
+              factory.createIdentifier("InstanceType"),
               [factory.createTypeReferenceNode(
-                factory.createIdentifier('TargetClass'),
+                factory.createIdentifier("TargetClass"),
                 undefined
               )]
             )
           ),
           undefined
         )],
-        ts.NodeFlags.Const | ts.NodeFlags.ContextFlags
+        ts.NodeFlags.Const
       )
-    );
+    )
+    
   };
 
   /**
@@ -194,25 +282,18 @@ export class CodeGen {
       [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
       factory.createVariableDeclarationList(
         [factory.createVariableDeclaration(
-          factory.createIdentifier('getPointer'),
+          factory.createIdentifier("getPointer"),
           undefined,
           factory.createFunctionTypeNode(
-            [factory.createTypeParameterDeclaration(
-              factory.createIdentifier('Instance'),
-              factory.createTypeReferenceNode(
-                factory.createIdentifier('WrapperObject'),
-                undefined
-              ),
-              undefined
-            )],
+            undefined,
             [factory.createParameterDeclaration(
               undefined,
               undefined,
               undefined,
-              factory.createIdentifier('instance'),
+              factory.createIdentifier("instance"),
               undefined,
               factory.createTypeReferenceNode(
-                factory.createIdentifier('Instance'),
+                factory.createIdentifier("WrapperObject"),
                 undefined
               ),
               undefined
@@ -221,9 +302,9 @@ export class CodeGen {
           ),
           undefined
         )],
-        ts.NodeFlags.Const | ts.NodeFlags.ContextFlags
+        ts.NodeFlags.Const
       )
-    );    
+    );
   };
 
   /**
@@ -235,44 +316,41 @@ export class CodeGen {
       [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
       factory.createVariableDeclarationList(
         [factory.createVariableDeclaration(
-          factory.createIdentifier('castObject'),
+          factory.createIdentifier("castObject"),
           undefined,
           factory.createFunctionTypeNode(
             [factory.createTypeParameterDeclaration(
-              factory.createIdentifier('TargetClass'),
-              factory.createIntersectionTypeNode([
-                factory.createTypeQueryNode(factory.createIdentifier('WrapperObject')),
-                factory.createTypeLiteralNode([factory.createConstructSignature(
+              factory.createIdentifier("TargetClass"),
+              factory.createTypeLiteralNode([factory.createConstructSignature(
+                undefined,
+                [factory.createParameterDeclaration(
                   undefined,
-                  [factory.createParameterDeclaration(
-                    undefined,
-                    undefined,
-                    factory.createToken(ts.SyntaxKind.DotDotDotToken),
-                    factory.createIdentifier('args'),
-                    undefined,
-                    factory.createArrayTypeNode(factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)),
+                  undefined,
+                  factory.createToken(ts.SyntaxKind.DotDotDotToken),
+                  factory.createIdentifier("args"),
+                  undefined,
+                  factory.createArrayTypeNode(factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)),
+                  undefined
+                )],
+                factory.createTypeReferenceNode(
+                  factory.createIdentifier("InstanceType"),
+                  [factory.createTypeReferenceNode(
+                    factory.createIdentifier("TargetClass"),
                     undefined
-                  )],
-                  factory.createTypeReferenceNode(
-                    factory.createIdentifier('InstanceType'),
-                    [factory.createTypeReferenceNode(
-                      factory.createIdentifier('TargetClass'),
-                      undefined
-                    )]
-                  )
-                )])
-              ]),
-              factory.createTypeQueryNode(factory.createIdentifier('WrapperObject'))
+                  )]
+                )
+              )]),
+              factory.createTypeQueryNode(factory.createIdentifier("WrapperObject"))
             )],
             [
               factory.createParameterDeclaration(
                 undefined,
                 undefined,
                 undefined,
-                factory.createIdentifier('instance'),
+                factory.createIdentifier("instance"),
                 undefined,
                 factory.createTypeReferenceNode(
-                  factory.createIdentifier('WrapperObject'),
+                  factory.createIdentifier("WrapperObject"),
                   undefined
                 ),
                 undefined
@@ -281,28 +359,28 @@ export class CodeGen {
                 undefined,
                 undefined,
                 undefined,
-                factory.createIdentifier('targetType'),
+                factory.createIdentifier("targetType"),
                 factory.createToken(ts.SyntaxKind.QuestionToken),
                 factory.createTypeReferenceNode(
-                  factory.createIdentifier('TargetClass'),
+                  factory.createIdentifier("TargetClass"),
                   undefined
                 ),
                 undefined
               )
             ],
             factory.createTypeReferenceNode(
-              factory.createIdentifier('InstanceType'),
+              factory.createIdentifier("InstanceType"),
               [factory.createTypeReferenceNode(
-                factory.createIdentifier('TargetClass'),
+                factory.createIdentifier("TargetClass"),
                 undefined
               )]
             )
           ),
           undefined
         )],
-        ts.NodeFlags.Const | ts.NodeFlags.ContextFlags
+        ts.NodeFlags.Const
       )
-    );    
+    )
   };
 
   /**
@@ -314,7 +392,7 @@ export class CodeGen {
       [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
       factory.createVariableDeclarationList(
         [factory.createVariableDeclaration(
-          factory.createIdentifier('compare'),
+          factory.createIdentifier("compare"),
           undefined,
           factory.createFunctionTypeNode(
             undefined,
@@ -323,10 +401,10 @@ export class CodeGen {
                 undefined,
                 undefined,
                 undefined,
-                factory.createIdentifier('instance'),
+                factory.createIdentifier("instance"),
                 undefined,
                 factory.createTypeReferenceNode(
-                  factory.createIdentifier('WrapperObject'),
+                  factory.createIdentifier("WrapperObject"),
                   undefined
                 ),
                 undefined
@@ -335,10 +413,10 @@ export class CodeGen {
                 undefined,
                 undefined,
                 undefined,
-                factory.createIdentifier('instance2'),
+                factory.createIdentifier("instance2"),
                 undefined,
                 factory.createTypeReferenceNode(
-                  factory.createIdentifier('WrapperObject'),
+                  factory.createIdentifier("WrapperObject"),
                   undefined
                 ),
                 undefined
@@ -348,9 +426,9 @@ export class CodeGen {
           ),
           undefined
         )],
-        ts.NodeFlags.Const | ts.NodeFlags.ContextFlags
+        ts.NodeFlags.Const
       )
-    )    
+    );    
   };
 
   /**
@@ -362,22 +440,22 @@ export class CodeGen {
       [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
       factory.createVariableDeclarationList(
         [factory.createVariableDeclaration(
-          factory.createIdentifier('getCache'),
+          factory.createIdentifier("getCache"),
           undefined,
           factory.createFunctionTypeNode(
             [factory.createTypeParameterDeclaration(
-              factory.createIdentifier('Class'),
-              factory.createTypeQueryNode(factory.createIdentifier('WrapperObject')),
-              factory.createTypeQueryNode(factory.createIdentifier('WrapperObject'))
+              factory.createIdentifier("Class"),
+              factory.createTypeQueryNode(factory.createIdentifier("WrapperObject")),
+              factory.createTypeQueryNode(factory.createIdentifier("WrapperObject"))
             )],
             [factory.createParameterDeclaration(
               undefined,
               undefined,
               undefined,
-              factory.createIdentifier('type'),
+              factory.createIdentifier("type"),
               factory.createToken(ts.SyntaxKind.QuestionToken),
               factory.createTypeReferenceNode(
-                factory.createIdentifier('Class'),
+                factory.createIdentifier("Class"),
                 undefined
               ),
               undefined
@@ -389,15 +467,15 @@ export class CodeGen {
                 undefined,
                 undefined,
                 undefined,
-                factory.createIdentifier('ptr'),
+                factory.createIdentifier("ptr"),
                 undefined,
                 factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
                 undefined
               )],
               factory.createTypeReferenceNode(
-                factory.createIdentifier('InstanceType'),
+                factory.createIdentifier("InstanceType"),
                 [factory.createTypeReferenceNode(
-                  factory.createIdentifier('Class'),
+                  factory.createIdentifier("Class"),
                   undefined
                 )]
               )
@@ -405,9 +483,9 @@ export class CodeGen {
           ),
           undefined
         )],
-        ts.NodeFlags.Const | ts.NodeFlags.ContextFlags
+        ts.NodeFlags.Const
       )
-    )    
+    );    
   };
 
   /**
@@ -419,7 +497,7 @@ export class CodeGen {
       [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
       factory.createVariableDeclarationList(
         [factory.createVariableDeclaration(
-          factory.createIdentifier('destroy'),
+          factory.createIdentifier("destroy"),
           undefined,
           factory.createFunctionTypeNode(
             undefined,
@@ -427,11 +505,11 @@ export class CodeGen {
               undefined,
               undefined,
               undefined,
-              factory.createIdentifier('instance'),
+              factory.createIdentifier("instance"),
               undefined,
               factory.createTypeLiteralNode([factory.createMethodSignature(
                 undefined,
-                factory.createIdentifier('__destroy__'),
+                factory.createIdentifier("__destroy__"),
                 undefined,
                 undefined,
                 [],
@@ -443,9 +521,9 @@ export class CodeGen {
           ),
           undefined
         )],
-        ts.NodeFlags.Const | ts.NodeFlags.ContextFlags
+        ts.NodeFlags.Const
       )
-    );    
+    );     
   };
 
   /**
@@ -457,49 +535,37 @@ export class CodeGen {
       [factory.createModifier(ts.SyntaxKind.ExportKeyword)],
       factory.createVariableDeclarationList(
         [factory.createVariableDeclaration(
-          factory.createIdentifier('getClass'),
+          factory.createIdentifier("getClass"),
           undefined,
           factory.createFunctionTypeNode(
             [factory.createTypeParameterDeclaration(
-              factory.createIdentifier('Instance'),
-              factory.createTypeReferenceNode(
-                factory.createIdentifier('WrapperObject'),
-                undefined
-              ),
+              factory.createIdentifier("Class"),
+              factory.createTypeQueryNode(factory.createIdentifier("WrapperObject")),
               undefined
             )],
             [factory.createParameterDeclaration(
               undefined,
               undefined,
               undefined,
-              factory.createIdentifier('instance'),
+              factory.createIdentifier("instance"),
               undefined,
               factory.createTypeReferenceNode(
-                factory.createIdentifier('Instance'),
-                undefined
+                factory.createIdentifier("InstanceType"),
+                [factory.createTypeReferenceNode(
+                  factory.createIdentifier("Class"),
+                  undefined
+                )]
               ),
               undefined
             )],
-            factory.createTypeLiteralNode([factory.createConstructSignature(
-              undefined,
-              [factory.createParameterDeclaration(
-                undefined,
-                undefined,
-                factory.createToken(ts.SyntaxKind.DotDotDotToken),
-                factory.createIdentifier('args'),
-                undefined,
-                factory.createArrayTypeNode(factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)),
-                undefined
-              )],
-              factory.createTypeReferenceNode(
-                factory.createIdentifier('Instance'),
-                undefined
-              )
-            )])
+            factory.createTypeReferenceNode(
+              factory.createIdentifier("Class"),
+              undefined
+            )
           ),
           undefined
         )],
-        ts.NodeFlags.Const | ts.NodeFlags.ContextFlags
+        ts.NodeFlags.Const
       )
     );    
   };
@@ -521,9 +587,9 @@ export class CodeGen {
           ),
           undefined
         )],
-        ts.NodeFlags.Const | ts.NodeFlags.ContextFlags
+        ts.NodeFlags.Const
       )
-    );    
+    )    
   };
 
   private helpers = (): ts.Statement[] => {
@@ -553,18 +619,35 @@ export class CodeGen {
     );
   };
 
-  private getConstructor = (member: WebIDL2.ConstructorMemberType | WebIDL2.OperationMemberType): [ts.ConstructorDeclaration] | [] => {
+  private getConstructor = (member: WebIDL2.ConstructorMemberType | WebIDL2.OperationMemberType): [ts.ConstructorDeclaration, ts.ConstructorDeclaration] | [] => {
     const { factory } = this.context;
     if (!member.arguments.length) {
       // JS classes already have an implicit no-args constructor
       return [];
     }
-    return [factory.createConstructorDeclaration(
+    const noArg: ts.ConstructorDeclaration = factory.createConstructorDeclaration(
       /*decorators*/undefined,
       /*modifiers*/undefined,
-      /*parameters*/member.arguments.map(this.getParameterDeclaration),
+      /*parameters*/undefined,
       /*body*/undefined
-    )];
+    );
+    ts.addSyntheticLeadingComment(
+      noArg,
+      ts.SyntaxKind.MultiLineCommentTrivia,
+      `*
+ * @deprecated no-arg construction is forbidden (throws errors).
+ * it's exposed in the types solely so that this class can be structurally-compatible with {@link WrapperObject}.
+ * @throws {string}
+ `,
+      true);
+    return [
+      noArg,
+      factory.createConstructorDeclaration(
+        /*decorators*/undefined,
+        /*modifiers*/undefined,
+        /*parameters*/member.arguments.map(this.getParameterDeclaration),
+        /*body*/undefined
+      )];
   };
 
   private getOperation = (member: WebIDL2.OperationMemberType): ts.MethodDeclaration => {
@@ -674,9 +757,48 @@ export class CodeGen {
     ];
   };
 
-  private getCommonClassBoilerplateMembers = (/* classIdentifierFactory: () => ts.EntityName */): ts.ClassElement[] => {
-    // const { factory } = this.context;
+  private getCommonClassBoilerplateMembers = (classIdentifierFactory: () => ts.EntityName): ts.ClassElement[] => {
+    const { factory } = this.context;
     return [
+      factory.createPropertyDeclaration(
+        undefined,
+        [
+          factory.createModifier(ts.SyntaxKind.ProtectedKeyword),
+          factory.createModifier(ts.SyntaxKind.StaticKeyword),
+          factory.createModifier(ts.SyntaxKind.ReadonlyKeyword)
+        ],
+        factory.createIdentifier("__cache__"),
+        undefined,
+        factory.createTypeLiteralNode([factory.createIndexSignature(
+          undefined,
+          undefined,
+          [factory.createParameterDeclaration(
+            undefined,
+            undefined,
+            undefined,
+            factory.createIdentifier("ptr"),
+            undefined,
+            factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+            undefined
+          )],
+          factory.createTypeReferenceNode(
+            classIdentifierFactory(),
+            undefined
+          )
+        )]),
+        undefined
+      ),
+      factory.createPropertyDeclaration(
+        undefined,
+        [
+          factory.createModifier(ts.SyntaxKind.ProtectedKeyword),
+          factory.createModifier(ts.SyntaxKind.ReadonlyKeyword)
+        ],
+        factory.createIdentifier("__class__"),
+        undefined,
+        factory.createTypeQueryNode(classIdentifierFactory()),
+        undefined
+      )
     ];
   };
 
@@ -701,8 +823,16 @@ export class CodeGen {
    * Additional members for classes which have a public constructor bound
    */
   private getConstructibleClassBoilerplateMembers = (): ts.ClassElement[] => {
-    // const { factory } = this.context;
+    const { factory } = this.context;
     return [
+      factory.createPropertyDeclaration(
+        undefined,
+        [factory.createModifier(ts.SyntaxKind.ProtectedKeyword)],
+        factory.createIdentifier("ptr"),
+        undefined,
+        factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+        undefined
+      )
     ];
   };
 
@@ -749,13 +879,13 @@ export class CodeGen {
               undefined
             )]
           )],
-          /*members*/this.getCommonClassBoilerplateMembers(/*classIdentifierFactory*/)
+          /*members*/this.getCommonClassBoilerplateMembers(classIdentifierFactory)
           .concat(isDeletable ? this.getDeletableClassBoilerplateMembers() : [])
           .concat(isConstructibleType ? this.getConstructibleClassBoilerplateMembers() : [])
           .concat(
             (root.members as Array<WebIDL2.IDLInterfaceMemberType | WebIDL2.IDLInterfaceMixinMemberType>)
             .flatMap<ts.ClassElement, Array<WebIDL2.IDLInterfaceMemberType | WebIDL2.IDLInterfaceMixinMemberType>>(
-              (member) => {
+              (member: WebIDL2.IDLInterfaceMemberType | WebIDL2.IDLInterfaceMixinMemberType): ts.ClassElement[] => {
                 if (CodeGen.isConstructorMember(root, member)) {
                   // tried to get this cast for free via type guard from ::isConstructorMember,
                   // but it makes TS wrongly eliminate 'operation' as a possible type outside of this block
