@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
-    "lib": ["ES2020"],
+    // Using DOM types because Emscripten includes references to them (for functionality we won't use in NodeJS)
+    "lib": ["ES2020", "DOM"],
     // NodeJS 14 doesn't have full esnext coverage (it's more like ES2020), but supports enough of esnext that we can use top-level await
     "module": "esnext",
     "moduleResolution": "node",
