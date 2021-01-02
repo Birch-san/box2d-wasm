@@ -21,7 +21,7 @@ const callback = Object.assign(new JSRayCastCallback(), {
   }
 });
 
-const world = new b2World();
+const world = new b2World(new b2Vec(0, 10));
 
 // make a line from left to right, vertically in the middle
 const shape = new b2EdgeShape();
