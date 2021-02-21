@@ -10,6 +10,7 @@
         "/System/Library/Frameworks",
         "/Library/Frameworks"
       ],
+      "forcedInclude": ["${workspaceFolder}/ide-include.h"],
       "compilerPath": "/usr/local/bin/em++",
       "cStandard": "c11",
       "cppStandard": "c++20"
