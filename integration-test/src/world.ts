@@ -29,13 +29,15 @@ export class WorldFactory {
     const bd_ground = new b2BodyDef();
     const groundBody = world.CreateBody(bd_ground);
 
+    this.createParticles(world);
+    
     //ground edges
     this.createFixtures(groundBody);
 
     this.createFallingShapes(world);
 
     // rope
-    const { rope, destroy: destroyRope } = this.createRope();
+    // const { rope, destroy: destroyRope } = this.createRope();
 
     this.createStaticPolygonAndChainShapes(groundBody);
 
@@ -45,19 +47,81 @@ export class WorldFactory {
     return {
       step(deltaMs: number) {
         const clampedDeltaMs = Math.min(deltaMs, maxTimeStepMs);
-        world.Step(clampedDeltaMs/1000, 3, 2);
-        rope.Step(clampedDeltaMs/1000, 3, new b2Vec2(0, 0));
+        world.Step(clampedDeltaMs/1000, 3, 2, 1);
+        // rope.Step(clampedDeltaMs/1000, 3, new b2Vec2(0, 0));
       },
       draw() {
         world.DebugDraw();
-        rope.Draw(renderer);
+        // rope.Draw(renderer);
       },
       destroy() {
         destroy(world);
-        destroyRope();
+        // destroyRope();
       }
     };
   }
+
+  private readonly createParticles = (world: Box2D.b2World) => {
+    const {
+      b2Vec2,
+      b2ParticleSystemDef,
+      b2ParticleGroupDef,
+      b2ParticleSystem,
+      b2ParticleGroup,
+      b2PolygonShape,
+      tuplesToVec2Array
+    } = this.box2D;
+    const psd = new b2ParticleSystemDef();
+    // Initialize physical coefficients to the maximum values that
+    // maintain numerical stability.
+    Object.assign<Box2D.b2ParticleSystemDef, Partial<Box2D.b2ParticleSystemDef>>(psd, {
+      colorMixingStrength: 0.5,
+      dampingStrength: 1.0,
+      destroyByAge: true,
+      ejectionStrength: 0.5,
+      elasticStrength: 0.25,
+      lifetimeGranularity: 1.0 / 60.0,
+      powderStrength: 0.5,
+      pressureStrength: 0.05,
+      // radius: 1.0,
+      radius: 0.025,
+      repulsiveStrength: 1.0,
+      springStrength: 0.25,
+      staticPressureIterations: 8,
+      staticPressureRelaxation: 0.2,
+      staticPressureStrength: 0.2,
+      surfaceTensionNormalStrength: 0.2,
+      surfaceTensionPressureStrength: 0.2,
+      viscousStrength: 0.25
+    });
+    const ps: Box2D.b2ParticleSystem = world.CreateParticleSystem(psd);
+    // Create the particles.
+    const shape = new b2PolygonShape();
+
+    const center: Box2D.Point = {
+      x: 0,
+      y: 1.01
+    };
+    const hx = 0.8;
+    const hy = 1.0;
+    type Tuple = [x: number, y: number];
+    const tuples: Array<Tuple> = ([
+      [-hx, -hy],
+      [ hx, -hy],
+      [ hx,  hy],
+      [-hx,  hy],
+    ] as const).map(
+      ([x, y]: readonly [number, number]): Tuple =>
+        [center.x + x, center.y + y]
+      );
+    const [vectors, destroy] = tuplesToVec2Array(tuples);
+
+    shape.Set(vectors, tuples.length);
+
+    const pd = new b2ParticleGroupDef();
+    pd.shape = shape;
+    const pg: Box2D.b2ParticleGroup = ps.CreateParticleGroup(pd);
+  };
 
   /** ground edges */
   private createFixtures = (groundBody: Box2D.b2Body) => {
