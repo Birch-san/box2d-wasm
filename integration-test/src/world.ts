@@ -94,6 +94,7 @@ export class WorldFactory {
       surfaceTensionPressureStrength: 0.2,
       viscousStrength: 0.25
     }, {
+      // overrides (i.e. what I actually want)
       radius: 0.1,
       density: 1.0,
       gravityScale: 1.0,
