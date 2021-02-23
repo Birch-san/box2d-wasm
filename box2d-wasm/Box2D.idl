@@ -65,6 +65,10 @@ interface b2World {
   void DestroyBody(b2Body body);
   b2Joint CreateJoint([Const] b2JointDef def);
   void DestroyJoint(b2Joint joint);
+  b2ParticleSystem CreateParticleSystem([Const] b2ParticleSystemDef def);
+  void DestroyParticleSystem(b2ParticleSystem p);
+  long CalculateReasonableParticleIterations(float timeStep);
+  void Step(float timeStep, long velocityIterations, long positionIterations, long particleIterations);
   void Step(float timeStep, long velocityIterations, long positionIterations);
   void ClearForces();
   void DebugDraw();
@@ -113,6 +117,8 @@ interface b2Shape {
                   [Ref] b2Transform transform, long childIndex);
   void ComputeAABB(b2AABB aabb, [Ref] b2Transform xf, long childIndex);
   void ComputeMass(b2MassData massData, float density);
+  // WebIDL can't bind to float*
+  // void ComputeDistance([Const, Ref] b2Transform xf, [Const, Ref] b2Vec2 p, float* distance, b2Vec2 normal, long childIndex);
 
   attribute b2ShapeType m_type;
   attribute float m_radius;
@@ -216,12 +222,23 @@ interface b2Vec3 {
   void b2Vec3(float x, float y, float z);
   void SetZero();
   void Set(float x, float y, float z);
+  float Length();
+  float Normalize();
   [Operator="+="] void op_add([Const, Ref] b2Vec3 v);
   [Operator="-="] void op_sub([Const, Ref] b2Vec3 v);
   [Operator="*="] void op_mul(float s);
   attribute float x;
   attribute float y;
   attribute float z;
+};
+
+interface b2Vec4 {
+  void b2Vec4();
+  void b2Vec4(float x, float y, float z, float w);
+  attribute float x;
+  attribute float y;
+  attribute float z;
+  attribute float w;
 };
 
 interface b2BodyUserData {
@@ -1163,6 +1180,7 @@ interface b2ParticleContact {
 };
 
 interface b2ParticleBodyContact {
+  void b2ParticleBodyContact();
   attribute long index;
   attribute b2Body body;
   attribute b2Fixture fixture;
@@ -1172,6 +1190,7 @@ interface b2ParticleBodyContact {
 };
 
 interface b2ParticlePair {
+  void b2ParticlePair();
   attribute long indexA;
   attribute long indexB;
   attribute unsigned long flags;
@@ -1180,6 +1199,7 @@ interface b2ParticlePair {
 };
 
 interface b2ParticleTriad {
+  void b2ParticleTriad();
 	attribute long indexA;
 	attribute long indexB;
 	attribute long indexC;
@@ -1195,6 +1215,7 @@ interface b2ParticleTriad {
 };
 
 interface b2ParticleSystemDef {
+  void b2ParticleSystemDef();
   attribute boolean strictContactCheck;
 	attribute float density;
 	attribute float gravityScale;
