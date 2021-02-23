@@ -9,12 +9,16 @@ import type { Helpers } from './helpers';
  *   "box2d.js is zlib licensed, just like Box2D."
  */
 export class CanvasDebugDraw {
+  private readonly dummyAxis_p: number;
   constructor(
     private readonly box2D: typeof Box2D & EmscriptenModule,
     private readonly helpers: Helpers,
     private readonly context: CanvasRenderingContext2D,
     private readonly canvasScaleFactor: number
     ) {
+    const { b2Vec2, getPointer } = box2D;
+    const dummyAxis = new b2Vec2(0,0);
+    this.dummyAxis_p = getPointer(dummyAxis);
   }
 
   static drawAxes(ctx: CanvasRenderingContext2D): void {
@@ -117,8 +121,8 @@ export class CanvasDebugDraw {
   }
 
   constructJSDraw = (): Box2D.JSDraw => {
-    const { JSDraw, b2Vec2, getPointer } = this.box2D;
-    const debugDraw = Object.assign(new JSDraw(), {
+    const { JSDraw } = this.box2D;
+    const debugDraw = Object.assign<Box2D.JSDraw, Partial<Box2D.JSDraw>>(new JSDraw(), {
       DrawSegment: (vert1_p: number, vert2_p: number, color_p: number): void => {
         this.setColorFromDebugDrawCallback(color_p);
         this.drawSegment(vert1_p, vert2_p);
@@ -133,13 +137,26 @@ export class CanvasDebugDraw {
       },
       DrawCircle: (center_p: number, radius: number, color_p: number): void => {
         this.setColorFromDebugDrawCallback(color_p);
-        const dummyAxis = new b2Vec2(0,0);
-        const dummyAxis_p = getPointer(dummyAxis);
-        this.drawCircle(center_p, radius, dummyAxis_p, false);
+        this.drawCircle(center_p, radius, this.dummyAxis_p, false);
       },
       DrawSolidCircle: (center_p: number, radius: number, axis_p: number, color_p: number): void => {
         this.setColorFromDebugDrawCallback(color_p);
         this.drawCircle(center_p, radius, axis_p, true);
+      },
+      DrawParticles: (centers_p: number, radius: number, colors_p: number, count: number): void => {
+        // const { b2Vec2, b2ParticleColor, wrapPointer } = this.box2D;
+        // determined using this.box2D.sizeof
+        const bytesVec2 = 16;
+        const bytesParticleColor = 16;
+        for (let i = 0; i < count; i++) {
+          // const { x, y }: Box2D.b2Vec2 = wrapPointer(centers_p + i * bytesVec2, b2Vec2);
+          // console.log(x, y, radius);
+          const center_p = centers_p + i * bytesVec2;
+          // const color: Box2D.b2ParticleColor = wrapPointer(colors_p + i * bytesParticleColor, b2ParticleColor);
+          const color_p = colors_p + i * bytesParticleColor;
+          this.setColorFromDebugDrawCallback(color_p);
+          this.drawCircle(center_p, radius, this.dummyAxis_p, true);
+        }
       },
       DrawTransform: (transform_p: number): void => {
         this.drawTransform(transform_p);
