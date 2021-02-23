@@ -286,11 +286,11 @@ Module['toFloatArray'] = (floats) => {
  * @return {number} Size of the element which ctor constructs
  */
 Module['sizeof'] = (ctor) => {
-  const { ptr, __destroy__ } = new ctor();
-  const { ptr: ptr2, __destroy__: __destroy__2 } = new ctor();
-  const size = ptr2-ptr;
-  __destroy__2();
-  __destroy__();
+  const a = new ctor();
+  const b = new ctor();
+  const size = b.ptr-a.ptr;
+  b.__destroy__();
+  a.__destroy__();
   return size;
 };
 
