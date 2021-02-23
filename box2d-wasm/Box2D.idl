@@ -556,6 +556,7 @@ interface JSDraw {
   void DrawSolidPolygon([Const] b2Vec2 vertices, long vertexCount, [Const, Ref] b2Color color);
   void DrawCircle([Const, Ref] b2Vec2 center, float radius, [Const, Ref] b2Color color);
   void DrawSolidCircle([Const, Ref] b2Vec2 center, float radius, [Const, Ref] b2Vec2 axis, [Const, Ref] b2Color color);
+  void DrawParticles([Const] b2Vec2 centers, float radius, [Const] b2ParticleColor colors, long count);
   void DrawSegment([Const, Ref] b2Vec2 p1, [Const, Ref] b2Vec2 p2, [Const, Ref] b2Color color);
   void DrawTransform([Const, Ref] b2Transform xf);
   void DrawPoint([Const, Ref] b2Vec2 p, float size, [Const, Ref] b2Color color);
@@ -1017,4 +1018,316 @@ interface b2ClipVertex {
   void b2ClipVertex();
   [Value] attribute b2Vec2 v;
 	[Value] attribute b2ContactID id;
+};
+
+enum b2ParticleFlag {
+	"b2_waterParticle",
+  "b2_zombieParticle",
+  "b2_wallParticle",
+  "b2_springParticle",
+  "b2_elasticParticle",
+  "b2_viscousParticle",
+  "b2_powderParticle",
+  "b2_tensileParticle",
+  "b2_colorMixingParticle",
+  "b2_destructionListenerParticle",
+  "b2_barrierParticle",
+  "b2_staticPressureParticle",
+  "b2_reactiveParticle",
+  "b2_repulsiveParticle",
+  "b2_fixtureContactListenerParticle",
+  "b2_particleContactListenerParticle",
+  "b2_fixtureContactFilterParticle",
+  "b2_particleContactFilterParticle"
+};
+
+interface b2ParticleColor {
+  void b2ParticleColor();
+  void b2ParticleColor(unsigned long r, unsigned long g, unsigned long b, unsigned long a);
+  void b2ParticleColor([Const, Ref] b2Color color);
+  boolean IsZero();
+  [Value] b2Color GetColor();
+  void Set(unsigned long r, unsigned long g, unsigned long b, unsigned long a);
+  void Set([Const, Ref] b2Color color);
+  [Operator="=", Ref] b2ParticleColor op_ass([Const, Ref] b2ParticleColor color);
+  [Operator="*=", Ref] b2ParticleColor op_mul_ass(float s);
+  // not distinguishable
+  // [Operator="*=", Ref] b2ParticleColor op_mul_ass(unsigned long s);
+  // unfamiliar operator
+  // [Operator="*", Value] b2ParticleColor op_mul(float s);
+  // not distinguishable
+  // [Operator="*", Value] b2ParticleColor op_mul(unsigned long s);
+  [Operator="+=", Ref] b2ParticleColor op_add_ass([Const, Ref] b2ParticleColor color);
+  // unfamiliar operator
+  // [Operator="+", Value] b2ParticleColor op_add([Const, Ref] b2ParticleColor color);
+  [Operator="-=", Ref] b2ParticleColor op_sub_ass([Const, Ref] b2ParticleColor color);
+  // unfamiliar operator
+  // [Operator="-", Value] b2ParticleColor op_sub([Const, Ref] b2ParticleColor color);
+  [Operator="=="] boolean op_eq([Const, Ref] b2ParticleColor color);
+  void Mix(b2ParticleColor mixColor, [Const] long strength);
+  void MixColors(b2ParticleColor colorA, b2ParticleColor colorB, [Const] long strength);
+
+  attribute octet r;
+  attribute octet g;
+  attribute octet b;
+  attribute octet a;
+};
+
+interface b2ParticleDef {
+  void b2ParticleDef();
+  attribute unsigned long flags;
+  [Value] attribute b2Vec2 position;
+  [Value] attribute b2Vec2 velocity;
+  [Value] attribute b2ParticleColor color;
+  attribute float lifetime;
+  attribute VoidPtr userData;
+  attribute b2ParticleGroup group;
+};
+
+enum b2ParticleGroupFlag {
+  "b2_solidParticleGroup",
+  "b2_rigidParticleGroup",
+  "b2_particleGroupCanBeEmpty",
+  "b2_particleGroupWillBeDestroyed",
+  "b2_particleGroupNeedsUpdateDepth",
+  "b2_particleGroupInternalMask"
+};
+
+interface b2ParticleGroupDef {
+  void b2ParticleGroupDef();
+  attribute unsigned long flags;
+  attribute unsigned long groupFlags;
+  [Value] attribute b2Vec2 position;
+  attribute float angle;
+  [Value] attribute b2Vec2 linearVelocity;
+  attribute float angularVelocity;
+  [Value] attribute b2ParticleColor color;
+  attribute float strength;
+  [Const] attribute b2Shape shape;
+  // can't bind to const b2Shape* const* shapes;
+  // [Const] attribute b2Shape shapes;
+  attribute long shapeCount;
+  attribute float stride;
+  attribute long particleCount;
+  [Const] attribute b2Vec2 positionData;
+  attribute float lifetime;
+  attribute VoidPtr userData;
+  attribute b2ParticleGroup group;
+};
+
+[NoDelete]
+interface b2ParticleGroup {
+  b2ParticleGroup GetNext();
+	// [Const] b2ParticleGroup GetNext();
+  b2ParticleSystem GetParticleSystem();
+	// [Const] b2ParticleSystem GetParticleSystem();
+  long GetParticleCount();
+  long GetBufferIndex();
+  boolean ContainsParticle(long index);
+  unsigned long GetAllParticleFlags();
+  unsigned long GetGroupFlags();
+  void SetGroupFlags(unsigned long flags);
+  float GetMass();
+  float GetInertia();
+  [Value] b2Vec2 GetCenter();
+  [Value] b2Vec2 GetLinearVelocity();
+  float GetAngularVelocity();
+  [Const, Ref] b2Transform GetTransform();
+  [Const, Ref] b2Vec2 GetPosition();
+  float GetAngle();
+  [Value] b2Vec2 GetLinearVelocityFromWorldPoint([Const, Ref] b2Vec2 worldPoint);
+  VoidPtr GetUserData();
+  void SetUserData(VoidPtr data);
+  void ApplyForce([Const, Ref] b2Vec2 force);
+  void ApplyLinearImpulse([Const, Ref] b2Vec2 impulse);
+  void DestroyParticles(boolean callDestructionListener);
+  void DestroyParticles();
+};
+
+interface b2ParticleContact {
+  void b2ParticleContact();
+  void SetIndices(long a, long b);
+	void SetWeight(float w);
+	void SetNormal([Const, Ref] b2Vec2 n);
+	void SetFlags(unsigned long f);
+
+	long GetIndexA();
+	long GetIndexB();
+	float GetWeight();
+	[Const, Ref] b2Vec2 GetNormal();
+	unsigned long GetFlags();
+
+	[Operator="=="] boolean op_eq([Const, Ref] b2ParticleContact rhs);
+	[Operator="!="] boolean op_neq([Const, Ref] b2ParticleContact rhs);
+	boolean ApproximatelyEqual([Const, Ref] b2ParticleContact rhs);
+};
+
+interface b2ParticleBodyContact {
+  attribute long index;
+  attribute b2Body body;
+  attribute b2Fixture fixture;
+  attribute float weight;
+  [Value] attribute b2Vec2 normal;
+  attribute float mass;
+};
+
+interface b2ParticlePair {
+  attribute long indexA;
+  attribute long indexB;
+  attribute unsigned long flags;
+  attribute float strength;
+  attribute float distance;
+};
+
+interface b2ParticleTriad {
+	attribute long indexA;
+	attribute long indexB;
+	attribute long indexC;
+	attribute unsigned long flags;
+  attribute float strength;
+  [Value] attribute b2Vec2 pa;
+  [Value] attribute b2Vec2 pb;
+  [Value] attribute b2Vec2 pc;
+	attribute float ka;
+	attribute float kb;
+	attribute float kc;
+	attribute float s;
+};
+
+interface b2ParticleSystemDef {
+  attribute boolean strictContactCheck;
+	attribute float density;
+	attribute float gravityScale;
+	attribute float radius;
+	attribute long maxCount;
+	attribute float pressureStrength;
+	attribute float dampingStrength;
+	attribute float elasticStrength;
+	attribute float springStrength;
+	attribute float viscousStrength;
+	attribute float surfaceTensionPressureStrength;
+	attribute float surfaceTensionNormalStrength;
+	attribute float repulsiveStrength;
+	attribute float powderStrength;
+	attribute float ejectionStrength;
+	attribute float staticPressureStrength;
+	attribute float staticPressureRelaxation;
+	attribute long staticPressureIterations;
+	attribute float colorMixingStrength;
+	attribute boolean destroyByAge;
+	attribute float lifetimeGranularity;
+};
+
+[NoDelete]
+interface b2ParticleSystem {
+	long CreateParticle([Const, Ref] b2ParticleDef def);
+  [Const] b2ParticleHandle GetParticleHandleFromIndex([Const] long index);
+  void DestroyParticle(long index);
+  void DestroyParticle(long index, boolean callDestructionListener);
+  void DestroyOldestParticle([Const] long index, [Const] boolean callDestructionListener);
+  long DestroyParticlesInShape([Const, Ref] b2Shape shape, [Const, Ref] b2Transform xf);
+  long DestroyParticlesInShape([Const, Ref] b2Shape shape, [Const, Ref] b2Transform xf, boolean callDestructionListener);
+  b2ParticleGroup CreateParticleGroup([Const, Ref] b2ParticleGroupDef def);
+  void JoinParticleGroups(b2ParticleGroup groupA, b2ParticleGroup groupB);
+  void SplitParticleGroup(b2ParticleGroup group);
+  b2ParticleGroup GetParticleGroupList();
+	// [Const] b2ParticleGroup GetParticleGroupList();
+  long GetParticleGroupCount();
+  long GetParticleCount();
+  long GetMaxParticleCount();
+  void SetMaxParticleCount(long count);
+  unsigned long GetAllParticleFlags();
+  unsigned long GetAllGroupFlags();
+  void SetPaused(boolean paused);
+  boolean GetPaused();
+  void SetDensity(float density);
+  float GetDensity();
+  void SetGravityScale(float gravityScale);
+  float GetGravityScale();
+  void SetDamping(float damping);
+  float GetDamping();
+  void SetStaticPressureIterations(long iterations);
+  long GetStaticPressureIterations();
+  void SetRadius(float radius);
+  float GetRadius();
+  b2Vec2 GetPositionBuffer();
+	// [Const] b2Vec2 GetPositionBuffer();
+  b2Vec2 GetVelocityBuffer();
+	// [Const] b2Vec2 GetVelocityBuffer();
+  b2ParticleColor GetColorBuffer();
+	// [Const] b2ParticleColor GetColorBuffer();
+  // can't bind to b2ParticleGroup* const* GetGroupBuffer();
+  // b2ParticleGroup GetGroupBuffer();
+	// [Const] b2ParticleGroup GetGroupBuffer();
+  // WebIDL doesn't provide a way to bind to float*
+  // float* GetWeightBuffer();
+	// [Const] float GetWeightBuffer();
+  // this is a void**
+  // VoidPtr GetUserDataBuffer();
+	// VoidPtr GetUserDataBuffer();
+  // WebIDL doesn't provide a way to bind to long*
+  // const unsigned long* GetFlagsBuffer();
+  void SetParticleFlags(long index, unsigned long flags);
+	unsigned long GetParticleFlags([Const] long index);
+  // WebIDL doesn't provide a way to bind to long*
+	// void SetFlagsBuffer(unsigned long* buffer, long capacity);
+	void SetPositionBuffer(b2Vec2 buffer, long capacity);
+	void SetVelocityBuffer(b2Vec2 buffer, long capacity);
+	void SetColorBuffer(b2ParticleColor buffer, long capacity);
+  // this is a void**
+	// void SetUserDataBuffer(VoidPtr buffer, long capacity);
+  [Const] b2ParticleContact GetContacts();
+	long GetContactCount();
+  [Const] b2ParticleBodyContact GetBodyContacts();
+	long GetBodyContactCount();
+  [Const] b2ParticlePair GetPairs();
+	long GetPairCount();
+  [Const] b2ParticleTriad GetTriads();
+	long GetTriadCount();
+  void SetStuckThreshold(long iterations);
+  // WebIDL doesn't provide a way to bind to long*
+  // [Const] long* GetStuckCandidates();
+  long GetStuckCandidateCount();
+  float ComputeCollisionEnergy();
+  void SetStrictContactCheck(boolean enabled);
+	boolean GetStrictContactCheck();
+  void SetParticleLifetime([Const] long index, [Const] float lifetime);
+	float GetParticleLifetime([Const] long index);
+  void SetDestructionByAge([Const] boolean enable);
+	boolean GetDestructionByAge();
+  // WebIDL doesn't provide a way to bind to long*
+  // [Const] long* GetExpirationTimeBuffer();
+	float ExpirationTimeToLifetime([Const] long expirationTime);
+  // WebIDL doesn't provide a way to bind to long*
+	// [Const] long* GetIndexByExpirationTimeBuffer();
+  void ParticleApplyLinearImpulse(long index, [Const, Ref] b2Vec2 impulse);
+  void ApplyLinearImpulse(long firstIndex, long lastIndex, [Const, Ref] b2Vec2 impulse);
+  void ParticleApplyForce(long index, [Const, Ref] b2Vec2 force);
+  void ApplyForce(long firstIndex, long lastIndex, [Const, Ref] b2Vec2 force);
+  b2ParticleSystem GetNext();
+	// [Const] b2ParticleSystem GetNext();
+  void QueryAABB(b2QueryCallback callback, [Const, Ref] b2AABB aabb);
+  void QueryShapeAABB(b2QueryCallback callback, [Const, Ref] b2Shape shape, [Const, Ref] b2Transform xf);
+  void RayCast(b2RayCastCallback callback, [Const, Ref] b2Vec2 point1, [Const, Ref] b2Vec2 point2);
+  void ComputeAABB(b2AABB aabb);
+};
+
+// interface b2IntrusiveListNode {
+// }
+
+interface b2ParticleHandle {
+  void b2ParticleHandle();
+  long GetIndex();
+  void InsertAfter(b2ParticleHandle obj);
+  void InsertBefore(b2ParticleHandle obj);
+  b2ParticleHandle GetNext();
+  b2ParticleHandle GetPrevious();
+  b2ParticleHandle GetTerminator();
+  b2ParticleHandle Remove();
+  boolean InList();
+  boolean IsEmpty();
+  unsigned long GetLength();
+  // let's not expose this; it's getting pretty far from what people actually want to interact with
+  // b2IntrusiveListNode GetListNode();
+  // [Const] b2IntrusiveListNode GetListNode();
 };
