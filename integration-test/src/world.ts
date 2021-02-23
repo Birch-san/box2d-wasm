@@ -63,18 +63,19 @@ export class WorldFactory {
 
   private readonly createParticles = (world: Box2D.b2World) => {
     const {
-      b2Vec2,
       b2ParticleSystemDef,
       b2ParticleGroupDef,
-      b2ParticleSystem,
-      b2ParticleGroup,
       b2PolygonShape,
       tuplesToVec2Array
     } = this.box2D;
     const psd = new b2ParticleSystemDef();
-    // Initialize physical coefficients to the maximum values that
-    // maintain numerical stability.
-    Object.assign<Box2D.b2ParticleSystemDef, Partial<Box2D.b2ParticleSystemDef>>(psd, {
+    Object.assign<
+      Box2D.b2ParticleSystemDef,
+      Partial<Box2D.b2ParticleSystemDef>,
+      Partial<Box2D.b2ParticleSystemDef>
+    >(psd, {
+      // Initialize physical coefficients to the maximum values that
+      // maintain numerical stability.
       colorMixingStrength: 0.5,
       dampingStrength: 1.0,
       destroyByAge: true,
@@ -83,8 +84,7 @@ export class WorldFactory {
       lifetimeGranularity: 1.0 / 60.0,
       powderStrength: 0.5,
       pressureStrength: 0.05,
-      // radius: 1.0,
-      radius: 0.025,
+      radius: 1.0,
       repulsiveStrength: 1.0,
       springStrength: 0.25,
       staticPressureIterations: 8,
@@ -93,8 +93,17 @@ export class WorldFactory {
       surfaceTensionNormalStrength: 0.2,
       surfaceTensionPressureStrength: 0.2,
       viscousStrength: 0.25
+    }, {
+      radius: 0.1,
+      density: 1.0,
+      gravityScale: 1.0,
+      dampingStrength: 0.2,
     });
     const ps: Box2D.b2ParticleSystem = world.CreateParticleSystem(psd);
+    // Initialize physical coefficients to the maximum values that
+    // maintain numerical stability.
+    Object.assign<Box2D.b2ParticleSystemDef, Partial<Box2D.b2ParticleSystemDef>>(psd, {
+    });
     // Create the particles.
     const shape = new b2PolygonShape();
 
@@ -164,7 +173,7 @@ export class WorldFactory {
 
     const ZERO = new b2Vec2(0, 0);
     const temp = new b2Vec2(0, 0);
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 2; i++) {
       const bd = new b2BodyDef();
       bd.set_type(b2_dynamicBody);
       bd.set_position(ZERO);
