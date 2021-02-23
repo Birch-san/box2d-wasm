@@ -21,7 +21,7 @@
        */
       locateFile: url => url
     });
-    const { b2Vec2, b2Draw: { e_shapeBit } } = box2D;
+    const { b2Vec2, b2Draw: { e_shapeBit, e_particleBit } } = box2D;
     const helpers = new Helpers(box2D);
     const ctx = canvas.getContext('2d');
     const canvasOffset: Point = {
@@ -36,7 +36,7 @@
     const pixelsPerMeter = 32;
 
     const renderer = new CanvasDebugDraw(box2D, helpers, ctx!, pixelsPerMeter).constructJSDraw();
-    renderer.SetFlags(e_shapeBit);
+    renderer.SetFlags(e_shapeBit | e_particleBit);
     const { step, draw, destroy } = new WorldFactory(box2D, helpers).create(renderer);
 
     const myRound = (val: number, places: number) => {
@@ -62,8 +62,7 @@
     setViewCenterWorld( new b2Vec2(0,0), true );
 
     const drawCanvas = () => {
-      //black background
-      ctx!.fillStyle = 'rgb(0,0,0)';
+      ctx!.fillStyle = 'rgb(125,125,125)';
       ctx!.fillRect( 0, 0, canvas.width, canvas.height );
 
       ctx!.save();
