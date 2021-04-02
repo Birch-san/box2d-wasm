@@ -1,8 +1,29 @@
 # box2d-wasm
 
-Box2D compiled to WebAssembly. [Demo](https://birchlabs.co.uk/box2d-wasm/demo/).
+
+<p>
+    <a href="https://badge.fury.io/js/box2d-wasm"><img src="https://badge.fury.io/js/box2d-wasm.svg" alt="npm version" height="18"></a>
+    <a href="LICENSE.zlib.txt">
+        <img src="https://img.shields.io/badge/License-Zlib-lightgrey.svg"/>
+    </a>
+    <a href="https://twitter.com/intent/follow?screen_name=Birchlabs">
+        <img src="https://img.shields.io/twitter/follow/Birchlabs.svg?style=social&logo=twitter"/>
+    </a>
+</p>
+
+Box2D compiled to WebAssembly.
 
 ![](https://birchlabs.co.uk/box2d-wasm/webpage-50fps.gif)
+
+## Showcase
+
+- [Shapes and rope](https://birchlabs.co.uk/box2d-wasm/demo/)
+- [Lunar Survey](https://birchlabs.co.uk/lunar-survey/)
+  - Demonstrates custom gravity
+- [Fluid simulation](https://birchlabs.co.uk/box2d-wasm-liquidfun/)
+  - Uses [liquidfun](https://github.com/Birch-san/box2d-wasm/releases/tag/v4.0.0-liquidfun.0) release
+  - High-performance main loop
+  - WebGL rendering
 
 ## Usage
 
