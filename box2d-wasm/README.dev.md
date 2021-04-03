@@ -12,8 +12,6 @@ Navigate to `<repository root>/box2d-wasm`, then:
 export TARGET_TYPE=Debug
 export EMSCRIPTEN="${EMSCRIPTEN:-"$(realpath "$(dirname $(realpath "$(which emcc)"))/../libexec")"}"
 export PYTHON="${PYTHON:-"$(which python3)"}"
-# if you're developing in this monorepo, you'll be testing your changes with integration-test, which doesn't use the UMD output
-export SKIP_UMD_BUILD=1
 ./build_all.sh
 ```
 
