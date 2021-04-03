@@ -25,7 +25,6 @@ EMCC_OPTS=(
   -s SUPPORT_LONGJMP=0
   -s EXPORTED_FUNCTIONS=_malloc,_free
   -s ALLOW_MEMORY_GROWTH=1
-  -s WASM=2
   )
 RELEASE_OPTS=(-O3)
 
@@ -87,20 +86,20 @@ mkdir -p "$UMD_DIR" "$ES_DIR"
 LINK_OPTS=(--post-link "$BARE_WASM" --post-js "$DIR/glue_stub.js" ${EMCC_OPTS[@]})
 
 ES_FILE="$ES_DIR/$BASENAME.js"
->&2 echo -e "${Blue}Building ES module, $ES_DIR/$BASENAME.{js,wasm{,.js}}${NC}"
+>&2 echo -e "${Blue}Building ES module, $ES_DIR/$BASENAME.{js,wasm}${NC}"
 set -x
 emcc "${LINK_OPTS[@]}" -s EXPORT_ES6=1 -o "$ES_FILE"
 { set +x; } 2>&-
->&2 echo -e "${Green}Successfully built $ES_DIR/$BASENAME.{js,wasm{,.js}}${NC}\n"
+>&2 echo -e "${Green}Successfully built $ES_DIR/$BASENAME.{js,wasm}${NC}\n"
 
 UMD_FILE="$UMD_DIR/$BASENAME.js"
 if [ "$BUILD_UMD_FROM_SCRATCH" = "1" ]; then
-  >&2 echo -e "${Blue}Building UMD module, $UMD_DIR/$BASENAME.{js,wasm{,.js}} from scratch${NC}"
+  >&2 echo -e "${Blue}Building UMD module, $UMD_DIR/$BASENAME.{js,wasm} from scratch${NC}"
   set -x
   emcc "${LINK_OPTS[@]}" -o "$UMD_FILE"
   { set +x; } 2>&-
 else
-  >&2 echo -e "${Blue}Building UMD module, $UMD_DIR/$BASENAME.{js,wasm{,.js}} by replacing header & footer of ES module${NC}"
+  >&2 echo -e "${Blue}Building UMD module, $UMD_DIR/$BASENAME.{js,wasm} by replacing header & footer of ES module${NC}"
   escape_for_sed_replace () {
     echo "$1" | sed -e 's/&/\\\&/g' -e '$!s/$/\\n/' | tr -d '\n'
   }
@@ -122,6 +121,6 @@ else
   UMD_FOOTER_ESCAPED=`escape_for_sed_replace "$UMD_FOOTER"`
 
   sed -e "s/^$ES6_HEADER$/$UMD_HEADER_ESCAPED/" -e "s/^$ES6_FOOTER$/$UMD_FOOTER_ESCAPED/" "$ES_FILE" > "$UMD_FILE"
-  cp "$ES_DIR/$BASENAME.wasm"{,.js} "$UMD_DIR"
+  cp "$ES_DIR/$BASENAME.wasm" "$UMD_DIR"
 fi
->&2 echo -e "${Green}Successfully built $UMD_DIR/$BASENAME.{js,wasm{,.js}}${NC}\n"
+>&2 echo -e "${Green}Successfully built $UMD_DIR/$BASENAME.{js,wasm}${NC}\n"

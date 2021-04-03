@@ -10,10 +10,8 @@
     "build/Box2D.d.ts",
     "build/es/Box2D.js",
     "build/es/Box2D.wasm",
-    "build/es/Box2D.wasm.js",
     "build/umd/Box2D.js",
-    "build/umd/Box2D.wasm",
-    "build/umd/Box2D.wasm.js"
+    "build/umd/Box2D.wasm"
   ],
   "types": "Box2DModule.d.ts",
   "repository": {
