@@ -1,5 +1,5 @@
-Object.defineProperty(b2RopeDef.prototype, 'position', { get: b2RopeDef.prototype.get_position, set: b2RopeDef.prototype.set_position });
-  b2RopeDef.prototype['get_masses'] = b2RopeDef.prototype.get_masses = /** @suppress {undefinedVars, duplicate} @this{Object} */function() {
+Object.defineProperty(b2RopeDef.prototype, 'masses', { get: b2RopeDef.prototype.get_masses, set: b2RopeDef.prototype.set_masses });
+b2RopeDef.prototype['get_masses'] = b2RopeDef.prototype.get_masses = /** @suppress {undefinedVars, duplicate} @this{Object} */function() {
   var self = this.ptr;
   return wrapPointer(_emscripten_bind_b2RopeDef_get_masses_0(self), b2Vec2);
 };
@@ -206,11 +206,11 @@ Module['b2TestOverlap'] = (a_or_shapeA, b_or_indexA, shapeB, indexB, xfA, xfB) =
  * @return {{ptr:number}[]}
  */
 Module['reifyArray'] = (array_p, numElements, elementSize, ctor) =>
-  Array(numElements)
-    .fill(undefined)
-    .map((_, index) =>
+  Array.from(
+    { length: numElements },
+    (_, index) =>
       wrapPointer(array_p + index * elementSize, ctor)
-    );
+  )
 
 /**
  * If you need to give to Box2D an array of Box2D.b2Vec2: use this to turn JS objects

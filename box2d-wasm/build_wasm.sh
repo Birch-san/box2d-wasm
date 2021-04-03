@@ -19,7 +19,6 @@ EMCC_OPTS=(
   -s MODULARIZE=1
   -s EXPORT_NAME=Box2D
   -s ALLOW_TABLE_GROWTH=1
-  --post-js box2d_glue.js
   --memory-init-file 0
   -s FILESYSTEM=0
   -s SUPPORT_LONGJMP=0
@@ -83,7 +82,7 @@ mkdir -p "$UMD_DIR" "$ES_DIR"
 
 >&2 echo -e "${Blue}Building post-link targets${NC}"
 
-LINK_OPTS=(--post-link "$BARE_WASM" --post-js "$DIR/glue_stub.js" ${EMCC_OPTS[@]})
+LINK_OPTS=(--post-link "$BARE_WASM" --post-js box2d_glue.js --post-js "$DIR/glue_stub.js" ${EMCC_OPTS[@]})
 
 ES_FILE="$ES_DIR/$BASENAME.js"
 >&2 echo -e "${Blue}Building ES module, $ES_DIR/$BASENAME.{js,wasm}${NC}"
