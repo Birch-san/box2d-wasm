@@ -2,7 +2,7 @@
 
 Ensure that you have a recent [emscripten](https://emscripten.org/) installed.
 
-This build process is known to work with emscripten 2.0.5.
+**Requires Emscripten 2.0.16 or higher.**
 
 ### Overview
 
