@@ -1,7 +1,7 @@
 {
-  "name": "box2d-wasm",
+  "name": "liquidfun-wasm",
   "version": "4.0.2",
-  "description": "Box2D compiled to WebAssembly",
+  "description": "Liquidfun fork of Box2D compiled to WebAssembly",
   "module": "build/es/Box2D.js",
   "main": "build/umd/Box2D.js",
   "files": [
@@ -15,7 +15,7 @@
   ],
   "types": "Box2DModule.d.ts",
   "repository": {
-    "url": "https://github.com/Birch-san/box2d-wasm/tree/master/box2d-wasm"
+    "url": "https://github.com/Birch-san/box2d-wasm/tree/liquidfun/box2d-wasm"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
