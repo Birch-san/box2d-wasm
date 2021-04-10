@@ -56,7 +56,7 @@ importers:
       '@typescript-eslint/parser': 4.4.1_eslint@7.11.0+typescript@4.0.3
       eslint: 7.11.0
       source-map-support: 0.5.19
-      ts-node: 9.0.0_typescript@4.0.3
+      ts-node: 9.1.1_typescript@4.0.3
       typescript: 4.0.3
     specifiers:
       '@types/node': ^14.11.8
@@ -65,7 +65,7 @@ importers:
       box2d-wasm: 'workspace:*'
       eslint: ^7.11.0
       source-map-support: ^0.5.19
-      ts-node: ^9.0.0
+      ts-node: ^9.1.1
       typescript: ^4.0.3
   webidl-to-ts:
     devDependencies:
@@ -77,7 +77,7 @@ importers:
       '@typescript-eslint/parser': 4.4.1_eslint@7.11.0+typescript@4.0.3
       eslint: 7.11.0
       source-map-support: 0.5.19
-      ts-node: 9.0.0_typescript@4.0.3
+      ts-node: 9.1.1_typescript@4.0.3
       typescript: 4.0.3
       webidl2: 23.13.0
       yargs: 16.0.3
@@ -90,7 +90,7 @@ importers:
       '@typescript-eslint/parser': ^4.4.1
       eslint: ^7.11.0
       source-map-support: ^0.5.19
-      ts-node: ^9.0.0
+      ts-node: ^9.1.1
       typescript: ^4.0.3
       webidl2: ^23.13.0
       yargs: ^16.0.3
@@ -576,6 +576,10 @@ packages:
       node: '>=4'
     resolution:
       integrity: sha512-pMD+MVR538ipqkG5JXeOEbKWS5um1H4LUUccUQG68qpeqBYbzYy79Gh55jkd2TtPdRfUaLWdv6LPP//5Zt0aPQ==
+  /create-require/1.1.1:
+    dev: true
+    resolution:
+      integrity: sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==
   /cross-spawn/7.0.3:
     dependencies:
       path-key: 3.1.1
@@ -1672,9 +1676,10 @@ packages:
       node: '>=6'
     resolution:
       integrity: sha512-gduQwd1rOdDMGxFG1gEvhV88Oirdo2p+KjoYFU7k2g+i7n6AFFbDQ5kMPUsW0pNbfQsB/cwXvT1i4Bue0s9g5g==
-  /ts-node/9.0.0_typescript@4.0.3:
+  /ts-node/9.1.1_typescript@4.0.3:
     dependencies:
       arg: 4.1.3
+      create-require: 1.1.1
       diff: 4.0.2
       make-error: 1.3.6
       source-map-support: 0.5.19
@@ -1687,7 +1692,7 @@ packages:
     peerDependencies:
       typescript: '>=2.7'
     resolution:
-      integrity: sha512-/TqB4SnererCDR/vb4S/QvSZvzQMJN8daAslg7MeaiHvD8rDZsSfXmNeNumyZZzMned72Xoq/isQljYSt8Ynfg==
+      integrity: sha512-hPlt7ZACERQGf03M253ytLY3dHbGNGrAq9qIHWUY9XHYl1z7wYngSr3OQ5xmui8o2AaxsONxIzjafLUiWBo1Fg==
   /tslib/1.14.1:
     dev: true
     resolution:
