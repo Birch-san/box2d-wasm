@@ -125,6 +125,7 @@ interface b2FixtureDef {
   [Value] attribute b2FixtureUserData userData;
   attribute float friction;
   attribute float restitution;
+  attribute float restitutionThreshold;
   attribute float density;
   attribute boolean isSensor;
   [Value] attribute b2Filter filter;
@@ -135,14 +136,14 @@ interface b2Fixture {
   b2Shape GetShape();
   void SetSensor(boolean sensor);
   boolean IsSensor();
-  void SetFilterData([Ref] b2Filter filter);
+  void SetFilterData([Const, Ref] b2Filter filter);
   [Const, Ref] b2Filter GetFilterData();
   void Refilter();
   b2Body GetBody();
   b2Fixture GetNext();
   [Ref] b2FixtureUserData GetUserData();
-  boolean TestPoint([Ref] b2Vec2 p);
-  boolean RayCast(b2RayCastOutput output, [Ref] b2RayCastInput input, long childIndex);
+  boolean TestPoint([Const, Ref] b2Vec2 p);
+  boolean RayCast(b2RayCastOutput output, [Const, Ref] b2RayCastInput input, long childIndex);
   void GetMassData(b2MassData massData);
   void SetDensity(float density);
   float GetDensity();
@@ -150,6 +151,8 @@ interface b2Fixture {
   void SetFriction(float friction);
   float GetRestitution();
   void SetRestitution(float restitution);
+  float GetRestitutionThreshold();
+  void SetRestitutionThreshold(float threshold);
   [Const, Ref] b2AABB GetAABB(long childIndex);
   void Dump(long bodyIndex);
 };
