@@ -26,6 +26,9 @@ interface b2Contact {
   void SetRestitution(float restitution);
   float GetRestitution();
   void ResetRestitution();
+  void SetRestitutionThreshold(float threshold);
+  float GetRestitutionThreshold();
+  void ResetRestitutionThreshold();
   void SetTangentSpeed(float speed);
   float GetTangentSpeed();
 };
