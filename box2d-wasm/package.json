@@ -1,6 +1,6 @@
 {
   "name": "box2d-wasm",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "Box2D compiled to WebAssembly",
   "module": "build/es/Box2D.js",
   "main": "build/umd/Box2D.js",
