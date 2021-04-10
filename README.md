@@ -30,10 +30,24 @@ Box2D compiled to WebAssembly.
 Install the [`box2d-wasm` npm package](https://www.npmjs.com/package/box2d-wasm)
 
 ```bash
-npm i --save box2d-wasm
+npm i box2d-wasm
 ```
 
 Then check out the [documentation](docs).
+
+## Alternative distributions
+
+For additional functionality:
+
+- fluid simulation
+- particle simulation
+- soft-body collisions
+
+You can install from the [liquidfun](https://github.com/Birch-san/box2d-wasm/releases/tag/v4.0.0-liquidfun.0) branch like so:
+
+```bash
+npm i "box2d-wasm@npm:liquidfun-wasm@^4.0.2"
+```
 
 ## License
 
