@@ -26,4 +26,8 @@ esac
 >&2 echo -e "TARGET_TYPE is $TARGET_TYPE"
 
 set -x
-emcmake cmake -DCMAKE_BUILD_TYPE="$TARGET_TYPE" ../../box2d -DBOX2D_BUILD_UNIT_TESTS=OFF -DBOX2D_BUILD_DOCS=OFF -DBOX2D_BUILD_TESTBED=OFF
+# TODO: publish two variants (with/without SIMD),
+#   use wasm-feature-detect to load whichever's supported
+#   https://v8.dev/features/simd
+#   https://www.infoq.com/articles/webassembly-simd-multithreading-performance-gains/
+emcmake cmake -DCMAKE_CXX_FLAGS="-msimd128" -DCMAKE_BUILD_TYPE="$TARGET_TYPE" ../../box2d -DBOX2D_BUILD_UNIT_TESTS=OFF -DBOX2D_BUILD_DOCS=OFF -DBOX2D_BUILD_TESTBED=OFF
