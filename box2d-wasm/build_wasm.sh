@@ -24,6 +24,9 @@ EMCC_OPTS=(
   -s SUPPORT_LONGJMP=0
   -s EXPORTED_FUNCTIONS=_malloc,_free
   -s ALLOW_MEMORY_GROWTH=1
+  # TODO: publish two variants (with/without SIMD)
+  # TODO: figure out whether this is needed in both C++ -> LLVM and LLVM -> wasm steps
+  -msimd128
   )
 RELEASE_OPTS=(-O3)
 
