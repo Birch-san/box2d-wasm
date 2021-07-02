@@ -2,7 +2,7 @@
 
 Ensure that you have a recent [emscripten](https://emscripten.org/) installed.
 
-**Requires Emscripten 2.0.16 or higher.**
+**Requires Emscripten 2.0.17. Higher versions produce incorrect output.**
 
 ### Overview
 
@@ -10,8 +10,11 @@ Navigate to `<repository root>/box2d-wasm`, then:
 
 ```bash
 export TARGET_TYPE=Debug
-export EMSCRIPTEN="${EMSCRIPTEN:-"$(realpath "$(dirname $(realpath "$(which emcc)"))/../libexec")"}"
-export PYTHON="${PYTHON:-"$(which python3)"}"
+# if you installed emscripten via emsdk: source emsdk_env.sh, then configure tools directory like so:
+export EMSCRIPTEN_TOOLS="$(realpath "$(dirname "$(realpath "$(which emcc)")")/tools")"
+# if you installed emscripten via brew: configure tools directory like so:
+export EMSCRIPTEN_TOOLS="$(realpath "$(dirname "$(realpath "$(which emcc)")")/../libexec/tools")"
+export PYTHON3="${EMSDK_PYTHON:-"$(which python3)"}"
 ./build_all.sh
 ```
 
@@ -41,11 +44,15 @@ export TARGET_TYPE=Debug
 # compile C++ to LLVM IR (creates ./bin/libbox2d.a archive)
 emmake make
 
-# ensure EMSCRIPTEN environment variable is set appropriately for your computer
-export EMSCRIPTEN="${EMSCRIPTEN:-"$(realpath "$(dirname $(realpath "$(which emcc)"))/../libexec")"}"
+# ensure EMSCRIPTEN_TOOLS environment variable points at the directory in which webidl_binder.py can be found.
+# you can determine this based on the location of the `emcc` executable on your PATH.
+# if you installed emscripten via emsdk: source emsdk_env.sh, then set the variable like so:
+export EMSCRIPTEN_TOOLS="$(realpath "$(dirname "$(realpath "$(which emcc)")")/tools")"
+# if you installed emscripten via brew: set the variable like so:
+export EMSCRIPTEN_TOOLS="$(realpath "$(dirname "$(realpath "$(which emcc)")")/../libexec/tools")"
 
-# ensure PYTHON environment variable points to a Python 3 binary:
-export PYTHON="${PYTHON:-"$(which python3)"}"
+# ensure PYTHON3 environment variable points to a Python 3 binary:
+export PYTHON3="${EMSDK_PYTHON:-"$(which python3)"}"
 
 # use Box2D.idl to create ./box2d_glue.{js,cpp} for invoking functionality from libbox2d
 ../build_idl_bindings.sh

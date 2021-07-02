@@ -25,13 +25,17 @@ EMCC_OPTS=(
   -s EXPORTED_FUNCTIONS=_malloc,_free
   -s ALLOW_MEMORY_GROWTH=1
   )
+DEBUG_OPTS=(
+  -g3
+  -gsource-map
+)
 RELEASE_OPTS=(-O3)
 
 case "$TARGET_TYPE" in
   Debug)
     EMCC_OPTS=(
       ${EMCC_OPTS[@]}
-      -g4
+      ${DEBUG_OPTS[@]}
       -s ASSERTIONS=2
       -s DEMANGLE_SUPPORT=1
       )
@@ -43,7 +47,7 @@ case "$TARGET_TYPE" in
     EMCC_OPTS=(
       ${EMCC_OPTS[@]}
       ${RELEASE_OPTS[@]}
-      -g4
+      ${DEBUG_OPTS[@]}
       )
     ;;
   

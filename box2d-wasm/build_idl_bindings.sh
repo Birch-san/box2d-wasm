@@ -11,27 +11,30 @@ if ! [[ "$PWD" -ef "$DIR/build" ]]; then
   exit 1
 fi
 
-if test -d "${EMSCRIPTEN-}"; then
-  >&2 echo -e "Using the following Emscripten libexec directory: $EMSCRIPTEN"
+if test -d "${EMSCRIPTEN_TOOLS-}"; then
+  >&2 echo -e "Using the following Emscripten tools directory: $EMSCRIPTEN_TOOLS"
 else
-  >&2 echo -e "${Red}EMSCRIPTEN variable empty/unset. Please set to the location of your Emscripten libexec directory.${NC}"
-  >&2 echo -e "You can set EMSCRIPTEN based on the location of an Emscripten command on your PATH like so:"
-  >&2 echo -e "${Purple}"'export EMSCRIPTEN="$(realpath "$(dirname $(realpath "$(which emcc)"))/../libexec")"'"${NC}"
+  >&2 echo -e "${Red}EMSCRIPTEN_TOOLS variable empty/unset. Please set to the location of the directory in which Emscripten's webidl_binder.py can be found.${NC}"
+  >&2 echo -e "You can set EMSCRIPTEN_TOOLS based on the location of an Emscripten command on your PATH."
+  >&2 echo -e "if you installed emscripten via emsdk: source emsdk_env.sh, then set the variable like so:"
+  >&2 echo -e "${Purple}"'export EMSCRIPTEN_TOOLS="$(realpath "$(dirname "$(realpath "$(which emcc)")")/tools")"'"${NC}"
+  >&2 echo -e "if you installed emscripten via brew: set the variable like so:"
+  >&2 echo -e "${Purple}"'export EMSCRIPTEN_TOOLS="$(realpath "$(dirname "$(realpath "$(which emcc)")")/../libexec/tools")"'"${NC}"
   exit 1
 fi
 
-if [[ -f "${PYTHON-}" && -x "${PYTHON-}" ]]; then
-  >&2 echo -e "Using the following Python binary: $PYTHON"
+if [[ -f "${PYTHON3-}" && -x "${PYTHON3-}" ]]; then
+  >&2 echo -e "Using the following Python binary: $PYTHON3"
 else
-  >&2 echo -e "${Red}PYTHON variable empty/unset/non-executable. Please set to the location of a Python 3 binary.${NC}"
-  >&2 echo -e "You can set PYTHON based on the location of a python3 binary on your PATH like so:"
-  >&2 echo -e "${Purple}"'export PYTHON="$(which python3)"'"${NC}"
+  >&2 echo -e "${Red}PYTHON3 variable empty/unset/non-executable. Please set to the location of a Python 3 binary.${NC}"
+  >&2 echo -e "You can set PYTHON3 based on the location of a python3 binary on your PATH like so:"
+  >&2 echo -e "${Purple}"'export PYTHON3="${EMSDK_PYTHON:-"$(which python3)"}"'"${NC}"
   exit 1
 fi
 
-if [ ! -f "$EMSCRIPTEN/tools/webidl_binder.py" ]; then
-    >&2 echo -e "${Red}WebIDL binder not found at expected location of $EMSCRIPTEN/tools/webidl_binder.py${NC}"
+if [ ! -f "$EMSCRIPTEN_TOOLS/webidl_binder.py" ]; then
+    >&2 echo -e "${Red}WebIDL binder not found at expected location of $EMSCRIPTEN_TOOLS/webidl_binder.py${NC}"
 fi
 
 set -x
-exec "$PYTHON" "$EMSCRIPTEN/tools/webidl_binder.py" "$DIR/Box2D.idl" box2d_glue
+exec "$PYTHON3" "$EMSCRIPTEN_TOOLS/webidl_binder.py" "$DIR/Box2D.idl" box2d_glue
