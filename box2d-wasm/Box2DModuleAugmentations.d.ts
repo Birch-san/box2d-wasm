@@ -79,6 +79,46 @@ declare namespace Box2D {
   };
 
   /**
+   * Utility to compute linear stiffness values frequency and damping ratio.
+   * The result will be written-out into the {@link stiffness} and {@link damping} parameters you provide.
+   * @example
+   * const { _malloc, _free, b2LinearStiffness, HEAPF32 } = box2D;
+   * // allocate two 4-byte floats on emscripten heap
+   * const output_p = _malloc(Float32Array.BYTES_PER_ELEMENT * 2);
+   * // give Box2D pointers to our floats on the heap, so it can mutate them
+   * b2LinearStiffness(output_p, output_p + Float32Array.BYTES_PER_ELEMENT, 0.9, 0.3, bodyA, bodyB)
+   * // create a Float32Array view over our heap offset, destructure two floats out of it
+   * const [stiffness, damping] = HEAPF32.subarray(output_p >> 2)
+   * // free the memory we allocated
+   * _free(output_p);
+   */
+  export const b2LinearStiffness: (
+    stiffness: Box2D.WrapperObject | number, damping: Box2D.WrapperObject | number,
+    frequencyHertz: number, dampingRatio: number,
+    bodyA: Box2D.b2Body | number, bodyB: Box2D.b2Body | number
+    ) => void;
+  
+  /**
+   * Utility to compute rotational stiffness values frequency and damping ratio.
+   * The result will be written-out into the {@link stiffness} and {@link damping} parameters you provide.
+   * @example
+   * const { _malloc, _free, b2AngularStiffness, HEAPF32 } = box2D;
+   * // allocate two 4-byte floats on emscripten heap
+   * const output_p = _malloc(Float32Array.BYTES_PER_ELEMENT * 2);
+   * // give Box2D pointers to our floats on the heap, so it can mutate them
+   * b2AngularStiffness(output_p, output_p + Float32Array.BYTES_PER_ELEMENT, 0.9, 0.3, bodyA, bodyB)
+   * // create a Float32Array view over our heap offset, destructure two floats out of it
+   * const [stiffness, damping] = HEAPF32.subarray(output_p >> 2)
+   * // free the memory we allocated
+   * _free(output_p);
+   */
+  export const b2AngularStiffness: (
+    stiffness: Box2D.WrapperObject | number, damping: Box2D.WrapperObject | number,
+    frequencyHertz: number, dampingRatio: number,
+    bodyA: Box2D.b2Body | number, bodyB: Box2D.b2Body | number
+    ) => void;
+
+  /**
    * If Box2D sends you a number, but you know it's (for example) a pointer to
    * an array of {@link b2Vec2}: use this to convert the pointer to JS objects.
    * @param array_p pointer to (subclass of {@link WrapperObject})

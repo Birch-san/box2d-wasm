@@ -147,4 +147,28 @@ bool EMSCRIPTEN_KEEPALIVE emscripten_bind_b2TestOverlap_6(
 bool EMSCRIPTEN_KEEPALIVE emscripten_bind_b2TestOverlap_2(b2AABB* a, b2AABB* b) {
   return b2TestOverlap(*a, *b);
 }
+
+void EMSCRIPTEN_KEEPALIVE emscripten_bind_b2LinearStiffness_6(
+  float* stiffness, float* damping,
+	float frequencyHertz, float dampingRatio,
+	const b2Body* bodyA, const b2Body* bodyB
+) {
+  b2LinearStiffness(
+    *stiffness, *damping,
+    frequencyHertz, dampingRatio,
+    bodyA, bodyB
+  );
+}
+
+void EMSCRIPTEN_KEEPALIVE emscripten_bind_b2AngularStiffness_6(
+  float* stiffness, float* damping,
+	float frequencyHertz, float dampingRatio,
+	const b2Body* bodyA, const b2Body* bodyB
+) {
+  b2AngularStiffness(
+    *stiffness, *damping,
+    frequencyHertz, dampingRatio,
+    bodyA, bodyB
+  );
+}
 }

@@ -1,4 +1,3 @@
-Object.defineProperty(b2RopeDef.prototype, 'masses', { get: b2RopeDef.prototype.get_masses, set: b2RopeDef.prototype.set_masses });
 b2RopeDef.prototype['get_masses'] = b2RopeDef.prototype.get_masses = /** @suppress {undefinedVars, duplicate} @this{Object} */function() {
   var self = this.ptr;
   return wrapPointer(_emscripten_bind_b2RopeDef_get_masses_0(self), b2Vec2);
@@ -8,6 +7,7 @@ b2RopeDef.prototype['set_masses'] = b2RopeDef.prototype.set_masses = /** @suppre
   if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr;
   _emscripten_bind_b2RopeDef_set_masses_1(self, arg0);
 };
+Object.defineProperty(b2RopeDef.prototype, 'masses', { get: b2RopeDef.prototype.get_masses, set: b2RopeDef.prototype.set_masses });
 
 /**
  * @param {{ptr:number}|number} objOrNum
@@ -311,4 +311,62 @@ Module['allocateArray'] = (ctor, elementSizeBytes, elements=1) => {
 
   const wrappedVertices = wrapPointer(arr_p, ctor);
   return [wrappedVertices, () => Module['_free'](arr_p)];
+};
+
+/**
+ * Utility to compute linear stiffness values from frequency and damping ratio.
+ * The result will be written-out into the {@link stiffness} and {@link damping} parameters you provide.
+ * @example
+ * const { _malloc, _free, b2LinearStiffness, HEAPF32 } = box2D;
+ * // allocate two 4-byte floats on emscripten heap
+ * const output_p = _malloc(Float32Array.BYTES_PER_ELEMENT * 2);
+ * // give Box2D pointers to our floats on the heap, so it can mutate them
+ * b2LinearStiffness(output_p, output_p + Float32Array.BYTES_PER_ELEMENT, 0.9, 0.3, bodyA, bodyB)
+ * // create a Float32Array view over our heap offset, destructure two floats out of it
+ * const [stiffness, damping] = HEAPF32.subarray(output_p >> 2)
+ * // free the memory we allocated
+ * _free(output_p);
+ * @param {{ptr:number}|number} stiffness a WrapperObject (or its pointer) pointing to 4 bytes of heap
+ * @param {{ptr:number}|number} damping a WrapperObject (or its pointer) pointing to 4 bytes of heap
+ * @param {number} frequencyHertz (float)
+ * @param {number} dampingRatio (float)
+ * @param {{ptr:number}|number} bodyA
+ * @param {{ptr:number}|number} bodyB
+ * @return {void}
+ */
+ Module['b2LinearStiffness'] = (stiffness, damping, frequencyHertz, dampingRatio, bodyA, bodyB) => {
+  const stiffness_p = getPointerFromUnion(stiffness);
+  const damping_p = getPointerFromUnion(damping);
+  const bodyA_p = getPointerFromUnion(bodyA);
+  const bodyB_p = getPointerFromUnion(bodyB);
+  _emscripten_bind_b2LinearStiffness_6(stiffness_p, damping_p, frequencyHertz, dampingRatio, bodyA_p, bodyB_p);
+};
+
+/**
+ * Utility to compute rotational stiffness values frequency and damping ratio.
+ * The result will be written-out into the {@link stiffness} and {@link damping} parameters you provide.
+ * @example
+ * const { _malloc, _free, b2AngularStiffness, HEAPF32 } = box2D;
+ * // allocate two 4-byte floats on emscripten heap
+ * const output_p = _malloc(Float32Array.BYTES_PER_ELEMENT * 2);
+ * // give Box2D pointers to our floats on the heap, so it can mutate them
+ * b2AngularStiffness(output_p, output_p + Float32Array.BYTES_PER_ELEMENT, 0.9, 0.3, bodyA, bodyB)
+ * // create a Float32Array view over our heap offset, destructure two floats out of it
+ * const [stiffness, damping] = HEAPF32.subarray(output_p >> 2)
+ * // free the memory we allocated
+ * _free(output_p);
+ * @param {{ptr:number}|number} stiffness a WrapperObject (or its pointer) pointing to 4 bytes of heap
+ * @param {{ptr:number}|number} damping a WrapperObject (or its pointer) pointing to 4 bytes of heap
+ * @param {number} frequencyHertz (float)
+ * @param {number} dampingRatio (float)
+ * @param {{ptr:number}|number} bodyA
+ * @param {{ptr:number}|number} bodyB
+ * @return {void}
+ */
+ Module['b2AngularStiffness'] = (stiffness, damping, frequencyHertz, dampingRatio, bodyA, bodyB) => {
+  const stiffness_p = getPointerFromUnion(stiffness);
+  const damping_p = getPointerFromUnion(damping);
+  const bodyA_p = getPointerFromUnion(bodyA);
+  const bodyB_p = getPointerFromUnion(bodyB);
+  _emscripten_bind_b2AngularStiffness_6(stiffness_p, damping_p, frequencyHertz, dampingRatio, bodyA_p, bodyB_p);
 };
