@@ -14,6 +14,19 @@ declare namespace Box2D {
   }
 
   /**
+   * merge in an extra {@link b2PrismaticJoint} property; we were unable to bind to this with WebIDL
+   * due to its being protected-scope, so created bindings to it more manually.
+   */
+  export interface b2PrismaticJoint {
+    /** pointer to float */
+    m_localYAxisA: number;
+    /** @return pointer to float */
+    get_m_localYAxisA(): number;
+    /** @param m_localYAxisA pointer to float */
+    set_m_localYAxisA(m_localYAxisA: Box2D.WrapperObject | number): void;
+  }
+
+  /**
    * Compute the point states given two manifolds. The states pertain to the transition from manifold1
    * to manifold2. So state1 is either persist or remove while state2 is either add or persist.
    * @param state1 a b2PointState enum value
