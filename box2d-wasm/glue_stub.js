@@ -9,17 +9,6 @@ b2RopeDef.prototype['set_masses'] = b2RopeDef.prototype.set_masses = /** @suppre
 };
 Object.defineProperty(b2RopeDef.prototype, 'masses', { get: b2RopeDef.prototype.get_masses, set: b2RopeDef.prototype.set_masses });
 
-b2PrismaticJoint.prototype['get_m_localYAxisA'] = b2PrismaticJoint.prototype.get_m_localYAxisA = /** @suppress {undefinedVars, duplicate} @this{Object} */function() {
-  var self = this.ptr;
-  return wrapPointer(_emscripten_bind_b2PrismaticJoint_get_m_localYAxisA_0(self), b2Vec2);
-};
-b2PrismaticJoint.prototype['set_m_localYAxisA'] = b2PrismaticJoint.prototype.set_m_localYAxisA = /** @suppress {undefinedVars, duplicate} @this{Object} */function(arg0) {
-  var self = this.ptr;
-  if (arg0 && typeof arg0 === 'object') arg0 = arg0.ptr;
-  _emscripten_bind_b2PrismaticJoint_set_m_localYAxisA_1(self, arg0);
-};
-Object.defineProperty(b2PrismaticJoint.prototype, 'm_localYAxisA', { get: b2PrismaticJoint.prototype.get_m_localYAxisA, set: b2PrismaticJoint.prototype.set_m_localYAxisA });
-
 /**
  * @param {{ptr:number}|number} objOrNum
  * @returns {number}

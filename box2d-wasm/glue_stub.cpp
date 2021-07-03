@@ -35,18 +35,6 @@ public:
 
 #include "build/box2d_glue.cpp"
 
-// view of the b2PrismaticJoint class, with m_localYAxisA exposed publicly
-// (liable to break at any moment, but still preferable to modifying + maintaining Box2D source)
-struct b2PrismaticJointExceptPublic : public b2Joint
-{
-private:
-  b2Vec2 m_localAnchorA;
-	b2Vec2 m_localAnchorB;
-	b2Vec2 m_localXAxisA;
-public:
-	b2Vec2 m_localYAxisA;
-};
-
 extern "C" {
 // member functions that we weren't able to describe in WebIDL (e.g. pointer-to-float params)
 float* EMSCRIPTEN_KEEPALIVE emscripten_bind_b2RopeDef_get_masses_0(b2RopeDef* self) {
@@ -182,16 +170,5 @@ void EMSCRIPTEN_KEEPALIVE emscripten_bind_b2AngularStiffness_6(
     frequencyHertz, dampingRatio,
     bodyA, bodyB
   );
-}
-
-// functions which expose private members publicly via dangerous casts
-// yes, it'd be safer to rewrite Box2D source and make an actual public getter,
-// but this repository tries hard to avoid diverging from original source
-b2Vec2* EMSCRIPTEN_KEEPALIVE emscripten_bind_b2PrismaticJoint_get_m_localYAxisA_0(b2PrismaticJoint* self) {
-  return &reinterpret_cast<b2PrismaticJointExceptPublic*>(self)->m_localYAxisA;
-}
-
-void EMSCRIPTEN_KEEPALIVE emscripten_bind_b2PrismaticJoint_set_m_localYAxisA_1(b2PrismaticJoint* self, b2Vec2* arg0) {
-  reinterpret_cast<b2PrismaticJointExceptPublic*>(self)->m_localYAxisA = *arg0;
 }
 }
