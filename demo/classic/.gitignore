@@ -1,3 +1,4 @@
 /node_modules/
-/public/Box2D.js
-/public/Box2D.wasm
+/public/wasm-feature-detect.js
+/public/entry.js
+/public/build/
