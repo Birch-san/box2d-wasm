@@ -1,9 +1,9 @@
 // https://nodejs.org/api/esm.html#esm_customizing_esm_specifier_resolution_algorithm
-// NodeJS ES module resolution (as opposed to using explicit module resolution).
-// this entrypoint is provided to support environments that have access to a bundler,
-// or NodeJS when launched like so:
-// node --experimental-specifier-resolution=node
-import { simd } from 'wasm-feature-detect'
+// explicit ES module resolution (as opposed to using Node module resolution).
+// this entrypoint is provided solely to support non-bundler use-cases.
+// my expectation is that you would copy 'node_modules/wasm-feature-detect/dist/esm/index.js'
+// and place it into a file ./wasm-feature-detect.js adjacent to where you serve this entrypoint.
+import { simd } from './wasm-feature-detect.js'
 
 export default async (...args) => {
   const hasSIMD = await simd();
