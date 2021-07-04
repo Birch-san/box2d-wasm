@@ -16,12 +16,14 @@
     }
   </style>
 
-  <script src='Box2D.js'></script>
+  <script src='wasm-feature-detect.js'></script>
+  <script src='entry.js'></script>
   <script src='demo.js'></script>
 </head>
 
 <body>
   <h1>Box2D in WebAssembly</h1>
+  <h2>With <a href="https://v8.dev/features/simd">SIMD</a> acceleration (if browser supports it)</h2>
   <canvas id="demo-canvas" width="800" height="700"></canvas>
   <p>
     Demonstration of <a href="https://github.com/Birch-san/box2d-wasm">box2d-wasm</a> by Alex Birch of <a href="https://birchlabs.co.uk/">Birchlabs.co.uk</a>. Zlib-licensed.<br>

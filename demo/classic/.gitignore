@@ -2,3 +2,5 @@
 /public/wasm-feature-detect.js
 /public/entry.js
 /public/build/
+/public/Box2D.js
+/public/Box2D.wasm
