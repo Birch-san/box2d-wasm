@@ -8,8 +8,25 @@ Blue='\033[0;34m'
 Purple='\033[0;35m'
 NC='\033[0m' # No Color
 
-if ! [[ "$(dirname "$PWD")" -ef "$DIR/build/flavour" ]]; then
-  >&2 echo -e "${Red}This script is meant to be run from <repository_root>/box2d-wasm/build/flavour/\$FLAVOUR_DIRNAME${NC}"
+BASENAME=Box2D
+FLAVOUR_EMCC_OPTS=()
+case "$FLAVOUR" in
+  standard)
+    ;;
+  simd)
+    BASENAME="$BASENAME.simd"
+    FLAVOUR_EMCC_OPTS=(${FLAVOUR_EMCC_OPTS[@]} -msimd128)
+    ;;
+  *)
+    >&2 echo -e "${Red}FLAVOUR not set.${NC}"
+    >&2 echo -e "Please set FLAVOUR to 'standard' or 'simd'. For example, with:"
+    >&2 echo -e "${Purple}export FLAVOUR='simd'${NC}"
+    exit 1
+    ;;
+esac
+
+if ! [[ "$PWD" -ef "$DIR/build/flavour/$FLAVOUR" ]]; then
+  >&2 echo -e "${Red}This script is meant to be run from <repository_root>/box2d-wasm/build/flavour/$FLAVOUR${NC}"
   exit 1
 fi
 
@@ -24,10 +41,8 @@ EMCC_OPTS=(
   -s SUPPORT_LONGJMP=0
   -s EXPORTED_FUNCTIONS=_malloc,_free
   -s ALLOW_MEMORY_GROWTH=1
+  ${FLAVOUR_EMCC_OPTS[@]}
   )
-if [[ "$SIMD_ENABLED" = "1" ]]; then
-  EMCC_OPTS=(${EMCC_OPTS[@]} -msimd128)
-fi
 DEBUG_OPTS=(
   -g3
   -gsource-map
@@ -73,7 +88,6 @@ case "$TARGET_TYPE" in
 esac
 >&2 echo -e "TARGET_TYPE is $TARGET_TYPE"
 
-BASENAME='Box2D'
 BARE_WASM="$BASENAME.bare.wasm"
 
 >&2 echo -e "${Blue}Building bare WASM${NC}"
