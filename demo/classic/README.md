@@ -18,7 +18,7 @@ Now continue to either "easy setup" **or** "full install".
 
 ### Easy install
 
-Copy `Box2D.wasm` and `Box2D.js` into the `public` folder:
+Copy `Box2D.wasm` and `Box2D.js` into the `public` folder (where the demo will be served from):
 
 ```bash
 cp node_modules/box2d-wasm/build/flavour/standard/umd/Box2D.{js,wasm} public

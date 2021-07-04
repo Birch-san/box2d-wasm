@@ -10,9 +10,9 @@
  * License evidence: https://github.com/kripken/box2d.js/blob/master/README.markdown#box2djs
  *   "box2d.js is zlib licensed, just like Box2D."
  */
-import Box2DFactory from './Box2D.js';
+import Box2DFactory from './entry.js';
 import { demo } from './common.js';
-
+ 
 /**
  * Aliasing this variable solely for the purpose of documenting its type.
  * @type {import('box2d-wasm')}

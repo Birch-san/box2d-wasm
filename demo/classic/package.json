@@ -9,6 +9,6 @@
     "sirv-cli": "^1.0.0"
   },
   "dependencies": {
-    "box2d-wasm": "5.0.1"
+    "box2d-wasm": "5.0.2"
   }
 }

@@ -10,7 +10,12 @@
  * 
  * @param {CanvasRenderingContext2D} ctx
  * @param {number} pixelsPerMeter
- * @param {import('box2d-wasm').Box2DEmscriptenModule} box2D
+ * @note regarding the funky typedef below:
+ *       box2d-wasm is a factory which returns a Promise.
+ *       this typedef gives the result of invoking Box2DFactory
+ *       and resolving its Promise.
+ * @typedef {Parameters<Parameters<ReturnType<import('box2d-wasm')>['then']>[0] & {}>[0]} Box2D
+ * @param {Box2D} box2D
  */
 export const makeDebugDraw = (ctx, pixelsPerMeter, {
     b2Color,
