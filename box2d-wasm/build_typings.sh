@@ -6,12 +6,12 @@ Red='\033[0;31m'
 Purple='\033[0;35m'
 NC='\033[0m' # No Color
 
-if ! [[ "$PWD" -ef "$DIR/build" ]]; then
-  >&2 echo -e "${Red}This script is meant to be run from <repository_root>/box2d-wasm/build${NC}"
+if ! [[ "$PWD" -ef "$DIR/build/common" ]]; then
+  >&2 echo -e "${Red}This script is meant to be run from <repository_root>/box2d-wasm/build/common${NC}"
   exit 1
 fi
 
-: "${WEBIDL_TO_TS:=../node_modules/webidl-to-ts}"
+: "${WEBIDL_TO_TS:="$DIR/node_modules/webidl-to-ts"}"
 if test -d "${WEBIDL_TO_TS-}"; then
   >&2 echo -e "webidl-to-ts found at: $WEBIDL_TO_TS"
 else
@@ -23,4 +23,4 @@ fi
 
 set -x
 # requires Node 14.0.0 for running ES modules
-exec node --experimental-specifier-resolution=node --harmony "$WEBIDL_TO_TS/dist/index.js" -f ../Box2D.idl -n Box2D -o Box2D.d.ts
+exec node --experimental-specifier-resolution=node --harmony "$WEBIDL_TO_TS/dist/index.js" -f "$DIR/Box2D.idl" -n Box2D -o Box2D.d.ts

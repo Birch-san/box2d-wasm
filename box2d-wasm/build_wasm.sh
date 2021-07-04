@@ -8,8 +8,25 @@ Blue='\033[0;34m'
 Purple='\033[0;35m'
 NC='\033[0m' # No Color
 
-if ! [[ "$PWD" -ef "$DIR/build" ]]; then
-  >&2 echo -e "${Red}This script is meant to be run from <repository_root>/box2d-wasm/build${NC}"
+BASENAME=Box2D
+FLAVOUR_EMCC_OPTS=()
+case "$FLAVOUR" in
+  standard)
+    ;;
+  simd)
+    BASENAME="$BASENAME.simd"
+    FLAVOUR_EMCC_OPTS=(${FLAVOUR_EMCC_OPTS[@]} -msimd128)
+    ;;
+  *)
+    >&2 echo -e "${Red}FLAVOUR not set.${NC}"
+    >&2 echo -e "Please set FLAVOUR to 'standard' or 'simd'. For example, with:"
+    >&2 echo -e "${Purple}export FLAVOUR='simd'${NC}"
+    exit 1
+    ;;
+esac
+
+if ! [[ "$PWD" -ef "$DIR/build/flavour/$FLAVOUR" ]]; then
+  >&2 echo -e "${Red}This script is meant to be run from <repository_root>/box2d-wasm/build/flavour/$FLAVOUR${NC}"
   exit 1
 fi
 
@@ -24,6 +41,7 @@ EMCC_OPTS=(
   -s SUPPORT_LONGJMP=0
   -s EXPORTED_FUNCTIONS=_malloc,_free
   -s ALLOW_MEMORY_GROWTH=1
+  ${FLAVOUR_EMCC_OPTS[@]}
   )
 DEBUG_OPTS=(
   -g3
@@ -70,8 +88,6 @@ case "$TARGET_TYPE" in
 esac
 >&2 echo -e "TARGET_TYPE is $TARGET_TYPE"
 
-
-BASENAME='Box2D'
 BARE_WASM="$BASENAME.bare.wasm"
 
 >&2 echo -e "${Blue}Building bare WASM${NC}"
@@ -86,7 +102,7 @@ mkdir -p "$UMD_DIR" "$ES_DIR"
 
 >&2 echo -e "${Blue}Building post-link targets${NC}"
 
-LINK_OPTS=(--post-link "$BARE_WASM" --post-js box2d_glue.js --post-js "$DIR/glue_stub.js" ${EMCC_OPTS[@]})
+LINK_OPTS=(--post-link "$BARE_WASM" --post-js "$DIR/build/common/box2d_glue.js" --post-js "$DIR/glue_stub.js" ${EMCC_OPTS[@]})
 
 ES_FILE="$ES_DIR/$BASENAME.js"
 >&2 echo -e "${Blue}Building ES module, $ES_DIR/$BASENAME.{js,wasm}${NC}"
@@ -119,8 +135,7 @@ else
       define([], function() { return Box2D; });
     else if (typeof exports === 'object')
       exports['Box2D'] = Box2D;
-    
-"
+    "
   UMD_FOOTER_ESCAPED=`escape_for_sed_replace "$UMD_FOOTER"`
 
   sed -e "s/^$ES6_HEADER$/$UMD_HEADER_ESCAPED/" -e "s/^$ES6_FOOTER$/$UMD_FOOTER_ESCAPED/" "$ES_FILE" > "$UMD_FILE"

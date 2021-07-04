@@ -33,7 +33,7 @@ public:
   }
 };
 
-#include "build/box2d_glue.cpp"
+#include "build/common/box2d_glue.cpp"
 
 extern "C" {
 // member functions that we weren't able to describe in WebIDL (e.g. pointer-to-float params)

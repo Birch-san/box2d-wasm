@@ -14,10 +14,11 @@ export default {
 	input: 'src/main.ts',
 	output: {
 		sourcemap: true,
-		format: 'iife',
+		format: 'esm',
 		name: 'app',
-		file: 'public/build/bundle.js'
+		dir: 'public/build'
 	},
+  // inlineDynamicImports: true,
 	plugins: [
 		svelte({
 			// enable run-time checks when not in production
@@ -48,7 +49,11 @@ export default {
 		// In dev mode, call `npm run start` once
 		// the bundle has been generated
 		!production && serve({
-      contentBase: ['public', 'node_modules/box2d-wasm/build/es'],
+      contentBase: [
+        'public',
+        'node_modules/box2d-wasm/build/flavour/standard/es',
+        'node_modules/box2d-wasm/build/flavour/simd/es'
+      ],
       port: 4000
     }),
 
