@@ -6,8 +6,8 @@ Red='\033[0;31m'
 Purple='\033[0;35m'
 NC='\033[0m' # No Color
 
-if ! [[ "$PWD" -ef "$DIR/build" ]]; then
-  >&2 echo -e "${Red}This script is meant to be run from <repository_root>/box2d-wasm/build${NC}"
+if ! [[ "$PWD" -ef "$DIR/build/common" ]]; then
+  >&2 echo -e "${Red}This script is meant to be run from <repository_root>/box2d-wasm/build/common${NC}"
   exit 1
 fi
 

@@ -1,2 +1,5 @@
 /build/
 /node_modules/
+# distributions made with npm pack
+*.tgz
+*.tar.gz
