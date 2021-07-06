@@ -37,4 +37,7 @@ if [ ! -f "$EMSCRIPTEN_TOOLS/webidl_binder.py" ]; then
 fi
 
 set -x
-exec "$PYTHON3" "$EMSCRIPTEN_TOOLS/webidl_binder.py" "$DIR/Box2D.idl" box2d_glue
+"$PYTHON3" "$EMSCRIPTEN_TOOLS/webidl_binder.py" "$DIR/Box2D.idl" box2d_glue
+
+# Fix for Emscripten 2.0.18+ (we have no main function so cannot use addOnPreMain)
+sed -i'.original.js' '/addOnPreMain/ s/addOnPreMain/addOnPreRun/' box2d_glue.js

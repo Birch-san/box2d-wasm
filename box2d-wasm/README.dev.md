@@ -2,7 +2,7 @@
 
 Ensure that you have a recent [emscripten](https://emscripten.org/) installed.
 
-**Requires Emscripten 2.0.17. Higher versions produce incorrect output.**
+**Requires Emscripten 2.0.17 or higher**
 
 ### Overview
 
