@@ -4,6 +4,7 @@ import nodePolyfills from 'rollup-plugin-node-polyfills';
 import resolve from '@rollup/plugin-node-resolve';
 import livereload from 'rollup-plugin-livereload';
 import serve from 'rollup-plugin-serve'
+import copy from 'rollup-plugin-copy'
 import { terser } from 'rollup-plugin-terser';
 import sveltePreprocess from 'svelte-preprocess';
 import typescript from '@rollup/plugin-typescript';
@@ -14,9 +15,9 @@ export default {
 	input: 'src/main.ts',
 	output: {
 		sourcemap: true,
-		format: 'iife',
+		format: 'esm',
 		name: 'app',
-		file: 'public/build/bundle.js'
+		dir: 'public/build'
 	},
 	plugins: [
 		svelte({
@@ -51,10 +52,19 @@ export default {
 			inlineSources: !production
 		}),
 
+    copy({
+      targets: [
+        { src: 'node_modules/box2d-wasm/build/flavour/standard/es/Box2D.wasm', dest: 'public' },
+        { src: 'node_modules/box2d-wasm/build/flavour/simd/es/Box2D.simd.wasm', dest: 'public' },
+      ]
+    }),
+
 		// In dev mode, call `npm run start` once
 		// the bundle has been generated
 		!production && serve({
-      contentBase: ['public', 'node_modules/box2d-wasm/build/es'],
+      contentBase: [
+        'public'
+      ],
       port: 4000
     }),
 
