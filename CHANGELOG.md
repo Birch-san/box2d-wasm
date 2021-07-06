@@ -1,5 +1,84 @@
 See https://github.com/Birch-san/box2d-wasm/releases
 
+# v5.0.3
+
+Updated from Emscripten `2.0.17`->`2.0.26`.
+
+Box2D.js is still 319kB.
+Box2D.wasm is 226kB (up from 162kB).
+
+Hopefully the extra code means more performance (more inlining?).  
+The most dramatic change in [the changelog](https://github.com/emscripten-core/emscripten/blob/main/ChangeLog.md) is the LLVM library/runtime updates in Emscripten 2.0.23.
+
+Emscripten 2.0.21 introduces some hints that will help your bundler locate the `.wasm` asset (and obviate the need to implement `locateFile`). Will try to determine whether there's any instructions that can be simplified as a result of this.
+
+# v5.0.2
+
+The ES module entrypoint `es/entry.js` introduced in v5.0.0 relied on [NodeJS-style import resolution](https://nodejs.org/api/esm.html#esm_customizing_esm_specifier_resolution_algorithm) of the library `wasm-feature-detect`. This worked in environments where a bundler is available, but not on the Web. An additional entrypoint, `es-explicit/entry.js` is provided to support ES imports on the Web.
+
+The ["modern" demo](https://github.com/Birch-san/box2d-wasm/tree/v5.0.3/demo/modern) demonstrates a working configuration of SIMD, and a simpler configuration without SIMD.
+
+# v5.0.1
+
+The UMD module distribution in v5.0.0 was a misnomer — it was actually only ever a CJS module.
+
+5.0.1 introduces a real UMD module, which has been confirmed working in NodeJS and on the Web. It includes an attempt at AMD support, but this is untested.
+
+On the Web, `entry.js` expects the [`wasm-feature-detect`](wasm-feature-detect) UMD module to be already-loaded into your webpage, inserted as a `<script>` tag prior to Box2D's. Additionally it expects
+`node_modules/box2d-wasm/build/flavour/simd/umd/Box2D.simd.{js,wasm}` to be served from `/build/flavour/simd/umd`, and `node_modules/box2d-wasm/build/flavour/standard/umd/Box2D.{js,wasm}` to be served from `/build/flavour/standard/umd`.
+
+The ["classic" demo](https://github.com/Birch-san/box2d-wasm/tree/v5.0.3/demo/classic) demonstrates a working configuration of SIMD, and a simpler configuration without SIMD.
+
+# v5.0.0
+
+Added support for [WebAssembly SIMD acceleration](https://v8.dev/features/simd) (in supported browsers). This can make specific parts of the code 4x faster (but performance overall is unlikely to be dramatically different).
+
+package.json now specifies the entrypoint to the library as `entry.js` (rather than pointing directly to `Box2D.js`). `entry.js` uses [`wasm-feature-detect`](wasm-feature-detect) to determine whether SIMD is available on your platform. It will then load in either `Box2D.js` or `Box2D.simd.js` as appropriate (after which, said .js file will load in `Box2D.wasm` or `Box2D.simd.wasm` respectively).
+
+If you import the ES module distribution of `box2d-wasm`: `entry.js` will use ES2020 dynamic `import()` and ES2017 `await` to load in `Box2D.js` or `Box2D.simd.js`.  
+The browsers which support [dynamic import](https://caniuse.com/?search=dynamic%20import) and [`async/await`](https://caniuse.com/?search=await) are very similar to the ones which support [WebAssembly](https://caniuse.com/?search=webassembly).  
+You may find that you need to reconfigure your bundler. The [Svelte/Rollup demo](demo/svelte-rollup-ts/rollup.config.js) demonstrates a working configuration (`format: 'esm'` is the important part).
+
+If you import the UMD module distribution of `box2d-wasm`: `entry.js` will use CommonJS `require()` to load in `Box2D.js` or `Box2D.simd.js`.
+
+# v4.1.0
+
+Updated Emscripten 2.0.16->2.0.17. This uses LLVM's new pass manager:
+
+> ﻿﻿Use LLVM's new pass manager by default, as LLVM does. This changes a bunch of things about how LLVM optimizes and inlines, so it may cause noticeable changes in compile times, code size, and speed, either for better or for worse.
+
+In practice, code size seems comparable:  
+Box2D.js is still 319kB.  
+Box2D.wasm is 162kB (down from 163kB).
+
+If you encounter any performance regressions, please say so (in case we need to tune `--one-caller-inline-max-function-size` https://github.com/emscripten-core/emscripten/issues/13899, or revert to legacy pass manager).
+
+Exposed new helpers `b2LinearStiffness` and `b2AngularStiffness`:
+
+```ts
+const { _malloc, _free, b2LinearStiffness, HEAPF32 } = box2D;
+// allocate two 4-byte floats on emscripten heap
+const output_p = _malloc(Float32Array.BYTES_PER_ELEMENT * 2);
+// give Box2D pointers to our floats on the heap, so it can mutate them
+b2LinearStiffness(output_p, output_p + Float32Array.BYTES_PER_ELEMENT, 0.9, 0.3, bodyA, bodyB)
+// create a Float32Array view over our heap offset, destructure two floats out of it
+const [stiffness, damping] = HEAPF32.subarray(output_p >> 2)
+// free the memory we allocated
+_free(output_p);
+```
+
+```ts
+const { _malloc, _free, b2AngularStiffness, HEAPF32 } = box2D;
+// allocate two 4-byte floats on emscripten heap
+const output_p = _malloc(Float32Array.BYTES_PER_ELEMENT * 2);
+// give Box2D pointers to our floats on the heap, so it can mutate them
+b2AngularStiffness(output_p, output_p + Float32Array.BYTES_PER_ELEMENT, 0.9, 0.3, bodyA, bodyB)
+// create a Float32Array view over our heap offset, destructure two floats out of it
+const [stiffness, damping] = HEAPF32.subarray(output_p >> 2)
+// free the memory we allocated
+_free(output_p);
+```
+
 # v4.0.0
 
 The `Box2DModule` type alias has been removed (again), because (in VSCode) neither `.js` files using CommonJS imports (`const Box2DFactory = require('box2d-wasm')`) nor `.js` files using JSDoc hints (`@type {import('box2d-wasm')}` or `@type {import('box2d-wasm').default}`) were able to detect the type exported as `export default Box2DFactory` in `Box2DModule.d.ts`.
