@@ -23,4 +23,4 @@ fi
 
 set -x
 # requires Node 14.0.0 for running ES modules
-exec node --experimental-specifier-resolution=node --harmony "$WEBIDL_TO_TS/dist/index.js" -f "$DIR/Box2D.idl" -n Box2D -o Box2D.d.ts
+node --experimental-specifier-resolution=node --harmony "$WEBIDL_TO_TS/dist/index.js" -f "$DIR/Box2D.idl" -n Box2D -o "$DIR/dist/Box2D.d.ts"

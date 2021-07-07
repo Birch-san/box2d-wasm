@@ -96,9 +96,8 @@ emcc "$DIR/glue_stub.cpp" bin/libbox2d.a -I "$DIR/../box2d/include" "${EMCC_OPTS
 { set +x; } 2>&-
 >&2 echo -e "${Green}Successfully built $BARE_WASM${NC}\n"
 
-UMD_DIR='umd'
-ES_DIR='es'
-mkdir -p "$UMD_DIR" "$ES_DIR"
+UMD_DIR="$DIR/dist/umd"
+ES_DIR="$DIR/dist/es"
 
 >&2 echo -e "${Blue}Building post-link targets${NC}"
 

@@ -3,3 +3,13 @@
 # distributions made with npm pack
 *.tgz
 *.tar.gz
+# copies of build artifacts
+dist/Box2D.d.ts
+dist/es/Box2D.js
+dist/es/Box2D.wasm
+dist/es/Box2D.simd.js
+dist/es/Box2D.simd.wasm
+dist/umd/Box2D.js
+dist/umd/Box2D.wasm
+dist/umd/Box2D.simd.js
+dist/umd/Box2D.simd.wasm

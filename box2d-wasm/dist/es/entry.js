@@ -22,8 +22,8 @@ export default async (...args) => {
   /** @type {{ 'default': import('box2d-wasm') }} */
   const Box2DModule = await (
     hasSIMD
-      ? import('../../build/flavour/simd/es/Box2D.simd.js')
-      : import('../../build/flavour/standard/es/Box2D.js')
+      ? import('./Box2D.simd.js')
+      : import('./Box2D.js')
   );
   const { 'default': Box2DFactory } = Box2DModule;
   // awaiting gives us a better stack trace (at the cost of an extra microtask)

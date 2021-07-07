@@ -1,4 +1,4 @@
-/// <reference path="build/common/Box2D.d.ts" />
+/// <reference path="Box2D.d.ts" />
 declare namespace Box2D {
   /**
    * merge in an extra {@link b2RopeDef} property; we were unable to describe this (pointer to array of floats)
