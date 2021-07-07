@@ -1,2 +1,4 @@
 /node_modules/
 /public/build/
+/public/Box2D.wasm
+/public/Box2D.simd.wasm
