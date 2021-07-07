@@ -12,6 +12,8 @@ The most dramatic change in [the changelog](https://github.com/emscripten-core/e
 
 Emscripten 2.0.21 introduces some hints that will help your bundler locate the `.wasm` asset (and obviate the need to implement `locateFile`). Will try to determine whether there's any instructions that can be simplified as a result of this.
 
+**note: UMD release appears to be broken** (was built using a text-replace trick which doesn't work in newer Emscripten)
+
 # v5.0.2
 
 The ES module entrypoint `es/entry.js` introduced in v5.0.0 relied on [NodeJS-style import resolution](https://nodejs.org/api/esm.html#esm_customizing_esm_specifier_resolution_algorithm) of the library `wasm-feature-detect`. This worked in environments where a bundler is available, but not on the Web. An additional entrypoint, `es-explicit/entry.js` is provided to support ES imports on the Web.
