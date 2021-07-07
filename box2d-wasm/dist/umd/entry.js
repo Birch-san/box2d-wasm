@@ -1,4 +1,4 @@
-(function (root, factory) {
+!function (root) {
   /**
    * This validation expression comes from wasm-feature-detect:
    * https://github.com/GoogleChromeLabs/wasm-feature-detect
@@ -20,11 +20,10 @@
   : './Box2D.js';
   if (typeof define === 'function' && define.amd) {
     // AMD
-    define([asset], factory);
+    define([asset], module => module);
   } else if (typeof module === 'object' && module.exports) {
     // NodeJS
-    const module = require(asset);
-    module.exports = factory(module);
+    module.exports = require(asset);
   } else {
     // Browser globals (root is window)
     const loadModule = (path) => new Promise((resolve, reject) => {
@@ -40,22 +39,11 @@
       tag.src = path;
       root.document.getElementsByTagName("head")[0].appendChild(tag);
     });
-    root.Box2D = factory(loadModule(asset));
-  }
-}(
-  typeof self !== 'undefined' ? self : this,
-  /**
-   * @param {import('box2d-wasm')|Promise<import('box2d-wasm')>} module
-   * @return {import('box2d-wasm')}
-   */
-  (module) =>
-    /**
-     * @param {Parameters<import('box2d-wasm')>} args
-     * @return {ReturnType<import('box2d-wasm')>}
-     */
-    async (...args) => {
-      const Box2DFactory = await Promise.resolve(module);
+    const modulePromise = loadModule(asset);
+    root.Box2D = async (...args) => {
+      const Box2DFactory = await modulePromise;
       // awaiting gives us a better stack trace (at the cost of an extra microtask)
       return await Box2DFactory(...args);
-  })
-);
+    };
+  }
+}(typeof self !== 'undefined' ? self : this);
