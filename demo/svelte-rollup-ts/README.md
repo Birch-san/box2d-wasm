@@ -31,6 +31,8 @@ Navigate to [localhost:4000](http://localhost:4000).
 Build a production bundle into `public/build`:
 
 ```bash
+# clean any build artifacts left from npm start
+rm -rf public/build
 npm run build
 ```
 

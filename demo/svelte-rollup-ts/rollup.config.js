@@ -54,8 +54,8 @@ export default {
 
     copy({
       targets: [
-        { src: 'node_modules/box2d-wasm/build/flavour/standard/es/Box2D.wasm', dest: 'public' },
-        { src: 'node_modules/box2d-wasm/build/flavour/simd/es/Box2D.simd.wasm', dest: 'public' },
+        { src: 'node_modules/box2d-wasm/dist/es/Box2D.wasm', dest: 'public' },
+        { src: 'node_modules/box2d-wasm/dist/es/Box2D.simd.wasm', dest: 'public' },
       ]
     }),
 
