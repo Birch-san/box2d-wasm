@@ -23,6 +23,7 @@
     define([asset], module => module);
   } else if (typeof module === 'object' && module.exports) {
     // NodeJS
+    /** @type {import('box2d-wasm')} */
     module.exports = require(asset);
   } else {
     // Browser globals (root is window)
@@ -30,20 +31,25 @@
     const dirAttr = 'data-box2d-dir';
     const hasDirAttribute = Array.from(scripts).find(script => script.hasAttribute(dirAttr));
     const box2DDir = hasDirAttribute?.getAttribute(dirAttr) ?? '.';
-    const loadModule = (path) => new Promise((resolve, reject) => {
+    const loadModule = (path, moduleName) => new Promise((resolve, reject) => {
       const tag = root.document.createElement("script");
       tag.onload = () => {
-        resolve(root.Box2D);
+        resolve(root[moduleName]);
         return false;
       };
       tag.onerror = ({ target: { src } }) => {
-        reject(new Error(`Failed to load '${src}'`));
+        reject(new Error(`Failed to load '${src}'. Check your browser console for network errors.`));
         return false;
       };
       tag.src = path;
       root.document.getElementsByTagName("head")[0].appendChild(tag);
     });
-    const modulePromise = loadModule(`${box2DDir}/${asset}`);
+    /** @type {Promise<import('box2d-wasm')>} */
+    const modulePromise = loadModule(`${box2DDir}/${asset}`, 'Box2D');
+    /**
+     * @param {Parameters<import('box2d-wasm')>} args
+     * @return {ReturnType<import('box2d-wasm')>}
+     */
     root.Box2D = async (...args) => {
       const Box2DFactory = await modulePromise;
       // awaiting gives us a better stack trace (at the cost of an extra microtask)

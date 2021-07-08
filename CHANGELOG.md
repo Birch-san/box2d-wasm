@@ -1,5 +1,54 @@
 See https://github.com/Birch-san/box2d-wasm/releases
 
+# v6.0.1
+
+Added a mechanism to the 'browser global' loader in the UMD entrypoint that enables you to specify the directory from which you serve Box2D.js, via the `data-box2d-dir` attribute on its `<script>` tag:
+
+```html
+<script data-box2d-dir="Box2D" src='Box2D/entry.js'></script>
+```
+
+This tells `entry.js` that `Box2D.js` can be found at `Box2D/Box2D.js`.
+
+# v6.0.0
+
+Simplified (i.e. flattened) directory structure introduced in v5.0.0, to make it easier to import the library and serve deferred assets.
+
+Inlined SIMD feature detection, eliminating dependency on `wasm-feature-detect`. This simplifies the entrypoints (fewer files to locate and load in).
+
+Eliminated "ES explicit" entrypoint (now that we are zero-dependency again, we no longer need to cater for differences in ES module resolution).
+
+Simplified UMD entrypoint by writing bespoke loaders for each of CommonJS, AMD and Browser globals.
+
+Tested AMD entrypoint and confirmed working. Can be used by serving a folder with the following assets:
+
+```
+entry.js
+Box2D.js
+Box2D.wasm
+Box2D.simd.js
+Box2D.simd.wasm
+index.html
+main.js
+require.js
+```
+
+```html
+<!-- load RequireJS library, import main.js -->
+<script data-main="main" src="require.js"></script>
+```
+
+```js
+// main.js
+// import Box2D's umd/entry.js
+requirejs(['./entry.js'], function (Box2DFactory) {
+  (async () => {
+    const box2D = await Box2DFactory();
+    console.log(box2D);
+  })();
+});
+```
+
 # v5.0.3
 
 Updated from Emscripten `2.0.17`->`2.0.26`.
