@@ -16,30 +16,13 @@ npm ci
 
 Now continue to either "easy setup" **or** "full install".
 
-### Easy install
+### Setup
 
-Copy `Box2D.wasm` and `Box2D.js` into the `public` folder (where the demo will be served from):
-
-```bash
-cp node_modules/box2d-wasm/build/flavour/standard/umd/Box2D.{js,wasm} public
-```
-
-### Full install
-
-This is a little more complex, but enables [WebAssembly SIMD](https://v8.dev/features/simd) acceleration in supported browsers (recent Chrome/Firefox), with a fallback for other browsers.
-
-We include the `wasm-feature-detect` library, and load Box2D via an entrypoint which conditionall loads the SIMD version or the fallback.
-
-[`public/simd.html`](public/simd.html) does half of the work, we just need to ensure that the files it's looking for are served in the same directory.
-
-The files we need are inside `node_modules/wasm-feature-detect` and `node_modules/box2d-wasm`. We'll copy them into `public`, where the demo will be served from:
+Copy the UMD distribution of Box2D into the `public` folder (where the demo will be served from), and rename the copied folder to `Box2D`:
 
 ```bash
-mkdir -p public/build/flavour/{simd,standard}/umd
-cp node_modules/wasm-feature-detect/dist/umd/index.js public/wasm-feature-detect.js
-cp node_modules/box2d-wasm/entry/umd/entry.js public
-cp node_modules/box2d-wasm/build/flavour/simd/umd/Box2D.simd.{js,wasm} public/build/flavour/simd/umd
-cp node_modules/box2d-wasm/build/flavour/standard/umd/Box2D.{js,wasm} public/build/flavour/standard/umd
+cp -R node_modules/box2d-wasm/dist/umd public
+mv public/umd public/Box2D
 ```
 
 ## Run
@@ -50,4 +33,4 @@ Serve the web application:
 npm start
 ```
 
-Navigate to [localhost:5000](http://localhost:5000), (or [localhost:5000/simd.html](http://localhost:5000/simd.html) if you did "full install").
+Navigate to [localhost:5000](http://localhost:5000).
