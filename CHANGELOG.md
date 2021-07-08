@@ -1,6 +1,19 @@
 See https://github.com/Birch-san/box2d-wasm/releases
 
+# v6.0.2
+
+[Fixed](https://github.com/Birch-san/box2d-wasm/commit/b7dab1d61d96cb28e268e2923dfb916211aa6432#diff-885c90134a4da6981f7c2fb931312d27389c9c0695d79fb5d4cbc7593cdcc2ff) substantial performance & size [regression](https://github.com/Birch-san/box2d-wasm/commit/6ec863d23d28bc8aced657d4d3280a66e656d07f#diff-885c90134a4da6981f7c2fb931312d27389c9c0695d79fb5d4cbc7593cdcc2ffR34) introduced in [`v5.0.0`](https://github.com/Birch-san/box2d-wasm/releases/tag/v5.0.0). We now correctly set optimization level.
+
+Box2D.js is still 319kB.
+Box2D.simd.js is still 319kB.
+Box2D.wasm is 161kB (down from 226kB).
+Box2D.simd.wasm is 162kB (down from 226kB).
+
+Performance is back to normal now, so it's now possible to try out SIMD properly.
+
 # v6.0.1
+
+**Do not use: suffers from performance/size regression introduced in [`v5.0.0`](https://github.com/Birch-san/box2d-wasm/releases/tag/v5.0.0). Prefer [`v6.0.2`](https://github.com/Birch-san/box2d-wasm/releases/tag/v6.0.2)**
 
 Added a mechanism to the 'browser global' loader in the UMD entrypoint that enables you to specify the directory from which you serve Box2D.js, via the `data-box2d-dir` attribute on its `<script>` tag:
 
@@ -11,6 +24,8 @@ Added a mechanism to the 'browser global' loader in the UMD entrypoint that enab
 This tells `entry.js` that `Box2D.js` can be found at `Box2D/Box2D.js`.
 
 # v6.0.0
+
+**Do not use: suffers from performance/size regression introduced in [`v5.0.0`](https://github.com/Birch-san/box2d-wasm/releases/tag/v5.0.0). Prefer [`v6.0.2`](https://github.com/Birch-san/box2d-wasm/releases/tag/v6.0.2)**
 
 Simplified (i.e. flattened) directory structure introduced in v5.0.0, to make it easier to import the library and serve deferred assets.
 
@@ -51,6 +66,10 @@ requirejs(['./entry.js'], function (Box2DFactory) {
 
 # v5.0.3
 
+**Do not use: suffers from performance/size regression introduced in [`v5.0.0`](https://github.com/Birch-san/box2d-wasm/releases/tag/v5.0.0). Prefer [`v6.0.2`](https://github.com/Birch-san/box2d-wasm/releases/tag/v6.0.2)**
+
+**Additionally: UMD release appears to be broken** (was built using a text-replace trick which doesn't work in newer Emscripten)
+
 Updated from Emscripten `2.0.17`->`2.0.26`.
 
 Box2D.js is still 319kB.
@@ -61,15 +80,17 @@ The most dramatic change in [the changelog](https://github.com/emscripten-core/e
 
 Emscripten 2.0.21 introduces some hints that will help your bundler locate the `.wasm` asset (and obviate the need to implement `locateFile`). Will try to determine whether there's any instructions that can be simplified as a result of this.
 
-**note: UMD release appears to be broken** (was built using a text-replace trick which doesn't work in newer Emscripten)
-
 # v5.0.2
+
+**Do not use: suffers from performance/size regression introduced in [`v5.0.0`](https://github.com/Birch-san/box2d-wasm/releases/tag/v5.0.0). Prefer [`v6.0.2`](https://github.com/Birch-san/box2d-wasm/releases/tag/v6.0.2)**
 
 The ES module entrypoint `es/entry.js` introduced in v5.0.0 relied on [NodeJS-style import resolution](https://nodejs.org/api/esm.html#esm_customizing_esm_specifier_resolution_algorithm) of the library `wasm-feature-detect`. This worked in environments where a bundler is available, but not on the Web. An additional entrypoint, `es-explicit/entry.js` is provided to support ES imports on the Web.
 
 The ["modern" demo](https://github.com/Birch-san/box2d-wasm/tree/v5.0.3/demo/modern) demonstrates a working configuration of SIMD, and a simpler configuration without SIMD.
 
 # v5.0.1
+
+**Do not use: suffers from performance/size regression introduced in [`v5.0.0`](https://github.com/Birch-san/box2d-wasm/releases/tag/v5.0.0). Prefer [`v6.0.2`](https://github.com/Birch-san/box2d-wasm/releases/tag/v6.0.2)**
 
 The UMD module distribution in v5.0.0 was a misnomer — it was actually only ever a CJS module.
 
@@ -81,6 +102,8 @@ On the Web, `entry.js` expects the [`wasm-feature-detect`](wasm-feature-detect) 
 The ["classic" demo](https://github.com/Birch-san/box2d-wasm/tree/v5.0.3/demo/classic) demonstrates a working configuration of SIMD, and a simpler configuration without SIMD.
 
 # v5.0.0
+
+**Do not use: introduces performance/size regression. Prefer [`v6.0.2`](https://github.com/Birch-san/box2d-wasm/releases/tag/v6.0.2)**
 
 Added support for [WebAssembly SIMD acceleration](https://v8.dev/features/simd) (in supported browsers). This can make specific parts of the code 4x faster (but performance overall is unlikely to be dramatically different).
 
