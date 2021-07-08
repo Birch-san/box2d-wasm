@@ -23,7 +23,7 @@
     "typescript": "^4.3.0"
   },
   "dependencies": {
-    "box2d-wasm": "6.0.1"
+    "box2d-wasm": "6.0.2"
   },
   "engines": {
     "node": ">= 14.8.0"
