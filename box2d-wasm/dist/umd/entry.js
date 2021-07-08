@@ -26,6 +26,10 @@
     module.exports = require(asset);
   } else {
     // Browser globals (root is window)
+    const scripts = root.document.getElementsByTagName('script')
+    const dirAttr = 'data-box2d-dir';
+    const hasDirAttribute = Array.from(scripts).find(script => script.hasAttribute(dirAttr));
+    const box2DDir = hasDirAttribute?.getAttribute(dirAttr) ?? '.';
     const loadModule = (path) => new Promise((resolve, reject) => {
       const tag = root.document.createElement("script");
       tag.onload = () => {
@@ -39,7 +43,7 @@
       tag.src = path;
       root.document.getElementsByTagName("head")[0].appendChild(tag);
     });
-    const modulePromise = loadModule(asset);
+    const modulePromise = loadModule(`${box2DDir}/${asset}`);
     root.Box2D = async (...args) => {
       const Box2DFactory = await modulePromise;
       // awaiting gives us a better stack trace (at the cost of an extra microtask)
