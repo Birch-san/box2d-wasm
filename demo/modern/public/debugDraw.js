@@ -8,23 +8,20 @@
  * License evidence: https://github.com/kripken/box2d.js/blob/master/README.markdown#box2djs
  *   "box2d.js is zlib licensed, just like Box2D."
  * 
+ * @typedef {import('box2d-wasm')} Box2DFactory
  * @param {CanvasRenderingContext2D} ctx
  * @param {number} pixelsPerMeter
- * @note regarding the funky typedef below:
- *       box2d-wasm is a factory which returns a Promise.
- *       this typedef gives the result of invoking Box2DFactory
- *       and resolving its Promise.
- * @typedef {Parameters<Parameters<ReturnType<import('box2d-wasm')>['then']>[0] & {}>[0]} Box2D
- * @param {Box2D} box2D
+ * @param {typeof Box2D & EmscriptenModule} box2D
  */
-export const makeDebugDraw = (ctx, pixelsPerMeter, {
+export const makeDebugDraw = (ctx, pixelsPerMeter, box2D) => {
+  const {
     b2Color,
     b2Draw: { e_shapeBit },
     b2Transform,
     b2Vec2,
     JSDraw,
     wrapPointer
-  }) => {
+  } = box2D;
 
   /**
    * to replace original C++ operator =

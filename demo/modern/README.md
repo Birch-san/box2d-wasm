@@ -14,24 +14,13 @@ cd box2d-wasm/demo/modern
 npm ci
 ```
 
-### Easy install
+### Setup
 
-Copy `Box2D.wasm` and `Box2D.js` into the `public` folder (where the demo will be served from):
-
-```bash
-cp node_modules/box2d-wasm/build/flavour/standard/es/Box2D.{js,wasm} public
-```
-
-### Full install
-
-This is a little more complex, but enables [WebAssembly SIMD](https://v8.dev/features/simd) acceleration in supported browsers (recent Chrome/Firefox), with a fallback for other browsers.
+Copy the ES module distribution of Box2D into the `public` folder (where the demo will be served from), and rename the copied folder to `Box2D`:
 
 ```bash
-mkdir -p public/build/flavour/{simd,standard}/es
-cp node_modules/wasm-feature-detect/dist/esm/index.js public/wasm-feature-detect.js
-cp node_modules/box2d-wasm/entry/es-explicit/entry.js public
-cp node_modules/box2d-wasm/build/flavour/simd/es/Box2D.simd.{js,wasm} public/build/flavour/simd/es
-cp node_modules/box2d-wasm/build/flavour/standard/es/Box2D.{js,wasm} public/build/flavour/standard/es
+cp -R node_modules/box2d-wasm/dist/es public
+mv public/es public/Box2D
 ```
 
 ## Run
@@ -42,4 +31,4 @@ Serve the web application:
 npm start
 ```
 
-Navigate to [localhost:5000](http://localhost:5000), (or [localhost:5000/simd.html](http://localhost:5000/simd.html) if you did "full install").
+Navigate to [localhost:5000](http://localhost:5000).
