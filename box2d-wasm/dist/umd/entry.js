@@ -15,16 +15,16 @@
    * limitations under the License.
    */
   const hasSIMD = WebAssembly.validate(new Uint8Array([0,97,115,109,1,0,0,0,1,5,1,96,0,1,123,3,2,1,0,10,10,1,8,0,65,0,253,15,253,98,11]));
-  const asset = hasSIMD
-  ? './Box2D.simd.js'
-  : './Box2D.js';
+  const moduleName = hasSIMD
+  ? './Box2D.simd'
+  : './Box2D';
   if (typeof define === 'function' && define.amd) {
     // AMD
-    define([asset], module => module);
+    define([moduleName], module => module);
   } else if (typeof module === 'object' && module.exports) {
     // NodeJS
-    /** @type {import('box2d-wasm')} */
-    module.exports = require(asset);
+    // we avoid using the moduleName variable, because Parcel (2.0.0-beta.3.1) only analyses imports that are compile-time constants
+    module.exports = hasSIMD ? require('./Box2D.simd') : require('./Box2D');
   } else {
     // Browser globals (root is window)
     const scripts = root.document.getElementsByTagName('script')
@@ -45,7 +45,7 @@
       root.document.getElementsByTagName("head")[0].appendChild(tag);
     });
     /** @type {Promise<import('box2d-wasm')>} */
-    const modulePromise = loadModule(`${box2DDir}/${asset}`, 'Box2D');
+    const modulePromise = loadModule(`${box2DDir}/${moduleName}.js`, 'Box2D');
     /**
      * @param {Parameters<import('box2d-wasm')>} args
      * @return {ReturnType<import('box2d-wasm')>}
