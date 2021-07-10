@@ -1,8 +1,10 @@
 See https://github.com/Birch-san/box2d-wasm/releases
 
-# v6.0.3
+# v6.0.4
 
 Added `.d.ts` declarations accompanying `entry.js`, `Box2D.js` and `Box2D.simd.js` (in case anybody wants to bypass the Node module specifier or the entrypoint and import an asset directly).
+
+# v6.0.3
 
 Updated UMD entrypoint to be better statically-analysable by Parcel.
 
