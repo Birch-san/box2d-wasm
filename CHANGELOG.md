@@ -1,5 +1,11 @@
 See https://github.com/Birch-san/box2d-wasm/releases
 
+# v6.0.3
+
+Added `.d.ts` declarations accompanying `entry.js`, `Box2D.js` and `Box2D.simd.js` (in case anybody wants to bypass the Node module specifier or the entrypoint and import an asset directly).
+
+Updated UMD entrypoint to be better statically-analysable by Parcel.
+
 # v6.0.2
 
 [Fixed](https://github.com/Birch-san/box2d-wasm/commit/b7dab1d61d96cb28e268e2923dfb916211aa6432#diff-885c90134a4da6981f7c2fb931312d27389c9c0695d79fb5d4cbc7593cdcc2ff) substantial performance & size [regression](https://github.com/Birch-san/box2d-wasm/commit/6ec863d23d28bc8aced657d4d3280a66e656d07f#diff-885c90134a4da6981f7c2fb931312d27389c9c0695d79fb5d4cbc7593cdcc2ffR34) introduced in [`v5.0.0`](https://github.com/Birch-san/box2d-wasm/releases/tag/v5.0.0). We now correctly set optimization level.
