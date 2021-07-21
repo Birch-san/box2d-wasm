@@ -36,23 +36,34 @@ interface b2Contact {
 interface b2ContactListener {
 };
 
-[JSImplementation="b2ContactListener"]
+interface b2ContactListenerWrapper {
+};
+
+[JSImplementation="b2ContactListenerWrapper"]
 interface JSContactListener {
   void JSContactListener();
 
   void BeginContact(b2Contact contact);
   void EndContact(b2Contact contact);
+  void BeginContactParticleSystemParticleBodyContact(b2ParticleSystem particleSystem, b2ParticleBodyContact particleBodyContact);
+  void EndContactFixtureParticleSystemIndex(b2Fixture fixture, b2ParticleSystem particleSystem, long index);
+  void BeginContactParticleSystemParticleContact(b2ParticleSystem particleSystem, b2ParticleContact particleContact);
+  void EndContactParticleSystemIndexIndex(b2ParticleSystem particleSystem, long indexA, long indexB);
   void PreSolve(b2Contact contact, [Const] b2Manifold oldManifold);
   void PostSolve(b2Contact contact, [Const] b2ContactImpulse impulse);
 };
 
 // provided for efficiency in the case where you do not use PreSolve/PostSolve
-[JSImplementation="b2ContactListener"]
+[JSImplementation="b2ContactListenerWrapper"]
 interface JSContactListenerWithoutSolveCallbacks {
   void JSContactListener();
 
   void BeginContact(b2Contact contact);
   void EndContact(b2Contact contact);
+  void BeginContactParticleSystemParticleBodyContact(b2ParticleSystem particleSystem, b2ParticleBodyContact particleBodyContact);
+  void EndContactFixtureParticleSystemIndex(b2Fixture fixture, b2ParticleSystem particleSystem, long index);
+  void BeginContactParticleSystemParticleContact(b2ParticleSystem particleSystem, b2ParticleContact particleContact);
+  void EndContactParticleSystemIndexIndex(b2ParticleSystem particleSystem, long indexA, long indexB);
 };
 
 interface b2World {
@@ -183,6 +194,9 @@ interface JSRayCastCallback {
   void JSRayCastCallback();
   float ReportFixture(b2Fixture fixture, [Const, Ref] b2Vec2 point,
                       [Const, Ref] b2Vec2 normal, float fraction);
+  float ReportParticle([Const] b2ParticleSystem particleSystem, long index, [Const, Ref] b2Vec2 point,
+                      [Const, Ref] b2Vec2 normal, float fraction);
+  boolean ShouldQueryParticleSystem([Const] b2ParticleSystem particleSystem);
 };
 
 interface b2QueryCallback {
@@ -191,6 +205,8 @@ interface b2QueryCallback {
 interface JSQueryCallback {
   void JSQueryCallback();
   boolean ReportFixture(b2Fixture fixture);
+  boolean ReportParticle([Const] b2ParticleSystem particleSystem, long index);
+  boolean ShouldQueryParticleSystem([Const] b2ParticleSystem particleSystem);
 };
 
 interface b2MassData {
@@ -485,10 +501,15 @@ interface b2ContactFeature {
 interface b2ContactFilter {
 };
 
-[JSImplementation="b2ContactFilter"]
+interface b2ContactFilterWrapper {
+};
+
+[JSImplementation="b2ContactFilterWrapper"]
 interface JSContactFilter {
   void JSContactFilter();
   boolean ShouldCollide(b2Fixture fixtureA, b2Fixture fixtureB);
+  boolean ShouldCollideFixtureParticleSystemIndex(b2Fixture fixture, b2ParticleSystem particleSystem, long particleIndex);
+  boolean ShouldCollideParticleSystemIndexIndex(b2ParticleSystem particleSystem, long particleIndexA, long particleIndexB);
 };
 
 interface b2ContactID {
@@ -517,6 +538,8 @@ interface JSDestructionListener {
   // methods, so that it is possible to implement both of them in JS.
   void SayGoodbyeJoint(b2Joint joint);
   void SayGoodbyeFixture(b2Fixture joint);
+  void SayGoodbyeParticleGroup(b2ParticleGroup group);
+  void SayGoodbyeParticleSystemIndex(b2ParticleSystem particleSystem, long index);
 };
 
 interface b2DistanceJoint {
