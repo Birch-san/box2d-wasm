@@ -1369,3 +1369,26 @@ interface b2ParticleHandle {
   // b2IntrusiveListNode GetListNode();
   // [Const] b2IntrusiveListNode GetListNode();
 };
+
+interface b2StackAllocator {
+  void b2StackAllocator();
+  VoidPtr Allocate(long size);
+  VoidPtr Reallocate(VoidPtr p, long size);
+  void Free(VoidPtr p);
+};
+
+interface b2VoronoiDiagram {
+  void b2VoronoiDiagram(b2StackAllocator allocator, long generatorCapacity);
+  void AddGenerator([Const, Ref] b2Vec2 center, long tag, boolean necessary);
+  void Generate(float radius, float margin);
+  void GetNodes([Ref] NodeCallback callback);
+};
+
+[Prefix="b2VoronoiDiagram::"]
+interface NodeCallback {
+};
+
+[JSImplementation="NodeCallback"]
+interface JSNodeCallback {
+  [Operator=""] void op_call(long a, long b, long c);
+};

@@ -9,6 +9,8 @@
 #include <box2d/box2d.h>
 // not sure why box2d.h doesn't include b2_rope; let's grab it manually
 #include <box2d/b2_rope.h>
+// bonus parts of liquidfun didn't make the cut either
+#include <box2d/b2_voronoi_diagram.h>
 
 typedef b2Shape::Type b2ShapeType;
 typedef b2ContactFeature::Type b2ContactFeatureType;
