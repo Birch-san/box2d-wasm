@@ -23,6 +23,8 @@ public:
 
   virtual void SayGoodbyeJoint(b2Joint* joint) = 0;
   virtual void SayGoodbyeFixture(b2Fixture* fixture) = 0;
+  virtual void SayGoodbyeParticleGroup(b2ParticleGroup* group) = 0;
+  virtual void SayGoodbyeParticleSystemIndex(b2ParticleSystem* particleSystem, int32 index) = 0;
 
   void SayGoodbye(b2Joint* joint) {
     SayGoodbyeJoint(joint);
@@ -30,6 +32,76 @@ public:
 
   void SayGoodbye(b2Fixture* fixture) {
     SayGoodbyeFixture(fixture);
+  }
+
+  void SayGoodbye(b2ParticleGroup* group) {
+    SayGoodbyeParticleGroup(group);
+  }
+
+  void SayGoodbye(b2ParticleSystem* particleSystem, int32 index) {
+    SayGoodbyeParticleSystemIndex(particleSystem, index);
+  }
+};
+
+// liquidfun introduces overloads of BeginContact and EndContact.
+// this abstraction assigns unique method names to each overload, to help JS bind to them.
+class b2ContactListenerWrapper : public b2ContactListener {
+public:
+  virtual ~b2ContactListenerWrapper() {}
+
+  virtual void BeginContact(b2Contact* contact) = 0;
+  virtual void EndContact(b2Contact* contact) = 0;
+  virtual void BeginContactParticleSystemParticleBodyContact(b2ParticleSystem* particleSystem,
+							  b2ParticleBodyContact* particleBodyContact) = 0;
+  virtual void EndContactFixtureParticleSystemIndex(b2Fixture* fixture,
+							b2ParticleSystem* particleSystem, int32 index) = 0;
+  virtual void BeginContactParticleSystemParticleContact(b2ParticleSystem* particleSystem,
+							  b2ParticleContact* particleContact) = 0;
+  virtual void EndContactParticleSystemIndexIndex(b2ParticleSystem* particleSystem,
+							int32 indexA, int32 indexB) = 0;
+  virtual void PreSolve(b2Contact* contact, const b2Manifold* oldManifold) = 0;
+  virtual void PostSolve(b2Contact* contact, const b2ContactImpulse* impulse) = 0;
+
+	void BeginContact(b2ParticleSystem* particleSystem,
+							  b2ParticleBodyContact* particleBodyContact) {
+    BeginContactParticleSystemParticleBodyContact(particleSystem, particleBodyContact);
+	}
+
+	void EndContact(b2Fixture* fixture,
+							b2ParticleSystem* particleSystem, int32 index) {
+    EndContactFixtureParticleSystemIndex(fixture, particleSystem, index);
+	}
+
+	void BeginContact(b2ParticleSystem* particleSystem,
+							  b2ParticleContact* particleContact) {
+    BeginContactParticleSystemParticleContact(particleSystem, particleContact);
+	}
+
+	void EndContact(b2ParticleSystem* particleSystem,
+							int32 indexA, int32 indexB) {
+    EndContactParticleSystemIndexIndex(particleSystem, indexA, indexB);
+	}
+};
+
+class b2ContactFilterWrapper : public b2ContactFilter {
+public:
+  virtual ~b2ContactFilterWrapper() {}
+
+  virtual bool ShouldCollide(b2Fixture* fixtureA, b2Fixture* fixtureB) = 0;
+  virtual bool ShouldCollideFixtureParticleSystemIndex(b2Fixture* fixture,
+							   b2ParticleSystem* particleSystem,
+							   int32 particleIndex) = 0;
+  virtual bool ShouldCollideParticleSystemIndexIndex(b2ParticleSystem* particleSystem,
+							   int32 particleIndexA, int32 particleIndexB) = 0;
+
+  bool ShouldCollide(b2Fixture* fixture,
+							   b2ParticleSystem* particleSystem,
+							   int32 particleIndex) {
+    return ShouldCollideFixtureParticleSystemIndex(fixture, particleSystem, particleIndex);
+  }
+  bool ShouldCollide(b2ParticleSystem* particleSystem,
+							   int32 particleIndexA, int32 particleIndexB) {
+    return ShouldCollideParticleSystemIndexIndex(particleSystem, particleIndexA, particleIndexB);
   }
 };
 
