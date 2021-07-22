@@ -145,9 +145,8 @@ export class CanvasDebugDraw {
       },
       DrawParticles: (centers_p: number, radius: number, colors_p: number, count: number): void => {
         // const { b2Vec2, b2ParticleColor, wrapPointer } = this.box2D;
-        // determined using this.box2D.sizeof
-        const bytesVec2 = 16;
-        const bytesParticleColor = 16;
+        const bytesVec2 = 8; // x,y are each 4-byte floats
+        const bytesParticleColor = 4; // (RGBA channels are each 1-byte)
         for (let i = 0; i < count; i++) {
           // const { x, y }: Box2D.b2Vec2 = wrapPointer(centers_p + i * bytesVec2, b2Vec2);
           // console.log(x, y, radius);
