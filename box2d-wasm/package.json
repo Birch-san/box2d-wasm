@@ -1,6 +1,6 @@
 {
   "name": "liquidfun-wasm",
-  "version": "6.0.4",
+  "version": "6.0.4-lf.1",
   "description": "Liquidfun fork of Box2D compiled to WebAssembly",
   "module": "dist/es/entry.js",
   "main": "dist/umd/entry.js",
