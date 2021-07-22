@@ -1387,8 +1387,3 @@ interface b2VoronoiDiagram {
 [Prefix="b2VoronoiDiagram::"]
 interface NodeCallback {
 };
-
-[JSImplementation="NodeCallback"]
-interface JSNodeCallback {
-  [Operator=""] void op_call(long a, long b, long c);
-};
