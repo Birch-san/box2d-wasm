@@ -61,76 +61,31 @@ export class WorldFactory {
     };
   }
 
-  private readonly createParticles = (world: Box2D.b2World) => {
+  private readonly createParticles = (world: Box2D.b2World): void => {
     const {
-      b2ParticleSystemDef,
-      b2ParticleGroupDef,
+      b2Vec2,
       b2PolygonShape,
-      tuplesToVec2Array
+      b2ParticleGroupDef,
+      b2ParticleSystemDef,
+      destroy,
     } = this.box2D;
-    const psd = new b2ParticleSystemDef();
-    Object.assign<
-      Box2D.b2ParticleSystemDef,
-      Partial<Box2D.b2ParticleSystemDef>,
-      Partial<Box2D.b2ParticleSystemDef>
-    >(psd, {
-      // Initialize physical coefficients to the maximum values that
-      // maintain numerical stability.
-      colorMixingStrength: 0.5,
-      dampingStrength: 1.0,
-      destroyByAge: true,
-      ejectionStrength: 0.5,
-      elasticStrength: 0.25,
-      lifetimeGranularity: 1.0 / 60.0,
-      powderStrength: 0.5,
-      pressureStrength: 0.05,
-      radius: 1.0,
-      repulsiveStrength: 1.0,
-      springStrength: 0.25,
-      staticPressureIterations: 8,
-      staticPressureRelaxation: 0.2,
-      staticPressureStrength: 0.2,
-      surfaceTensionNormalStrength: 0.2,
-      surfaceTensionPressureStrength: 0.2,
-      viscousStrength: 0.25
-    }, {
-      // overrides (i.e. what I actually want)
-      radius: 0.1,
-      density: 1.0,
-      gravityScale: 1.0,
-      dampingStrength: 0.2,
-    });
-    const ps: Box2D.b2ParticleSystem = world.CreateParticleSystem(psd);
-    // Initialize physical coefficients to the maximum values that
-    // maintain numerical stability.
-    Object.assign<Box2D.b2ParticleSystemDef, Partial<Box2D.b2ParticleSystemDef>>(psd, {
-    });
-    // Create the particles.
-    const shape = new b2PolygonShape();
+    const center = new b2Vec2(-1, 1)
+    const shape = new b2PolygonShape()
+    shape.SetAsBox(0.9, 0.9, center, 0)
+    destroy(center)
 
-    const center: Box2D.Point = {
-      x: 0,
-      y: 1.01
-    };
-    const hx = 0.8;
-    const hy = 1.0;
-    type Tuple = [x: number, y: number];
-    const tuples: Array<Tuple> = ([
-      [-hx, -hy],
-      [ hx, -hy],
-      [ hx,  hy],
-      [-hx,  hy],
-    ] as const).map(
-      ([x, y]: readonly [number, number]): Tuple =>
-        [center.x + x, center.y + y]
-      );
-    const [vectors, destroy] = tuplesToVec2Array(tuples);
+    const psd = new b2ParticleSystemDef()
+    psd.radius = 0.15
+    psd.dampingStrength = 0.2
 
-    shape.Set(vectors, tuples.length);
+    const particleSystem: Box2D.b2ParticleSystem = world.CreateParticleSystem(psd)
+    destroy(psd)
 
-    const pd = new b2ParticleGroupDef();
-    pd.shape = shape;
-    const pg: Box2D.b2ParticleGroup = ps.CreateParticleGroup(pd);
+    const particleGroupDef = new b2ParticleGroupDef()
+    particleGroupDef.shape = shape
+    particleSystem.CreateParticleGroup(particleGroupDef)
+    destroy(particleGroupDef)
+    destroy(shape)
   };
 
   /** ground edges */
