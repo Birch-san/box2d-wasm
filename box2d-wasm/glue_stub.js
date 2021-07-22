@@ -370,3 +370,41 @@ Module['allocateArray'] = (ctor, elementSizeBytes, elements=1) => {
   const bodyB_p = getPointerFromUnion(bodyB);
   _emscripten_bind_b2AngularStiffness_6(stiffness_p, damping_p, frequencyHertz, dampingRatio, bodyA_p, bodyB_p);
 };
+
+// JSNodeCallback
+/**
+ * @suppress {undefinedVars, duplicate}
+ * @this{Object}
+ */
+function JSNodeCallback() {
+  this.ptr = _emscripten_bind_JSNodeCallback_JSNodeCallback_0();
+  getCache(JSNodeCallback)[this.ptr] = this;
+};
+JSNodeCallback.prototype = Object.create(NodeCallback.prototype);
+JSNodeCallback.prototype.constructor = JSNodeCallback;
+JSNodeCallback.prototype.__class__ = JSNodeCallback;
+JSNodeCallback.__cache__ = {};
+Module['JSNodeCallback'] = JSNodeCallback;
+
+JSNodeCallback.prototype['op_call'] = JSNodeCallback.prototype.op_call =
+/**
+ * @suppress {undefinedVars, duplicate}
+ * @this{Object}
+ */
+function(a, b, c) {
+  var self = this.ptr;
+  if (a && typeof a === 'object') a = a.ptr;
+  if (b && typeof b === 'object') b = b.ptr;
+  if (c && typeof c === 'object') c = c.ptr;
+  _emscripten_bind_JSNodeCallback_op_call_3(self, a, b, c);
+};
+
+JSNodeCallback.prototype['__destroy__'] = JSNodeCallback.prototype.__destroy__ =
+/**
+ * @suppress {undefinedVars, duplicate}
+ * @this{Object}
+ */
+function() {
+  var self = this.ptr;
+  _emscripten_bind_JSNodeCallback___destroy___0(self);
+};
