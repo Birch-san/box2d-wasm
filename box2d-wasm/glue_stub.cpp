@@ -109,6 +109,25 @@ public:
 
 #include "build/common/box2d_glue.cpp"
 
+// implement JSNodeCallback manually, to override operator() correctly
+class JSNodeCallback : public b2VoronoiDiagram::NodeCallback {
+public:
+  void operator()(int a, int b, int c)  {
+    EM_ASM_INT({
+      var self = Module['getCache'](Module['JSNodeCallback'])[$0];
+      if (!self.hasOwnProperty('op_call')) throw 'a JSImplementation must implement all functions, you forgot JSNodeCallback::op_call.';
+      self['op_call']($1,$2,$3);
+    }, (int)this, a, b, c);
+  }
+  void __destroy__()  {
+    EM_ASM_INT({
+      var self = Module['getCache'](Module['JSNodeCallback'])[$0];
+      if (!self.hasOwnProperty('__destroy__')) throw 'a JSImplementation must implement all functions, you forgot JSNodeCallback::__destroy__.';
+      self['__destroy__']();
+    }, (int)this);
+  }
+};
+
 extern "C" {
 // member functions that we weren't able to describe in WebIDL (e.g. pointer-to-float params)
 float* EMSCRIPTEN_KEEPALIVE emscripten_bind_b2RopeDef_get_masses_0(b2RopeDef* self) {
@@ -117,6 +136,19 @@ float* EMSCRIPTEN_KEEPALIVE emscripten_bind_b2RopeDef_get_masses_0(b2RopeDef* se
 
 void EMSCRIPTEN_KEEPALIVE emscripten_bind_b2RopeDef_set_masses_1(b2RopeDef* self, float* arg0) {
   self->masses = arg0;
+}
+
+// binding JSNodeCallback manually in order to bind operator() method correctly
+JSNodeCallback* EMSCRIPTEN_KEEPALIVE emscripten_bind_JSNodeCallback_JSNodeCallback_0() {
+  return new JSNodeCallback();
+}
+
+void EMSCRIPTEN_KEEPALIVE emscripten_bind_JSNodeCallback_op_call_3(JSNodeCallback* self, int a, int b, int c) {
+  (*self)(a, b, c);
+}
+
+void EMSCRIPTEN_KEEPALIVE emscripten_bind_JSNodeCallback___destroy___0(JSNodeCallback* self) {
+  delete self;
 }
 
 // global functions that we weren't able to describe in WebIDL (think it only supports classes/methods)

@@ -283,4 +283,14 @@ declare namespace Box2D {
      */
     freeLeaked: () => void;
   }
+
+  export class JSNodeCallback extends NodeCallback {
+    protected static readonly __cache__: {
+        [ptr: number]: JSNodeCallback;
+    };
+    protected readonly __class__: typeof JSNodeCallback;
+    __destroy__(): void;
+    protected ptr: number;
+    op_call(a: number, b: number, c: number): void;
+  }
 }
