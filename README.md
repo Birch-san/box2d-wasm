@@ -20,8 +20,8 @@ Box2D compiled to WebAssembly.
 - [Shapes and rope](https://birchlabs.co.uk/box2d-wasm/demo/)
 - [Lunar Survey](https://birchlabs.co.uk/lunar-survey/)
   - Demonstrates custom gravity
-- [Fluid simulation](https://birchlabs.co.uk/box2d-wasm-liquidfun/)
-  - Uses [liquidfun](https://github.com/Birch-san/box2d-wasm/releases/tag/v4.0.0-liquidfun.0) release
+- [Fluid simulation](https://birchlabs.co.uk/liquidfun-wasm/)
+  - Uses [liquidfun](https://github.com/Birch-san/box2d-wasm/releases/tag/liquidfun-v6.0.4-lf.1) release
   - High-performance main loop
   - WebGL rendering
 
@@ -43,10 +43,10 @@ For additional functionality:
 - particle simulation
 - soft-body collisions
 
-You can install from the [liquidfun](https://github.com/Birch-san/box2d-wasm/releases/tag/v4.0.0-liquidfun.0) branch like so:
+You can install from the [liquidfun](https://github.com/Birch-san/box2d-wasm/releases/tag/liquidfun-v6.0.4-lf.1) branch like so:
 
 ```bash
-npm i "box2d-wasm@npm:liquidfun-wasm@^4.0.2"
+npm i "box2d-wasm@npm:liquidfun-wasm@6.0.4-lf.1"
 ```
 
 ## License
