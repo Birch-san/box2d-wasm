@@ -696,7 +696,7 @@ b2MouseJointDef implements b2JointDef;
 
 interface b2PolygonShape {
   void b2PolygonShape();
-  void Set(b2Vec2 vertices, long vertexCount);
+  void Set(b2Vec2[] vertices, long vertexCount);
   void SetAsBox(float hx, float hy);
   void SetAsBox(float hx, float hy, [Ref] b2Vec2 center, float angle);
   [Value] attribute b2Vec2 m_centroid;
