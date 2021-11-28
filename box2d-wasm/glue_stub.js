@@ -370,3 +370,146 @@ Module['allocateArray'] = (ctor, elementSizeBytes, elements=1) => {
   const bodyB_p = getPointerFromUnion(bodyB);
   _emscripten_bind_b2AngularStiffness_6(stiffness_p, damping_p, frequencyHertz, dampingRatio, bodyA_p, bodyB_p);
 };
+
+/**
+ * Calling `new` on an Emscripten object does two things:
+ * - allocates memory on the emscripten heap with {@link Box2D.malloc}()
+ * - creates an Emscripten-wrapped JS object using {@link Box2D.wrapPointer}().
+ * 
+ * When you're done with the Emscripten-wrapped JS object, you should {@link Box2D.destroy}() it.
+ * destroy() does two things:
+ * - invokes the class's __destroy__, which performs {@link Box2D.free}()
+ *   - this frees the dynamically-allocated memory from the WASM heap
+ * - deletes from the class's cache, the reference it retains to the Emscripten-wrapped JS object
+ *   - this eliminates a JS memory leak
+ * 
+ * There's a couple of gaps here.
+ * - how should we clean up after we ourselves invoke wrapPointer()?
+ * - how should we clean up after we receive an Emscripten-wrapped JS object from a method?
+ * 
+ * LeakMitigator provides helper methods to solve those gaps.
+ * 
+ * @example
+ * // This example demonstrates how to use recordLeak/freeLeaked to free many references in one go
+ * import Box2DFactory from 'box2d-wasm';
+ * const { b2BodyDef, b2Vec2, b2World, getPointer, LeakMitigator }: typeof Box2D & EmscriptenModule = await Box2DFactory()
+ * const { freeLeaked, recordLeak } = new LeakMitigator()
+ * 
+ * // we invoked `new`; we should `destroy()` when we're done with it
+ * const gravity = new b2Vec2(0, 10)
+ * 
+ * // b2World takes a copy-by-value of gravity; we are done with it
+ * const world = new b2World(gravity)
+ * // free from WASM heap + delete cached JS reference
+ * destroy(gravity)
+ * 
+ * const bd_ground = new b2BodyDef()
+ * 
+ * // world#CreateBody() returns a JS object built via wrapPointer
+ * // b2Body::__cache__ retains a reference to the object
+ * const ground: Box2D.b2Body = recordLeak(world.CreateBody(bd_ground))
+ * 
+ * // if we have created all the bodies we need from this template, we are free to destroy it.
+ * // world#CreateBody() does not retain any reference to it (it accepts b2BodyDef via copy-by-value)
+ * destroy(bd_ground)
+ * 
+ * // fast-forward to later, where we tear down the Box2D experiment...
+ * 
+ * for (let body: Box2D.b2Body = world.GetBodyList(); getPointer(body) !== getPointer(NULL); body = body.GetNext()) {
+ *   // this b2Body was created with b2World#CreateBody(), so Box2D manages the memory, not us.
+ *   // we should not use destroy(body). instead we should use b2World#DestroyBody()
+ *   // this also destroys all fixtures on the body.
+ *   world.DestroyBody(body);
+ * }
+ * 
+ * // delete from the __cache__ of applicable b2* classes:
+ * // every JS object reference that this LeakMitigator recorded
+ * freeLeaked()
+ * @example
+ * // This example demonstrates how to use freeFromCache to free a single reference
+ * import Box2DFactory from 'box2d-wasm';
+ * const { b2BodyDef, b2Vec2, b2World, getPointer, LeakMitigator }: typeof Box2D & EmscriptenModule = await Box2DFactory()
+ * const { freeFromCache } = LeakMitigator
+ * 
+ * // we invoked `new`; we should `destroy()` when we're done with it
+ * const gravity = new b2Vec2(0, 10)
+ * 
+ * // b2World takes a copy-by-value of gravity; we are done with it
+ * const world = new b2World(gravity)
+ * // free from WASM heap + delete cached JS reference
+ * destroy(gravity)
+ * 
+ * const bd_ground = new b2BodyDef()
+ * 
+ * // world#CreateBody() returns a JS object built via wrapPointer
+ * // b2Body::__cache__ retains a reference to the object
+ * const ground: Box2D.b2Body = world.CreateBody(bd_ground)
+ * 
+ * // if we have created all the bodies we need from this template, we are free to destroy it.
+ * // world#CreateBody() does not retain any reference to it (it accepts b2BodyDef via copy-by-value)
+ * destroy(bd_ground)
+ * 
+ * // when we are done with `ground`:
+ * world.DestroyBody(ground);
+ * // delete the reference to the `ground` JS object in b2Body's __cache__
+ * freeFromCache(ground);
+ */
+Module['LeakMitigator'] = class LeakMitigator {
+  constructor() {
+    this.instances = new Map()
+  }
+
+  /**
+   * Convenience method to free an object from an Emscripten class's __cache__
+   */
+  static freeFromCache(
+    instance,
+    b2Class = Module['getClass'](instance)
+  ) {
+    const cache = Module['getCache'](b2Class)
+    delete cache[Module['getPointer'](instance)]
+  }
+
+  /**
+   * wrap this around any Emscripten method which returns an object.
+   * records the instance, so that we can free it from cache later
+   */
+  recordLeak(
+    instance,
+    b2Class = Module['getClass'](instance)
+  ) {
+    const instances = this.instances.get(b2Class) ?? new Set()
+    instances.add(instance)
+    this.instances.set(b2Class, instances)
+    return instance
+  }
+
+  /**
+   * prefer this over {@link Box2D.wrapPointer}.
+   * records the instance that's created, so that we can free it from cache later
+   */
+  safeWrapPointer(
+    pointer,
+    targetType
+  ) {
+    return this.recordLeak(
+      Module['wrapPointer'](pointer, targetType),
+      targetType
+    )
+  }
+
+  /**
+   * access the cache structure of each Emscripten class for which we recorded instances,
+   * then free from cache every instance that we recorded.
+   */
+  freeLeaked() {
+    // using Array#forEach because acorn optimizer couldn't parse the for..of
+    this.instances.entries().forEach(([b2Class, instances]) => {
+      const cache = Module['getCache'](b2Class)
+      for (const instance of instances) {
+        delete cache[Module['getPointer'](instance)]
+      }
+    })
+    this.instances.clear()
+  }
+}
