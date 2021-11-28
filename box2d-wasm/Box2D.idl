@@ -46,15 +46,6 @@ interface JSContactListener {
   void PostSolve(b2Contact contact, [Const] b2ContactImpulse impulse);
 };
 
-// provided for efficiency in the case where you do not use PreSolve/PostSolve
-[JSImplementation="b2ContactListener"]
-interface JSContactListenerWithoutSolveCallbacks {
-  void JSContactListener();
-
-  void BeginContact(b2Contact contact);
-  void EndContact(b2Contact contact);
-};
-
 interface b2World {
   void b2World([Const, Ref] b2Vec2 gravity);
   void SetDestructionListener(b2DestructionListener listener);
