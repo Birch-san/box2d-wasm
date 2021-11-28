@@ -233,32 +233,33 @@ interface b2Body {
   b2Fixture CreateFixture(b2FixtureDef def);
   b2Fixture CreateFixture(b2Shape shape, float density);
   void DestroyFixture(b2Fixture fixture);
-  void SetTransform([Ref] b2Vec2 position, float angle);
+  void SetTransform([Const, Ref] b2Vec2 position, float angle);
   [Const, Ref] b2Transform GetTransform();
   [Const, Ref] b2Vec2 GetPosition();
   float GetAngle();
   [Const, Ref] b2Vec2 GetWorldCenter();
   [Const, Ref] b2Vec2 GetLocalCenter();
-  void SetLinearVelocity([Ref] b2Vec2 v);
-  [Value] b2Vec2 GetLinearVelocity();
+  void SetLinearVelocity([Const, Ref] b2Vec2 v);
+  [Const, Ref] b2Vec2 GetLinearVelocity();
   void SetAngularVelocity(float omega);
   float GetAngularVelocity();
-  void ApplyForce([Ref] b2Vec2 force, [Ref] b2Vec2 point, boolean awake);
-  void ApplyForceToCenter([Ref] b2Vec2 force, boolean awake);
+  void ApplyForce([Const, Ref] b2Vec2 force, [Const, Ref] b2Vec2 point, boolean wake);
+  void ApplyForceToCenter([Const, Ref] b2Vec2 force, boolean wake);
   void ApplyTorque(float torque, boolean awake);
-  void ApplyLinearImpulse([Ref] b2Vec2 impulse, [Ref] b2Vec2 point, boolean awake);
-  void ApplyAngularImpulse(float impulse, boolean awake);
+  void ApplyLinearImpulse([Const, Ref] b2Vec2 impulse, [Const, Ref] b2Vec2 point, boolean wake);
+  void ApplyLinearImpulseToCenter([Const, Ref] b2Vec2 impulse, boolean wake);
+  void ApplyAngularImpulse(float impulse, boolean wake);
   float GetMass();
   float GetInertia();
   void GetMassData(b2MassData data);
-  void SetMassData(b2MassData data);
+  void SetMassData([Const] b2MassData data);
   void ResetMassData();
-  [Value] b2Vec2 GetWorldPoint([Ref] b2Vec2 localPoint);
-  [Value] b2Vec2 GetWorldVector([Ref] b2Vec2 localVector);
-  [Value] b2Vec2 GetLocalPoint([Ref] b2Vec2 worldPoint);
-  [Value] b2Vec2 GetLocalVector([Ref] b2Vec2 worldVector);
-  [Value] b2Vec2 GetLinearVelocityFromWorldPoint([Ref] b2Vec2 worldPoint);
-  [Value] b2Vec2 GetLinearVelocityFromLocalPoint([Ref] b2Vec2 localPoint);
+  [Value] b2Vec2 GetWorldPoint([Const, Ref] b2Vec2 localPoint);
+  [Value] b2Vec2 GetWorldVector([Const, Ref] b2Vec2 localVector);
+  [Value] b2Vec2 GetLocalPoint([Const, Ref] b2Vec2 worldPoint);
+  [Value] b2Vec2 GetLocalVector([Const, Ref] b2Vec2 worldVector);
+  [Value] b2Vec2 GetLinearVelocityFromWorldPoint([Const, Ref] b2Vec2 worldPoint);
+  [Value] b2Vec2 GetLinearVelocityFromLocalPoint([Const, Ref] b2Vec2 localPoint);
   float GetLinearDamping();
   void SetLinearDamping(float linearDamping);
   float GetAngularDamping();
@@ -277,9 +278,13 @@ interface b2Body {
   boolean IsEnabled();
   void SetFixedRotation(boolean flag);
   boolean IsFixedRotation();
+  // a const overload also exists, which we cannot easily expose
   b2Fixture GetFixtureList();
+  // a const overload also exists, which we cannot easily expose
   b2JointEdge GetJointList();
+  // a const overload also exists, which we cannot easily expose
   b2ContactEdge GetContactList();
+  // a const overload also exists, which we cannot easily expose
   b2Body GetNext();
   [Ref] b2BodyUserData GetUserData();
   b2World GetWorld();
@@ -306,6 +311,7 @@ interface b2BodyDef {
   attribute boolean awake;
   attribute boolean fixedRotation;
   attribute boolean bullet;
+  attribute boolean enabled;
   [Value] attribute b2BodyUserData userData;
   attribute float gravityScale;
 };
