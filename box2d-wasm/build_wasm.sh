@@ -111,12 +111,9 @@ emcc "${LINK_OPTS[@]}" -s EXPORT_ES6=1 -o "$ES_FILE"
 >&2 echo -e "${Green}Successfully built $ES_DIR/$BASENAME.{js,wasm}${NC}\n"
 
 UMD_FILE="$UMD_DIR/$BASENAME.js"
-if [ "$BUILD_UMD_FROM_SCRATCH" = "1" ]; then
-  >&2 echo -e "${Blue}Building UMD module, $UMD_DIR/$BASENAME.{js,wasm} from scratch${NC}"
-  set -x
-  emcc "${LINK_OPTS[@]}" -o "$UMD_FILE"
-  { set +x; } 2>&-
-else
+# cheeky text-replace to save time.
+# only works if the text-substitution is exactly as we expected (so may fail silently depending on Emscripten version or config)
+if [ "$BUILD_UMD_VIA_TEXT_REPLACE" = "1" ]; then
   >&2 echo -e "${Blue}Building UMD module, $UMD_DIR/$BASENAME.{js,wasm} by replacing header & footer of ES module${NC}"
   escape_for_sed_replace () {
     echo "$1" | sed -e 's/&/\\\&/g' -e '$!s/$/\\n/' | tr -d '\n'
@@ -139,5 +136,10 @@ else
 
   sed -e "s/^$ES6_HEADER$/$UMD_HEADER_ESCAPED/" -e "s/^$ES6_FOOTER$/$UMD_FOOTER_ESCAPED/" "$ES_FILE" > "$UMD_FILE"
   cp "$ES_DIR/$BASENAME.wasm" "$UMD_DIR"
+else
+  >&2 echo -e "${Blue}Building UMD module, $UMD_DIR/$BASENAME.{js,wasm} from scratch${NC}"
+  set -x
+  emcc "${LINK_OPTS[@]}" -o "$UMD_FILE"
+  { set +x; } 2>&-
 fi
 >&2 echo -e "${Green}Successfully built $UMD_DIR/$BASENAME.{js,wasm}${NC}\n"
