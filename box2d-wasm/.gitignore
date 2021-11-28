@@ -7,11 +7,15 @@
 /dist/Box2D.d.ts
 /dist/es/Box2D.js
 /dist/es/Box2D.wasm
+/dist/es/Box2D.wasm.map
 /dist/es/Box2D.simd.js
 /dist/es/Box2D.simd.wasm
+/dist/es/Box2D.simd.wasm.map
 /dist/umd/Box2D.js
 /dist/umd/Box2D.wasm
+/dist/umd/Box2D.wasm.map
 /dist/umd/Box2D.simd.js
 /dist/umd/Box2D.simd.wasm
+/dist/umd/Box2D.simd.wasm.map
 # integration test for AMD modules which I didn't feel like putting anywhere more formal
 /amd/

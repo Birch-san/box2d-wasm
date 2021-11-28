@@ -454,62 +454,70 @@ Module['allocateArray'] = (ctor, elementSizeBytes, elements=1) => {
  * // delete the reference to the `ground` JS object in b2Body's __cache__
  * freeFromCache(ground);
  */
-Module['LeakMitigator'] = class LeakMitigator {
-  constructor() {
-    this.instances = new Map()
-  }
-
-  /**
-   * Convenience method to free an object from an Emscripten class's __cache__
-   */
-  static freeFromCache(
-    instance,
-    b2Class = Module['getClass'](instance)
-  ) {
-    const cache = Module['getCache'](b2Class)
-    delete cache[Module['getPointer'](instance)]
-  }
-
-  /**
-   * wrap this around any Emscripten method which returns an object.
-   * records the instance, so that we can free it from cache later
-   */
-  recordLeak(
-    instance,
-    b2Class = Module['getClass'](instance)
-  ) {
-    const instances = this.instances.get(b2Class) ?? new Set()
-    instances.add(instance)
-    this.instances.set(b2Class, instances)
-    return instance
-  }
-
-  /**
-   * prefer this over {@link Box2D.wrapPointer}.
-   * records the instance that's created, so that we can free it from cache later
-   */
-  safeWrapPointer(
-    pointer,
-    targetType
-  ) {
-    return this.recordLeak(
-      Module['wrapPointer'](pointer, targetType),
-      targetType
-    )
-  }
-
-  /**
-   * access the cache structure of each Emscripten class for which we recorded instances,
-   * then free from cache every instance that we recorded.
-   */
-  freeLeaked() {
-    // using Array#forEach because acorn optimizer couldn't parse the for..of
-    this.instances.entries().forEach(([b2Class, instances]) => {
-      const cache = Module['getCache'](b2Class)
-      for (const instance of instances) {
-        delete cache[Module['getPointer'](instance)]
-      }
-    })
-    this.instances.clear()
-  }
+function LeakMitigator() {
+  this.instances = new Map()
+  this['recordLeak'] = this['recordLeak'].bind(this);
+  this['safeWrapPointer'] = this['safeWrapPointer'].bind(this);
+  this['freeLeaked'] = this['freeLeaked'].bind(this);
 }
+LeakMitigator.prototype.constructor = LeakMitigator;
+
+LeakMitigator['freeFromCache'] =
+/**
+ * Convenience method to free an object from an Emscripten class's __cache__
+ */
+function freeFromCache(
+  instance,
+  b2Class = Module['getClass'](instance)
+) {
+  const cache = Module['getCache'](b2Class)
+  delete cache[Module['getPointer'](instance)]
+}
+
+LeakMitigator.prototype['recordLeak'] =
+/**
+ * wrap this around any Emscripten method which returns an object.
+ * records the instance, so that we can free it from cache later
+ */
+function recordLeak(
+  instance,
+  b2Class = Module['getClass'](instance)
+) {
+  const instances = this.instances.get(b2Class) ?? new Set()
+  instances.add(instance)
+  this.instances.set(b2Class, instances)
+  return instance
+}
+
+LeakMitigator.prototype['safeWrapPointer'] =
+/**
+ * prefer this over {@link Box2D.wrapPointer}.
+ * records the instance that's created, so that we can free it from cache later
+ */
+function safeWrapPointer(
+  pointer,
+  targetType
+) {
+  return this.recordLeak(
+    Module['wrapPointer'](pointer, targetType),
+    targetType
+  )
+}
+
+LeakMitigator.prototype['freeLeaked'] =
+/**
+* access the cache structure of each Emscripten class for which we recorded instances,
+* then free from cache every instance that we recorded.
+*/
+function freeLeaked() {
+  // using Array#forEach because acorn optimizer couldn't parse the for..of
+  Array.from(this.instances.entries()).forEach(([b2Class, instances]) => {
+    const cache = Module['getCache'](b2Class)
+    for (const instance of instances) {
+      delete cache[Module['getPointer'](instance)]
+    }
+  })
+  this.instances.clear()
+};
+
+Module['LeakMitigator'] = LeakMitigator

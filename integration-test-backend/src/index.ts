@@ -1,7 +1,20 @@
 import Box2DFactory from 'box2d-wasm';
 import { assertFloatEqual } from './assertFloatEqual';
 
-const { b2BodyDef, b2_dynamicBody, b2PolygonShape, b2Vec2, b2World }: typeof Box2D & EmscriptenModule = await Box2DFactory();
+const {
+  b2BodyDef,
+  b2_dynamicBody,
+  b2PolygonShape,
+  b2Vec2,
+  b2World,
+  destroy,
+  getPointer,
+  LeakMitigator,
+  NULL
+}: typeof Box2D & EmscriptenModule = await Box2DFactory();
+
+const { freeFromCache } = LeakMitigator;
+const { recordLeak, freeLeaked } = new LeakMitigator();
 
 const gravity = new b2Vec2(0, 10);
 const world = new b2World(gravity);
@@ -16,10 +29,13 @@ const bd = new b2BodyDef();
 bd.set_type(b2_dynamicBody);
 bd.set_position(zero);
 
-const body = world.CreateBody(bd);
-body.CreateFixture(square, 1);
+const body = recordLeak(world.CreateBody(bd));
+destroy(bd);
+freeFromCache(body.CreateFixture(square, 1));
+destroy(square);
 body.SetTransform(zero, 0);
 body.SetLinearVelocity(zero);
+destroy(zero);
 body.SetAwake(true);
 body.SetEnabled(true);
 
@@ -41,5 +57,14 @@ for (let i=0; i<iterations; i++) {
   }
   world.Step(timeStepMillis, velocityIterations, positionIterations);
 }
+
+destroy(gravity);
+
+for (let body = recordLeak(world.GetBodyList()); getPointer(body) !== getPointer(NULL); body = recordLeak(body.GetNext())) {
+  world.DestroyBody(body);
+}
+
+destroy(world);
+freeLeaked();
 
 console.log(`👍 Ran ${iterations} iterations of a falling body. Body had the expected position on each iteration.`);

@@ -57,8 +57,7 @@ importers:
       '@typescript-eslint/eslint-plugin': 4.4.1_2196fd0119f017e301a06eb3953d355c
       '@typescript-eslint/parser': 4.4.1_eslint@7.11.0+typescript@4.3.5
       eslint: 7.11.0
-      source-map-support: 0.5.19
-      ts-node: 10.0.0_ae070899a1185038810c6e69a96767bc
+      ts-node: 10.4.0_ae070899a1185038810c6e69a96767bc
       typescript: 4.3.5
     specifiers:
       '@types/node': ^14.11.8
@@ -66,8 +65,7 @@ importers:
       '@typescript-eslint/parser': ^4.4.1
       box2d-wasm: 'workspace:*'
       eslint: ^7.11.0
-      source-map-support: ^0.5.19
-      ts-node: ^10.0.0
+      ts-node: ^10.4.0
       typescript: ^4.3.0
   webidl-to-ts:
     devDependencies:
@@ -116,6 +114,20 @@ packages:
     dev: true
     resolution:
       integrity: sha512-i6rgnR/YgPEQzZZnbTHHuZdlE8qyoBNalD6F+q4vAFlcMEcqmkoG+mPqJYJCo63qPf74+Y1UZsl3l6f7/RIkmA==
+  /@cspotcode/source-map-consumer/0.8.0:
+    dev: true
+    engines:
+      node: '>= 12'
+    resolution:
+      integrity: sha512-41qniHzTU8yAGbCp04ohlmSrZf8bkf/iJsl3V0dRGsQN/5GFfx+LbCSsCpp2gqrqjTVg/K6O8ycoV35JIwAzAg==
+  /@cspotcode/source-map-support/0.7.0:
+    dependencies:
+      '@cspotcode/source-map-consumer': 0.8.0
+    dev: true
+    engines:
+      node: '>=12'
+    resolution:
+      integrity: sha512-X4xqRHqN8ACt2aHVe51OxeA2HjbcL4MqFqXkrmQszJ1NOUuUu5u6Vqx/0lZSVNku7velL5FC/s5uEAj1lsBMhA==
   /@eslint/eslintrc/0.1.3:
     dependencies:
       ajv: 6.12.6
@@ -218,10 +230,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-509r2+yARFfHHE7T6Puu2jjkoycftovhXRqW328PDXTVGKihlb1P8Z9mMZH04ebyajfRY7dedfGynlrFHJUQCg==
-  /@tsconfig/node16/1.0.1:
+  /@tsconfig/node16/1.0.2:
     dev: true
     resolution:
-      integrity: sha512-FTgBI767POY/lKNDNbIzgAX6miIDBs6NTCbdlDb8TrWovHsSvaVIZDlTqym29C6UqhzwcJx4CYr+AlrMywA0cA==
+      integrity: sha512-eZxlbI8GZscaGS7kkc/trHTT5xgrjH3/1n2JDwusC9iahPKWMRvRjJSAN5mCXviuTGQ/lHnhvv8Q1YTpnfz9gA==
   /@tsconfig/svelte/1.0.10:
     dev: true
     resolution:
@@ -487,6 +499,12 @@ packages:
       acorn: ^6.0.0 || ^7.0.0 || ^8.0.0
     resolution:
       integrity: sha512-K0Ptm/47OKfQRpNQ2J/oIN/3QYiK6FwW+eJbILhsdxh2WTLdl+30o8aGdTbm5JbffpFFAg/g+zi1E+jvJha5ng==
+  /acorn-walk/8.2.0:
+    dev: true
+    engines:
+      node: '>=0.4.0'
+    resolution:
+      integrity: sha512-k+iyHEuPgSw6SbuDpGQM+06HQUa04DZ3o+F6CSzXMvvI5KMvnaEqXe+YVe555R9nn6GPt404fos4wcgpw12SDA==
   /acorn/7.4.1:
     dev: true
     engines:
@@ -494,6 +512,13 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-nQyp0o1/mNdbTO1PO6kHkwSrmgZ0MT/jCCpNiwbUjGoRN4dlBhqJtoQuCnEOKzgTVwg0ZWiCoQy6SxMebQVh8A==
+  /acorn/8.6.0:
+    dev: true
+    engines:
+      node: '>=0.4.0'
+    hasBin: true
+    resolution:
+      integrity: sha512-U1riIR+lBSNi3IbxtaHOIKdH8sLFv3NYfNv8sg7ZsNhcfl4HF2++BfqqrNAxoCLQW1iiylOj76ecnaUxz+z9yw==
   /ajv/6.12.6:
     dependencies:
       fast-deep-equal: 3.1.3
@@ -1849,27 +1874,27 @@ packages:
       node: '>=6'
     resolution:
       integrity: sha512-gduQwd1rOdDMGxFG1gEvhV88Oirdo2p+KjoYFU7k2g+i7n6AFFbDQ5kMPUsW0pNbfQsB/cwXvT1i4Bue0s9g5g==
-  /ts-node/10.0.0_ae070899a1185038810c6e69a96767bc:
+  /ts-node/10.4.0_ae070899a1185038810c6e69a96767bc:
     dependencies:
+      '@cspotcode/source-map-support': 0.7.0
       '@tsconfig/node10': 1.0.8
       '@tsconfig/node12': 1.0.9
       '@tsconfig/node14': 1.0.1
-      '@tsconfig/node16': 1.0.1
+      '@tsconfig/node16': 1.0.2
       '@types/node': 14.11.8
+      acorn: 8.6.0
+      acorn-walk: 8.2.0
       arg: 4.1.3
       create-require: 1.1.1
       diff: 4.0.2
       make-error: 1.3.6
-      source-map-support: 0.5.19
       typescript: 4.3.5
       yn: 3.1.1
     dev: true
-    engines:
-      node: '>=12.0.0'
     hasBin: true
     peerDependencies:
-      '@swc/core': '>=1.2.45'
-      '@swc/wasm': '>=1.2.45'
+      '@swc/core': '>=1.2.50'
+      '@swc/wasm': '>=1.2.50'
       '@types/node': '*'
       typescript: '>=2.7'
     peerDependenciesMeta:
@@ -1878,7 +1903,7 @@ packages:
       '@swc/wasm':
         optional: true
     resolution:
-      integrity: sha512-ROWeOIUvfFbPZkoDis0L/55Fk+6gFQNZwwKPLinacRl6tsxstTF1DbAcLKkovwnpKMVvOMHP1TIbnwXwtLg1gg==
+      integrity: sha512-g0FlPvvCXSIO1JDF6S232P5jPYqBkRL9qly81ZgAOSU7rwI0stphCgd2kLiCrU9DjQCrJMWEqcNSjQL02s6d8A==
   /ts-node/9.1.1_typescript@4.0.3:
     dependencies:
       arg: 4.1.3

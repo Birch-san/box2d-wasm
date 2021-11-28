@@ -55,11 +55,16 @@ destroy(tmp);
 
 world.Step(1/60, 1, 1);
 
-// strictly speaking we could consider wrapping world#GetBodyList() and body#GetNext()
-// with recordLeak() (because they're methods which return JS objects)
-// but we already recorded these bodies in our LeakMitigator when we received them
-// via world#CreateBody()
-for (let body = world.GetBodyList(); getPointer(body) !== getPointer(NULL); body = body.GetNext()) {
+// we wrap world#GetBodyList() and body#GetNext() with recordLeak() because they're
+// methods which return JS objects.
+// some of these bodies are already recorded in our LeakMitigator (because we recorded the body
+// leaked by world#CreateBody()). LeakMitigator ignores duplicates, so this is fine.
+// the list ends with a reference to NULL. this is reference leaks too, so we record it.
+for (
+  let body = recordLeak(world.GetBodyList());
+  getPointer(body) !== getPointer(NULL);
+  body = recordLeak(body.GetNext())
+  ) {
   // what happens when we invoke a getter which returns an object?
   // that's right, we need recordLeak().
   // but we don't need `destroy()` (this b2Vec2 wasn't created via `new`).
@@ -157,7 +162,16 @@ destroy(bd_ground)
 
 // fast-forward to later, where we tear down the Box2D experiment...
 
-for (let body = world.GetBodyList(); getPointer(body) !== getPointer(NULL); body = body.GetNext()) {
+// we wrap world#GetBodyList() and body#GetNext() with recordLeak() because they're
+// methods which return JS objects.
+// some of these bodies are already recorded in our LeakMitigator (because we recorded the body
+// leaked by world#CreateBody()). LeakMitigator ignores duplicates, so this is fine.
+// the list ends with a reference to NULL. this is reference leaks too, so we record it.
+for (
+  let body = recordLeak(world.GetBodyList());
+  getPointer(body) !== getPointer(NULL);
+  body = recordLeak(body.GetNext())
+  ) {
   // this b2Body was created with b2World#CreateBody(), so Box2D manages the memory, not us.
   // we should not use destroy(body). instead we should use b2World#DestroyBody()
   // this also destroys all fixtures on the body.
