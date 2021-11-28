@@ -1,5 +1,16 @@
 See https://github.com/Birch-san/box2d-wasm/releases
 
+# v7.0.0
+
+Exposed:
+
+- `b2BodyDef#enabled` attribute (resolves https://github.com/Birch-san/box2d-wasm/issues/38)
+- `b2Body#ApplyLinearImpulseToCenter` method (resolves https://github.com/Birch-san/box2d-wasm/issues/36)
+
+
+
+Deleted (unreachable) type `JSContactListenerWithoutSolveCallbacks` (resolves https://github.com/Birch-san/box2d-wasm/issues/35); the performance problem it was designed to solve (eliminating WASM->JS calls) is [not a problem nowadays](https://hacks.mozilla.org/2018/10/calls-between-javascript-and-webassembly-are-finally-fast-%F0%9F%8E%89/). Prefer `JSContactListener`.
+
 # v6.0.4
 
 Added `.d.ts` declarations accompanying `entry.js`, `Box2D.js` and `Box2D.simd.js` (in case anybody wants to bypass the Node module specifier or the entrypoint and import an asset directly).
