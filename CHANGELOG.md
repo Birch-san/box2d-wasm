@@ -2,14 +2,21 @@ See https://github.com/Birch-san/box2d-wasm/releases
 
 # v7.0.0
 
-Exposed:
+Closes https://github.com/Birch-san/box2d-wasm/issues/38  
+Closes https://github.com/Birch-san/box2d-wasm/issues/36  
+Closes https://github.com/Birch-san/box2d-wasm/issues/35
+
+Exposed new Box2D functionality:
 
 - `b2BodyDef#enabled` attribute (resolves https://github.com/Birch-san/box2d-wasm/issues/38)
 - `b2Body#ApplyLinearImpulseToCenter` method (resolves https://github.com/Birch-san/box2d-wasm/issues/36)
 
+Added `LeakMitigator` for freeing retained references from Emscripten's JS object caches.  
+See [documentation](https://github.com/Birch-san/box2d-wasm/blob/master/docs/memory-model.md).
 
+Breaking changes:
 
-Deleted (unreachable) type `JSContactListenerWithoutSolveCallbacks` (resolves https://github.com/Birch-san/box2d-wasm/issues/35); the performance problem it was designed to solve (eliminating WASM->JS calls) is [not a problem nowadays](https://hacks.mozilla.org/2018/10/calls-between-javascript-and-webassembly-are-finally-fast-%F0%9F%8E%89/). Prefer `JSContactListener`.
+- Deleted (unreachable) type `JSContactListenerWithoutSolveCallbacks` (resolves https://github.com/Birch-san/box2d-wasm/issues/35); the performance problem it was designed to solve (eliminating WASM->JS calls) is [not a problem nowadays](https://hacks.mozilla.org/2018/10/calls-between-javascript-and-webassembly-are-finally-fast-%F0%9F%8E%89/). Prefer `JSContactListener`.
 
 # v6.0.4
 
