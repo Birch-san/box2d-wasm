@@ -42,7 +42,7 @@ cd box2d-wasm
 npm i -g pnpm
 pnpm i
 # compile webidl-to-ts from TS to JS, so that box2d-wasm can consume it to generate typings
-pnpm build --filter=webidl-to-ts
+pnpm --filter=webidl-to-ts build
 ```
 
 ### Compile Box2D to WASM + generate .js and .d.ts bindings

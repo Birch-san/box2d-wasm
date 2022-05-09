@@ -1,0 +1,13 @@
+{
+  "name": "box2d-wasm-importer-manifest",
+  "version": "1.0.0",
+  "description": "This is here to prevent ERR_PNPM_NO_IMPORTER_MANIFEST_FOUND",
+  "repository": {
+    "url": "https://github.com/Birch-san/box2d-wasm/tree/master"
+  },
+  "scripts": {
+    "build": "echo what"
+  },
+  "author": "Alex Birch",
+  "license": "Zlib"
+}

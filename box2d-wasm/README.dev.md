@@ -51,15 +51,6 @@ export WEBIDL_BINDER="$(realpath "$(dirname "$(realpath "$(which emcc)")")/../sh
 
 popd
 
-# pick one
-FLAVOUR=standard
-FLAVOUR=simd
-
-FLAVOUR_DIR="flavour/$FLAVOUR"
-
-mkdir -p "$FLAVOUR_DIR"
-pushd "$FLAVOUR_DIR"
-
 # TARGET_TYPE
 #   Debug: fast compilation (for fast iteration when developing locally)
 #   Release: optimized for high-performance (longer compile time, for release builds)
@@ -69,6 +60,15 @@ pushd "$FLAVOUR_DIR"
 TARGET_TYPE=RelWithDebInfo
 TARGET_TYPE=Release
 TARGET_TYPE=Debug
+
+# pick one
+FLAVOUR=standard
+FLAVOUR=simd
+
+FLAVOUR_DIR="flavour/$FLAVOUR"
+
+mkdir -p "$FLAVOUR_DIR"
+pushd "$FLAVOUR_DIR"
 
 # generate Makefiles compatible with emscripten
 FLAVOUR="$FLAVOUR" TARGET_TYPE="$TARGET_TYPE" ../../../build_makefile.sh
