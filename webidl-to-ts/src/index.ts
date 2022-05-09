@@ -32,7 +32,7 @@ const argv = yargs(process.argv.slice(2))
   })
   .help('h')
   .alias('h', 'help')
-  .argv;
+  .parseSync();
 process.stderr.write(`Parsing ${path.resolve(argv.f)}\n`);
 
 const content = fs.readFileSync(argv.f, { encoding: 'utf8'} );

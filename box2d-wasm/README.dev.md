@@ -11,9 +11,11 @@ Navigate to `<repository root>/box2d-wasm`, then:
 ```bash
 export TARGET_TYPE=Debug
 # if you installed emscripten via emsdk: source emsdk_env.sh, then configure tools directory like so:
-export EMSCRIPTEN_TOOLS="$(realpath "$(dirname "$(realpath "$(which emcc)")")/tools")"
+export WEBIDL_BINDER="$(realpath "$(dirname "$(realpath "$(which emcc)")")/tools/webidl_binder.py")"
 # if you installed emscripten via brew: configure tools directory like so:
-export EMSCRIPTEN_TOOLS="$(realpath "$(dirname "$(realpath "$(which emcc)")")/../libexec/tools")"
+export WEBIDL_BINDER="$(realpath "$(dirname "$(realpath "$(which emcc)")")/../libexec/tools/webidl_binder.py")"
+# if you installed emscripten via Nix: configure tools directory like so:
+export WEBIDL_BINDER="$(realpath "$(dirname "$(realpath "$(which emcc)")")/../share/emscripten/tools/webidl_binder.py")"
 export PYTHON3="${EMSDK_PYTHON:-"$(which python3)"}"
 ./build_all.sh
 ```
@@ -25,8 +27,38 @@ If you're prefer not to use [`build_all.sh`](build_all.sh), here's each step lai
 Navigate to `<repository root>/box2d-wasm`, then:
 
 ```bash
-mkdir build
-cd build
+mkdir -p build/common
+pushd build
+pushd common
+
+# ensure PYTHON3 environment variable points to a Python 3 binary:
+export PYTHON3="${EMSDK_PYTHON:-"$(which python3)"}"
+
+# ensure WEBIDL_BINDER environment variable points to the location of the Emscripten tool, webidl_binder.py
+# you can determine this based on the location of the `emcc` executable on your PATH.
+# if you installed emscripten via emsdk: source emsdk_env.sh, then set the variable like so:
+export WEBIDL_BINDER="$(realpath "$(dirname "$(realpath "$(which emcc)")")/tools/webidl_binder.py")"
+# if you installed emscripten via brew: set the variable like so:
+export WEBIDL_BINDER="$(realpath "$(dirname "$(realpath "$(which emcc)")")/../libexec/tools/webidl_binder.py")"
+# if you installed emscripten via Nix: configure tools directory like so:
+export WEBIDL_BINDER="$(realpath "$(dirname "$(realpath "$(which emcc)")")/../share/emscripten/tools/webidl_binder.py")"
+
+# use Box2D.idl to create ./box2d_glue.{js,cpp} for invoking functionality from libbox2d
+../../build_idl_bindings.sh
+
+# generate Box2D.d.ts from Box2D.idl
+../../build_typings.sh
+
+popd
+
+# pick one
+FLAVOUR=standard
+FLAVOUR=simd
+
+FLAVOUR_DIR="flavour/$FLAVOUR"
+
+mkdir -p "$FLAVOUR_DIR"
+pushd "$FLAVOUR_DIR"
 
 # TARGET_TYPE
 #   Debug: fast compilation (for fast iteration when developing locally)
@@ -34,32 +66,18 @@ cd build
 #   RelWithDebInfo: Release, but with debug source-maps (and with closure optimizations disabled)
 # used for C++ -> LLVM IR, and for LLVM IR -> WASM. Debug
 # both provided for your copy-paste convenience
-export TARGET_TYPE=RelWithDebInfo
-export TARGET_TYPE=Release
-export TARGET_TYPE=Debug
+TARGET_TYPE=RelWithDebInfo
+TARGET_TYPE=Release
+TARGET_TYPE=Debug
 
 # generate Makefiles compatible with emscripten
-../build_makefile.sh
+FLAVOUR="$FLAVOUR" TARGET_TYPE="$TARGET_TYPE" ../../../build_makefile.sh
 
 # compile C++ to LLVM IR (creates ./bin/libbox2d.a archive)
 emmake make
 
-# ensure EMSCRIPTEN_TOOLS environment variable points at the directory in which webidl_binder.py can be found.
-# you can determine this based on the location of the `emcc` executable on your PATH.
-# if you installed emscripten via emsdk: source emsdk_env.sh, then set the variable like so:
-export EMSCRIPTEN_TOOLS="$(realpath "$(dirname "$(realpath "$(which emcc)")")/tools")"
-# if you installed emscripten via brew: set the variable like so:
-export EMSCRIPTEN_TOOLS="$(realpath "$(dirname "$(realpath "$(which emcc)")")/../libexec/tools")"
-
-# ensure PYTHON3 environment variable points to a Python 3 binary:
-export PYTHON3="${EMSDK_PYTHON:-"$(which python3)"}"
-
-# use Box2D.idl to create ./box2d_glue.{js,cpp} for invoking functionality from libbox2d
-../build_idl_bindings.sh
-
 # generate Box2D.{wasm,js} from glue code + libbox2d.a
-../build_wasm.sh
+FLAVOUR="$FLAVOUR" TARGET_TYPE="$TARGET_TYPE" ../../../build_wasm.sh
 
-# generate Box2D.d.ts from Box2D.idl
-../build_typings.sh
+popd
 ```
