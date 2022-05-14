@@ -45,7 +45,6 @@ EMCC_OPTS=(
   )
 DEBUG_OPTS=(
   -g3
-  -gsource-map
 )
 RELEASE_OPTS=(-O3)
 
