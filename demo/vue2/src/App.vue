@@ -1,26 +1,19 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+import { Suspense } from '@vue/runtime-dom';
+import Game from './components/Game.vue'
 </script>
 
 <template>
-  <div id="app">
-    <header>
-      <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-      <div class="wrapper">
-        <HelloWorld msg="You did it!" />
-      </div>
-    </header>
-
-    <main>
-      <TheWelcome />
-    </main>
-  </div>
+  <Suspense>
+    <Game/>
+    <template #fallback>
+      Loading...
+    </template>
+  </Suspense>
 </template>
 
 <style>
-@import './assets/base.css';
+/* @import './assets/base.css';
 
 #app {
   max-width: 1280px;
@@ -79,5 +72,5 @@ a,
   .logo {
     margin: 0 2rem 0 0;
   }
-}
+} */
 </style>
