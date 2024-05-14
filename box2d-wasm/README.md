@@ -17,7 +17,7 @@ Detailed TypeScript declarations are included (generated via [`webidl-to-ts`](..
 Install the [`box2d-wasm` npm package](https://www.npmjs.com/package/box2d-wasm)
 
 ```bash
-npm i --save box2d-wasm
+pnpm i --save box2d-wasm
 ```
 
 Then check out the [documentation](../docs).
