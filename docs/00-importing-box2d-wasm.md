@@ -41,8 +41,8 @@ To host our webpage, we'll need to [run an HTTP server](http://expressjs.com/en/
 You can grab `Box2D.js` and `Box2D.wasm` from your `node_modules`:
 
 ```
-node_modules/box2d-wasm/build/es/Box2D.js
-node_modules/box2d-wasm/build/es/Box2D.wasm
+node_modules/box2d-wasm/dist/es/Box2D.js
+node_modules/box2d-wasm/dist/es/Box2D.wasm
 ```
 
 You may find that your browser tries to download `Box2D.wasm` from an inconvenient location.  
