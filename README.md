@@ -11,7 +11,7 @@
     </a>
 </p>
 
-Box2D compiled to WebAssembly.
+Box2D v2.4 compiled to WebAssembly. For Box2D v3.0 see [this repository](https://github.com/Birch-san/box2d3-wasm)
 
 ![](https://birchlabs.co.uk/box2d-wasm/webpage-50fps.gif)
 
